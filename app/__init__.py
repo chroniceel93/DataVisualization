@@ -1,31 +1,38 @@
+import os
+
 from flask import Flask
-from flask_mysqldb import MySQL
-app = Flask(__name__)
+from flaskext.mysql import MySQL
+
+mysql = MySQL()
+
+#code pulled from Flask tutorial as needed
+
+# create_app is the factory method
+# TODO: a better explainer on Factory methods
+# They're a way to provide instances of interfaces to subclasses, sorta?
+def create_app(test_config=None):
+    # create and configure the app
+    app = Flask(__name__, instance_relative_config=True)
+    # __name__ is the name of the current module
+    # instance_relative_config=True - Tells flask config files are relative to instance folder
+    
+    # Lets some default config stuff... Change 'dev' to rand
+    app.config.from_mapping(
+        SECRET_KEY='dev'
+    )
+    
+    if test_config is None:
+        # load instance config, if it exists, if not testing.
+        app.config.from_pyfile('config.py', silent=True)
+    else:
+        # load test config if passed in
+        app.config.from_mapping(test_config)
 
 
-# cursor is define per app instance, used for DB connection
-# there is no *persistent* db connection...
-
-# I'm defining a test-user here, so we can get things up and
-# running, but we should really set this up per-instance
-
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'johndoe'
-app.config['MYSQL_PASSWORD'] = 'password'
-app.config['MYSQL_DB'] = 'employees'
-
-mysql = MySQL(app)
-
-from app import routes
-
-# with app.app_context():
-#  cursor = mysql.connection.cursor()
-#  cursor.excute("SQL STATEMENT")
-
-# Statement is executed and data is returned
-
-# to print raw result
-#  result = cursor.fetchall()
-#  cursor.close() 
-#  print(result)
+    
+    with app.app_context():
+        from . import routes
+        
+        return app
+    
 
