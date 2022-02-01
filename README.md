@@ -53,4 +53,14 @@ flask run --host=xxx.xxx.xxx.xxx
 
 Remember to enter the IP address you want to access the website from. If you're connecting on the machine running the server, use `127.0.0.1`. If you're accessing it from another computer on the LAN, then use 192.168.X.XXX. This should never be exposed directly to the web, as it is not a production capable webserver.
 
-I'll put instructions on how to debug flask as it's running in VSCode some other day.
+The first step is simply making sure the standard Python extension pack is installed.
+
+Once the extensions are installed and activated, pres Ctrl+Shift+P to opent the command Pallete, and type in `Python: Select Interpreter`. 
+
+You will select the option to enter the interpreter path, and navigate to your virtual environment. Simply select the Python interpreter located at /venv/bin/python. Code will then default to this runtime, and use the libraries therein. 
+
+Once this is set up, you can debug the flask app by going into the debug view, selecting `Run and Debug`, and then from the dropdown menu, selecting `Flask`. 
+
+Enter the name of the initial executable, currently `simpleflask.py`, and it will spin up a flask instance.
+
+Code will automatically forward port 5000 through ssh, so you can access the debug server using localhost on your native system.
