@@ -9,10 +9,10 @@ def get_test():
                                      , database='employees')
     cur = connection.cursor()
     
-    cur.execute("SELECT * FROM employees")
+    cur.execute("SELECT * FROM employees ORDER BY first_name")
     string = ""
     for row in cur:
-        string += str(row[2]) + " " + str(row[3]) + " " + str(row[5]) + '\n\n'
+        string += str(row[2]) + " " + str(row[3]) + " " + str(row[5]) + '<p>'
     cur.close()
     connection.close()
     return string

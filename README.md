@@ -33,12 +33,12 @@ After all of the prerequisite packages have been installed, you should go ahead 
 
 To enter the virtual environment, run `. venv/bin/activate`, and to exit simply type `deactivate` at any time.
 
-Once you've entered the virtual environment, we will first install the required python packages:
+Once you've entered the virtual environment, we will first install the required python packages using `pip install`:
 
 ```
 flask
 wheel (needed to compile some c++ interface code)
-flask-mysqldb
+mysql-connector-python
 ```
 
 Finally, we need to get the Flask debug server running.

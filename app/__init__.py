@@ -1,9 +1,6 @@
 import os
 
 from flask import Flask
-from flaskext.mysql import MySQL
-
-mysql = MySQL()
 
 #code pulled from Flask tutorial as needed
 
