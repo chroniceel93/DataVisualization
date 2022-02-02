@@ -47,7 +47,7 @@ First, go into the virtual environment, and then export a few environment variab
 
 ```
 export FLASK_ENV=development
-export FLASK_APP=simpleflask.py
+export FLASK_APP=app
 flask run --host=xxx.xxx.xxx.xxx
 ```
 
@@ -61,6 +61,6 @@ You will select the option to enter the interpreter path, and navigate to your v
 
 Once this is set up, you can debug the flask app by going into the debug view, selecting `Run and Debug`, and then from the dropdown menu, selecting `Flask`. 
 
-Enter the name of the initial executable, currently `simpleflask.py`, and it will spin up a flask instance.
+Enter the name of the initial executable, currently `app`, and it will spin up a flask instance.
 
 Code will automatically forward port 5000 through ssh, so you can access the debug server using localhost on your native system.

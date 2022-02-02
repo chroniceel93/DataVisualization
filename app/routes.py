@@ -14,3 +14,15 @@ def temp():
 @app.route('/dbtest')
 def dbtest():
     return render_template("dbtest.html.jinja", string=db.get_test())
+
+@app.route('/dbtest/tables')
+def dbtest_tables():
+	return render_template("dbtest.html.jinja", string=db.get_table_list())
+
+@app.route('/dbtest/columns')
+def dbtest_columns():
+    return render_template("dbtest.html.jinja", string=db.get_table_columns("employees"))
+
+@app.route('/dbtest/items')
+def dbtest_items():
+    return render_template("dbtest.html.jinja", string=db.get_all_data("employees", "first_name"))
