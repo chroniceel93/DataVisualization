@@ -1,0 +1,37 @@
+<html>
+    <body>
+        <h3>Line Graph Page</h3>
+    </body>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <canvas id="testchart" style="width:100%;max-width:700px"></canvas>
+
+    <button onclick="barchart()">Graph</button>
+
+    <script>
+        var bargraphname = "Bar Graph Name"
+        function barchart(){ 
+            var datanames = ["one", "two", "three"];
+            var ltestdata = [10,20,30];
+            var barColors = ["red", "green","blue"];
+
+            new Chart("testchart", {
+                type: "bar",
+                data: {
+                    labels: datanames,
+                    datasets: [{
+                    backgroundColor: barColors,
+                    data: ltestdata
+                    }]
+                },
+                options: {
+                    legend: {display: false},
+                    title: {
+                        display: true,
+                        text: bargraphname
+                    }
+                }
+            });
+        }
+    </script>
+</html>

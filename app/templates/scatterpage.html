@@ -1,0 +1,33 @@
+<html>
+    <body>
+        <h3>Scatter Graph Page</h3>
+    </body>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <canvas id="testchart" style="width:100%;max-width:700px"></canvas>
+
+    <button onclick="scatterchart()">Graph</button>
+
+    <script>
+        function scatterchart(){
+                var testdata = [{x:1,y:1},{x:2,y:2},{x:3,y:3}];
+                new Chart("testchart", {
+                    type: "scatter",
+                    data: {
+                        datasets: [{
+                        pointRadius: 4,
+                        pointBackgroundColor: "rgb(0,0,255)",
+                        data: testdata
+                        }]
+                    },
+                    options: {
+                        legend: {display: false},
+                        scales: {
+                        xAxes: [{ticks: {min: 0, max:5}}],
+                        yAxes: [{ticks: {min: 0, max:5}}],
+                        }
+                    }
+                });
+            }
+    </script>
+</html>

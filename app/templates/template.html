@@ -1,84 +1,13 @@
 <html>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    
     <body>
-        <canvas id="testchart" style="width:100%;max-width:700px"></canvas>
+        
         <h3> Template test! </h3>
         
-        <button onclick="scatterchart()">Scatter</button>
-        <button onclick="linechart()">Line</button>
-        <button onclick="barchart()">Bar</button>
+        <button onclick="location.href = '/linepage'">Line Graphs</button>
+        <button onclick="location.href = '/barpage'">Bar Grpahs</button>
+        <button onclick="location.href = '/scatterpage'">Scatter Graphs</button>
 
-        <script>
-            function scatterchart(){
-                var testdata = [{x:1,y:1},{x:2,y:2},{x:3,y:3}];
-                new Chart("testchart", {
-                    type: "scatter",
-                    data: {
-                        datasets: [{
-                        pointRadius: 4,
-                        pointBackgroundColor: "rgb(0,0,255)",
-                        data: testdata
-                        }]
-                    },
-                    options: {
-                        legend: {display: false},
-                        scales: {
-                        xAxes: [{ticks: {min: 0, max:5}}],
-                        yAxes: [{ticks: {min: 0, max:5}}],
-                        }
-                    }
-                });
-            }
-            
-            function linechart(){
-                var xValues = [50,60,70,80,90,100,110,120,130,140,150];
-                var yValues = [7,8,8,9,9,9,10,11,14,14,15];
-
-                new Chart("testchart", {
-                    type: "line",
-                    data: {
-                        labels: xValues,
-                        datasets: [{
-                        fill: false,
-                        lineTension: 0,
-                        backgroundColor: "rgba(0,0,255,1.0)",
-                        borderColor: "rgba(0,0,255,0.1)",
-                        data: yValues
-                        }]
-                    },
-                    options: {
-                        legend: {display: false},
-                        scales: {
-                            yAxes: [{ticks: {min: 6, max:16}}],
-                        }
-                    }
-                });
-            }
-
-            var bargraphname = "Bar Graph Name"
-            function barchart(){ 
-                var datanames = ["one", "two", "three"];
-                var ltestdata = [10,20,30];
-                var barColors = ["red", "green","blue"];
-
-                new Chart("testchart", {
-                    type: "bar",
-                    data: {
-                        labels: datanames,
-                        datasets: [{
-                        backgroundColor: barColors,
-                        data: ltestdata
-                        }]
-                    },
-                    options: {
-                        legend: {display: false},
-                        title: {
-                            display: true,
-                            text: bargraphname
-                        }
-                    }
-                });
-            }
-        </script>
+        
     </body>
 </html>
