@@ -1,5 +1,6 @@
 from flask import current_app, g
 import mysql.connector
+import json
 from mysqlx import Row
 
 def connect():
@@ -38,9 +39,11 @@ def get_table_columns(table):
 def get_all_data(table, item):   
     command = "SELECT " + item + " FROM " + table
     items = execute_com(command)
-    return ' '.join(str(items))
+    return json.dumps(items)
 
 def execute_com(string):
+    #TODO: Implement error handling for mysql connection.
+    
     connection = mysql.connector.connect( user='johndoe'
                                         , password='password'
                                         , host='localhost'
@@ -48,12 +51,8 @@ def execute_com(string):
     cur = connection.cursor()
     cur.execute(string)
     
-    items = []
-    for row in cur:
-        size = len(row)
-        for x in range(0, size):
-            items.append(row[x])
-            
+    items = cur.fetchall()
+    
     cur.close()
     connection.close()
             
