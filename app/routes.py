@@ -43,3 +43,7 @@ def dbtest_items():
 def test():
     db.join("salary", "first_name", "salaries", "employees")
     return
+
+@app.route('/dbtest/allfields')
+def dbtest_allfields():
+    return render_template("dbtest.html.jinja", string=db.get_all())
