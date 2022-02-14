@@ -38,3 +38,8 @@ def dbtest_columns():
 @app.route('/dbtest/items')
 def dbtest_items():
     return render_template("dbtest.html.jinja", string=db.get_all_data("employees", "first_name, last_name"))
+
+@app.route('/test')
+def test():
+    db.join("salary", "first_name", "salaries", "employees")
+    return

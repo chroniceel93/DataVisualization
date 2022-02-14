@@ -41,6 +41,37 @@ def get_all_data(table, item):
     items = execute_com(command)
     return json.dumps(items)
 
+def join(itemA, itemB, tableA, tableB):
+    command1 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableA + "\""
+    command2 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableB + "\""
+    keyA = execute_com(command1)
+    keyB = execute_com(command2)
+    for x in range(0, len(keyA)):
+        if keyA[x][0] == tableB:
+            keyA = keyA[x][1]
+            break
+            
+    for y in range(0, len(keyB)):
+        print(y)
+        if keyB[y][0] == tableA:
+            keyB = keyB[y][1]
+            break
+    
+    # if keyA returned empty
+    if (keyA == []):
+        #then we use keyB
+        command = "SELECT " + itemA + ", " + itemB + \
+        " FROM " + tableB + " JOIN " + tableA + \
+        " ON " + tableB + "." + keyB + " = " + tableA + "." + keyB
+    else:
+        #otherwise, we use keyA
+        command = "SELECT '" + itemA + "', '" + itemB + \
+        "' FROM " + tableB + "JOIN" + tableA + \
+        " ON " + tableA + "." + keyA + " = " + tableB + "." + keyA
+        
+    result = execute_com(command)
+    return result
+
 def execute_com(string):
     #TODO: Implement error handling for mysql connection.
     
