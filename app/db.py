@@ -1,3 +1,5 @@
+# Functions for interacting with the database.
+
 from flask import current_app, g
 import mysql.connector
 import json
@@ -81,7 +83,7 @@ def join(itemA, itemB, tableA, tableB):
         " ON " + tableA + "." + keyA + " = " + tableB + "." + keyA
         
     result = execute_com(command)
-    return result
+    return json.dumps(result)
 
 def execute_com(string):
     #TODO: Implement error handling for mysql connection.

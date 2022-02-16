@@ -1,3 +1,5 @@
+#initialize flask
+
 import os
 
 from flask import Flask
@@ -26,7 +28,6 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
 
-    
     with app.app_context():
         from . import routes
         
