@@ -1,8 +1,28 @@
 <!DOCTYPE html>
 <head> 
     <title> test </title>
+    <script>
+        // jinja substitutes the scripts root directory upon creation.
+        $SCRIPT_ROOT = {{ request.script_root|tojson }};
+    </script>
 </head>
 <body>
+<!-- loads jQuery -->
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
+<script>
+    // I really, really hate JS, so working this out was not fun.
+    // $(function()) lets us run a function on page load. This is provided by jQuery.
+    // We prepend jQuery functions with $, as per convention.
+    $(function() {
+        // .getJSON() sends a GET request, and expects JSON data back.
+        // It is a shorthand for a .ajax() function that does the same thing.
+        // $SCRIPT_ROOT + '/ajax_test' builds the url.
+        // The function in the function call lets us work with the retrieved obj.
+        $.getJSON($SCRIPT_ROOT + '/ajax_test', function(JSON) {
+            alert(JSON.toString())
+        });
+    });
+</script>
 {% if string %}
 {{string}}
 {% else %}

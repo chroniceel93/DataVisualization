@@ -9,7 +9,7 @@ from flask import Flask
 # They're a way to provide instances of interfaces to subclasses, sorta?
 def create_app(test_config=None):
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__, instance_relative_config=True, static_url_path='/static')
     # __name__ is the name of the current module
     # instance_relative_config=True - Tells flask config files are relative to instance folder
     

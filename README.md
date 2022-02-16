@@ -64,3 +64,5 @@ Once this is set up, you can debug the flask app by going into the debug view, s
 Enter the name of the initial executable, currently `app`, and it will spin up a flask instance.
 
 Code will automatically forward port 5000 through ssh, so you can access the debug server using localhost on your native system.
+
+Includes jQuery under the MIT license 

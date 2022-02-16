@@ -46,4 +46,9 @@ def test():
 
 @app.route('/dbtest/allfields')
 def dbtest_allfields():
-    return render_template("dbtest.html.jinja", string=db.get_all())
+    return render_template("dbtest.html.jinja", string="Cool stuff!")
+    #return render_template("dbtest.html.jinja", string=db.get_all())
+    
+@app.route('/ajax_test')
+def ajax_test():
+    return db.get_all()
