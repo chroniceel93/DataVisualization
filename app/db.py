@@ -1,8 +1,11 @@
 # Functions for interacting with the database.
+# TODO: Put this in a class without breaking it
 
-from flask import current_app, g
+from logging import addLevelName
+from flask import current_app, g, jsonify
 import mysql.connector
 import json
+import csv
 from mysqlx import Row
 
 def connect():
@@ -40,7 +43,38 @@ def get_all():
     return json.dumps(result)
 
 def request(type, itemA, itemB, step):
-    return "Nothing, for now!"
+    #TODO: Push into it's own function.
+    # Parse CSV input, temp var is the CSV parser
+    temp = csv.reader([itemA], delimiter=',')
+    # tempRow holds the parsed row
+    tempRow = []
+    # for loop is basically the only document way I could find to get data out of this
+    # So a for loop it is. We save the row to tempRow.
+    for row in temp:
+        tempRow = row
+    # We pull the row data out into discrete vars named so that the following code is easier for humans to parse.
+    aTable = tempRow[0]
+    aEntry = tempRow[1]
+    # Length of itemA is variable, if statement to check for case where we pass three items
+    if len(tempRow) == 3 :
+        aValue = tempRow[2]
+    else:
+        aValue = ""
+    temp = csv.reader([itemB], delimiter=',')
+    for row in temp:
+        tempRow = row
+        
+    #No conditional, as itemB has a fixed number of items
+    bTable = tempRow[0]
+    bValue = tempRow[1]
+    bType = tempRow[2]
+    
+    # If items A and B are on different tables, then we will need to join them. Get back the join string!
+    if aTable != bTable :
+        joinStr = join(aTable, bTable)
+        
+    # Build SQL query as needed
+    return jsonify("Nothing for now!")
 
 def join(tableA, tableB):
     """ This function generates a snippet of SQL that joins two tables.
@@ -49,8 +83,6 @@ def join(tableA, tableB):
     and then picking the first matching key pair.
 
     Args:
-        itemA (string): ident for first item
-        itemB (string): ident for second item
         tableA (string): ident for table holding first item
         tableB (string): ident for table holding second item
 
