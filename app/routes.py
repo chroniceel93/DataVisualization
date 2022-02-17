@@ -38,7 +38,11 @@ def db_all():
 
 @app.route('/db_result')
 def db_result():
-    return db.join("salary", "first_name", "salaries", "employees")
+    return db.join("salary", "gender", "salaries", "employees")
+
+@app.route('/request')
+def req():
+    return db.request(0, "salaries,salaries", "salaries,from_date,date", 0)
 
 # @app.route('/dbtest')
 # def dbtest():

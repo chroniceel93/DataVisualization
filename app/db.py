@@ -10,20 +10,8 @@ def connect():
                                      , password='password'
                                      , host='localhost'
                                      , database='employees')
-
-# def get_test():
-#     # TODO: Pull connection into a utility Class to reduce repeat code, especially w/ tests
-#     # NOTE: Test class, serves no real function
-#     connection = connect()
-#     cur = connection.cursor()
-#     cur.execute("SELECT * FROM employees ORDER BY first_name")
-#     string = ""
-#     for row in cur:
-#         string += str(row[2]) + " " + str(row[3]) + " " + str(row[5]) + '<p>'
-#     cur.close()
-#     connection.close()
-#    return string
-
+    
+    
 def get_table_list():
     command = "SHOW TABLES"
     items = execute_com(command)
@@ -34,10 +22,12 @@ def get_table_columns(table):
     items = execute_com(command)
     return items
 
-#NOTE: join is good for debug output, but not useful for actually working w/ data
-# we can build dropdowns from raw entries...
-
 def get_all():
+    """ Queries the database for all fields.
+
+    Returns:
+        string: A JSON String containing {"table_name", "item_name", "item_type"}
+    """
     items = get_table_list()
     cols = 0
     result = []
@@ -48,13 +38,25 @@ def get_all():
             # append 2d array element with table name, item name and item type, in that order
             result.append([str(items[x])[2:-3], str(cols[y][0]), str(cols[y][1])[2:-1]])
     return json.dumps(result)
-    
-def get_all_data(table, item):   
-    command = "SELECT " + item + " FROM " + table
-    items = execute_com(command)
-    return json.dumps(items)
 
-def join(itemA, itemB, tableA, tableB):
+def request(type, itemA, itemB, step):
+    return "Nothing, for now!"
+
+def join(tableA, tableB):
+    """ This function generates a snippet of SQL that joins two tables.
+
+    It's fairly naieve, first querying for all keys between the two tables,
+    and then picking the first matching key pair.
+
+    Args:
+        itemA (string): ident for first item
+        itemB (string): ident for second item
+        tableA (string): ident for table holding first item
+        tableB (string): ident for table holding second item
+
+    Returns:
+        string: SQL snippet
+    """
     command1 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableA + "\""
     command2 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableB + "\""
     keyA = execute_com(command1)
@@ -73,19 +75,25 @@ def join(itemA, itemB, tableA, tableB):
     # if keyA returned empty
     if (keyA == []):
         #then we use keyB
-        command = "SELECT " + itemA + ", " + itemB + \
-        " FROM " + tableB + " JOIN " + tableA + \
+        command = "JOIN " + tableA + \
         " ON " + tableB + "." + keyB + " = " + tableA + "." + keyB
     else:
         #otherwise, we use keyA
-        command = "SELECT '" + itemA + "', '" + itemB + \
-        "' FROM " + tableB + "JOIN" + tableA + \
+        command = "JOIN" + tableA + \
         " ON " + tableA + "." + keyA + " = " + tableB + "." + keyA
         
-    result = execute_com(command)
-    return json.dumps(result)
+    return command
 
 def execute_com(string):
+    """ Takes a given string, assuming it is a valid SQL Query, and executes it.
+
+    Args:
+        string (string): SQL Query
+
+    Returns:
+        type: description (it's complicated, I'll sort it out this weekend?)
+    """
+    #TODO: Fill out return fields in docstring
     #TODO: Implement error handling for mysql connection.
     
     connection = mysql.connector.connect( user='johndoe'
@@ -101,3 +109,25 @@ def execute_com(string):
     connection.close()
             
     return items
+
+# Old debug functions I'm probably going to delete.
+
+# def get_test():
+#     # TODO: Pull connection into a utility Class to reduce repeat code, especially w/ tests
+#     # NOTE: Test class, serves no real function
+#     connection = connect()
+#     cur = connection.cursor()
+#     cur.execute("SELECT * FROM employees ORDER BY first_name")
+#     string = ""
+#     for row in cur:
+#         string += str(row[2]) + " " + str(row[3]) + " " + str(row[5]) + '<p>'
+#     cur.close()
+#     connection.close()
+#    return string
+
+
+    
+# def get_all_data(table, item):   
+#     command = "SELECT " + item + " FROM " + table
+#     items = execute_com(command)
+#     return json.dumps(items)

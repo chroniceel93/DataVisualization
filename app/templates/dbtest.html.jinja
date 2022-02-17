@@ -29,6 +29,12 @@
         });
     }
 
+    function testRequest() {
+        $.getJSON($SCRIPT_ROOT + '/request', function(JSON) {
+            alret(JSON.toString())
+        });
+    }
+
 </script>
 {% if string %}
 {{string}}
@@ -37,5 +43,6 @@ nothing
 {% endif %}
 <button onclick="testElements()"> Show table elements </button>
 <button onclick="testQuery()"> Show demo result </button>
+<button onclick="testRequest()"> Show request result </button>
 </body>
 </html>
