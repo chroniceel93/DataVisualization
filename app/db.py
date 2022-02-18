@@ -64,17 +64,27 @@ def request(type, itemA, itemB, step):
     for row in temp:
         tempRow = row
         
-    #No conditional, as itemB has a fixed number of items
+    # No conditional, as itemB has a fixed number of items
     bTable = tempRow[0]
-    bValue = tempRow[1]
+    bEntry = tempRow[1]
     bType = tempRow[2]
+    
+    comStr = ""
     
     # If items A and B are on different tables, then we will need to join them. Get back the join string!
     if aTable != bTable :
-        joinStr = join(aTable, bTable)
+        comStr = join(aTable, bTable)
+    else :
+        comStr = aTable
         
+    # If B is a date, then it needs to be encapsulated with "DATE()"
+    if bType == "date":
+        comStr = "SELECT AVG(" + aTable + "." + aEntry + "), DATE(" + bTable + "." + bEntry + ") FROM " + comStr + " GROUP BY (" + bTable + "." + bEntry + ") ORDER BY ("  + bTable + "." + bEntry + ")"
+        
+    # Execute SQL Query, and return
+    result = execute_com(comStr)
     # Build SQL query as needed
-    return jsonify("Nothing for now!")
+    return jsonify(result)
 
 def join(tableA, tableB):
     """ This function generates a snippet of SQL that joins two tables.
@@ -107,11 +117,11 @@ def join(tableA, tableB):
     # if keyA returned empty
     if (keyA == []):
         #then we use keyB
-        command = "JOIN " + tableA + \
+        command = tableA + " JOIN " +  \
         " ON " + tableB + "." + keyB + " = " + tableA + "." + keyB
     else:
         #otherwise, we use keyA
-        command = "JOIN" + tableA + \
+        command =  tableA +" JOIN " + \
         " ON " + tableA + "." + keyA + " = " + tableB + "." + keyA
         
     return command
