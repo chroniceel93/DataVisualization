@@ -11,19 +11,19 @@ def index():
 
 @app.route('/template')
 def temp():
-	return render_template("template.html")
+	return render_template("template.html.jinja")
 
 @app.route('/linepage')
 def linepage():
-	return render_template("linepage.html")
+	return render_template("linepage.html.jinja")
 
 @app.route('/barpage')
 def barpage():
-	return render_template("barpage.html")
+	return render_template("barpage.html.jinja")
 
 @app.route('/scatterpage')
 def scatterpage():
-	return render_template("scatterpage.html")
+	return render_template("scatterpage.html.jinja")
 
 @app.route('/dbtest')
 def dbtest_allfields():
