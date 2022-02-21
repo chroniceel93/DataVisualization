@@ -38,7 +38,28 @@ def db_all():
 
 @app.route('/db_result')
 def db_result():
-    return db.join("salary", "first_name", "salaries", "employees")
+    return db.join("salary", "gender", "salaries", "employees")
+
+@app.route('/request')
+def req():
+    """ This function returns the JSON formatted results of an abstracted SQL request.
+    
+    The abstraction currently relies on a few core assumptions. We will only be returning two fields per request, and we will only average or sum the requests. The current syntax is designed so that it can be extended.
+    
+    The structure is as follows: TYPE, ITEMX, ITEMY, STEP
+    
+    TYPE is an enum that determines what operation is performed on the selected data. Currently, we will only support SUM and AVG.
+    
+    ITEMX is the data we wish to view, and it is given as a CSV string containing either two ("Table,Item") or three ("Table,Item,Value") items. In order, these define the table the item exists in, the item's field, and if supplied, what value we are looking for.
+    
+    ITEMY is our scale, given as a CSV string, containing exactly three items ("Table,Item,Type"). The rationale here is slightly different, as since we are using this entry to determine scale, the relevant SQL syntax is type dependent. We will not be searching for a given Value here.
+    
+    Finally, STEP. This value is used to change the granularity of the input. With very large databases, it might be expected that several hundred thousand results may come back for a given query, leading to a response in the order of hundreds of megabytes. This puts an undue strain on the web-server, the network and the web application for little or no gain. So, increasing the STEP size will decrease the granularity of the data.
+
+    Returns:
+        string: JSON String containing result of abstracted SQL query
+    """
+    return db.request(0, "salaries,salary", "salaries,from_date,date", 0)
 
 # @app.route('/dbtest')
 # def dbtest():

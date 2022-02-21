@@ -4,34 +4,86 @@
     <body>
         <h3>Scatter Graph Page</h3>
     </body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      .chartMenu p {
+        padding: 10px;
+        font-size: 20px;
+      }
+      .chartCard {
+        width: 100vw;
+        height: calc(100vh - 40px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chartBox {
+        width: 700px;
+        padding: 20px;
+        border-radius: 20px;
+        background: white;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="location.href = '/template'">Main Menu</button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <canvas id="testchart" style="width:100%;max-width:700px"></canvas>
-
-    <button onclick="scatterchart()">Graph</button>
+    <div class="chartCard">
+      <div class="chartBox">
+        <canvas id="myChart"></canvas>
+        Change name of graph: <input onkeyup="updatename(this)" type="text">
+      </div>
+    </div>
 
     
 
+    <script src="{{ url_for('static', filename='chart.js') }}"></script>
+    
     <script>
-        function scatterchart(){
-                var testdata = [{x:1,y:1},{x:2,y:2},{x:3,y:3}];
-                new Chart("testchart", {
-                    type: "scatter",
-                    data: {
-                        datasets: [{
-                        pointRadius: 4,
-                        pointBackgroundColor: "rgb(0,0,255)",
-                        data: testdata
-                        }]
-                    },
-                    options: {
-                        legend: {display: false},
-                        scales: {
-                        xAxes: [{ticks: {min: 0, max:5}}],
-                        yAxes: [{ticks: {min: 0, max:5}}],
-                        }
-                    }
-                });
-            }
+    // setup 
+    const data = {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Scatter Graph Name',
+        pointRadius: 4,
+        pointBackgroundColor: "rgb(0,0,255)",
+        data: [{x:1,y:1},{x:2,y:2},{x:3,y:3}]
+      }]
+    };
+
+    // config 
+    const config = {
+      type: 'scatter',
+      data,
+      options: {
+        legend: {display: false},
+        scales: {
+            xAxes: [{ticks: {min: 0, max:10}}],
+            yAxes: [{ticks: {min: 0, max:10}}],
+        }
+      }
+    };
+
+    // render init block
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+
+    function updatename(nameval){
+        myChart.config.data.datasets[0].label = nameval.value;
+        myChart.update();
+    }
     </script>
+
+  </body>
 </html>

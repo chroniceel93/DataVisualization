@@ -4,38 +4,106 @@
     <body>
         <h3>Line Graph Page</h3>
     </body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      .chartMenu p {
+        padding: 10px;
+        font-size: 20px;
+      }
+      .chartCard {
+        width: 100vw;
+        height: calc(100vh - 40px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chartBox {
+        width: 700px;
+        padding: 20px;
+        border-radius: 20px;
+        background: white;
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="location.href = '/template'">Main Menu</button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-    <canvas id="testchart" style="width:100%;max-width:700px"></canvas>
+    <div class="chartCard">
+      <div class="chartBox">
+        <canvas id="myChart"></canvas>
+        Change name of graph: <input onkeyup="updatename(this)" type="text">
+      </div>
+    </div>
 
-    <button onclick="barchart()">Graph</button>
-
+<<<<<<< HEAD
     
 
+=======
+    <script src="{{ url_for('static', filename='chart.js') }}"></script>
+    
+>>>>>>> 9619dc794f4d8a7929ed1df96ce9010d6517c81c
     <script>
-        var bargraphname = "Bar Graph Name"
-        function barchart(){ 
-            var datanames = ["one", "two", "three"];
-            var ltestdata = [10,20,30];
-            var barColors = ["red", "green","blue"];
+    // setup 
+    const data = {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Bar Graph Name',
+        data: [18, 12, 6, 9, 12, 3, 9],
+        backgroundColor: [
+          'rgba(255, 26, 104, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+          'rgba(0, 0, 0, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255, 26, 104, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+          'rgba(0, 0, 0, 1)'
+        ],
+        borderWidth: 1
+      }]
+    };
 
-            new Chart("testchart", {
-                type: "bar",
-                data: {
-                    labels: datanames,
-                    datasets: [{
-                    backgroundColor: barColors,
-                    data: ltestdata
-                    }]
-                },
-                options: {
-                    legend: {display: false},
-                    title: {
-                        display: true,
-                        text: bargraphname
-                    }
-                }
-            });
+    // config 
+    const config = {
+      type: 'bar',
+      data,
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
+      }
+    };
+
+    // render init block
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+
+    function updatename(nameval){
+        myChart.config.data.datasets[0].label = nameval.value;
+        myChart.update();
+    }
     </script>
+
+  </body>
 </html>
