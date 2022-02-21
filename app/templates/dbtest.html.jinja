@@ -23,12 +23,6 @@
         });
     }
 
-    function testQuery() {
-        $.getJSON($SCRIPT_ROOT + '/db_result', function(JSON) {
-            alert(JSON.toString())
-        });
-    }
-
     function testRequest() {
         $.getJSON($SCRIPT_ROOT + '/request', function(JSON) {
             alret(JSON.toString())
@@ -42,7 +36,6 @@
 nothing
 {% endif %}
 <button onclick="testElements()"> Show table elements </button>
-<button onclick="testQuery()"> Show demo result </button>
 <button onclick="testRequest()"> Show request result </button>
 </body>
 </html>

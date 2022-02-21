@@ -93,27 +93,8 @@
       </div>
     </div>
 
-<<<<<<< HEAD
-
-
-
-    <div class="dropdown">
-        <button onclick="myFunction()" class="dropbtn">Dropdown</button>
-        <div id="myDropdown" class="dropdown-content">
-          <a href="#">Link 1</a>
-          <a href="#">Link 2</a>
-          <a href="#">Link 3</a>
-        </div>
-      </div>
-
-
-
-    
-
-=======
     <script src="{{ url_for('static', filename='chart.js') }}"></script>
     
->>>>>>> 9619dc794f4d8a7929ed1df96ce9010d6517c81c
     <script>
     // setup 
     const data = {
@@ -138,51 +119,6 @@
       }
     };
 
-<<<<<<< HEAD
-                new Chart("testchart", {
-                    type: "line",
-                    data: {
-                        labels: xValues,
-                        datasets: [{
-                        fill: false,
-                        lineTension: 0,
-                        backgroundColor: "rgba(0,0,255,1.0)",
-                        borderColor: "rgba(0,0,255,0.1)",
-                        data: yValues
-                        }]
-                    },
-                    options: {
-                        legend: {display: false},
-                        scales: {
-                            yAxes: [{ticks: {min: 6, max:16}}],
-                        }
-                    }
-                });
-            }
-
-
-    /* When the user clicks on the button, toggle between hiding and showing the dropdown content */
-    function myFunction() {
-        document.getElementById("myDropdown").classList.toggle("show");
-    }
-    
-    // Close the dropdown if the user clicks outside of it
-    window.onclick = function(event) {
-        if (!event.target.matches('.dropbtn')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        var i;
-        for (i = 0; i < dropdowns.length; i++) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-            openDropdown.classList.remove('show');
-            }
-        }
-        }
-    }
-
-
-
-=======
     // render init block
     const myChart = new Chart(
       document.getElementById('myChart'),
@@ -193,7 +129,6 @@
         myChart.config.data.datasets[0].label = nameval.value;
         myChart.update();
     }
->>>>>>> 9619dc794f4d8a7929ed1df96ce9010d6517c81c
     </script>
 
   </body>
