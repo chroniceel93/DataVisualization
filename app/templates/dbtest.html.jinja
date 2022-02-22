@@ -25,7 +25,7 @@
 
     function testRequest() {
         $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
-            alret(JSON.toString())
+            alert(JSON.toString())
         }, "json");
     }
 
