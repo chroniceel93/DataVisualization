@@ -116,9 +116,6 @@ class DB:
         return json.dumps(result)
 
     def request(type, itemA, itemB, step):
-        kill = False # Kills request if we run into issue building query
-        
-        #TODO: Push into it's own function.
         # Parse CSV input, temp var is the CSV parser
         temp = csv.reader([itemA], delimiter=',')
         # tempRow holds the parsed row
@@ -160,25 +157,27 @@ class DB:
             aStr = "SUM(" + aTable + "." + aEntry + "), "
         else:
             # we don't know what we should do, kill it
-            kill = True
-            
-        if kill:
             return jsonify("Failed to provide valide type for item A.")
         
         # Build bStr, or portion of SQL query that selects for B, with appropriate modifier
         # Build bTail, or portion of SQL query that groups/orders the data, tied to B's type.
         if bType == "date":
-            bStr = "DATE(" + bTable + "." + bEntry + ") "
-            bTail = "GROUP BY (" + bTable + "." + bEntry + ") ORDER BY ("  + bTable + "." + bEntry + ")"
+            if step == 0:
+                bStr = "EXTRACT(YEAR_MONTH_DAY FROM " + bTable + "." + bEntry + ") "
+                tailStr = "GROUP BY EXTRACT(YEAR_MONTH_DAY FROM " + bTable + "." + bEntry + ") ORDER BY EXTRACT(YEAR_MONTH_DAY FROM "  + bTable + "." + bEntry + ")"
+            elif step == 1:
+                bStr = "EXTRACT(YEAR_MONTH FROM " + bTable + "." + bEntry + ") "
+                tailStr = "GROUP BY EXTRACT(YEAR_MONTH FROM " + bTable + "." + bEntry + ") ORDER BY EXTRACT(YEAR_MONTH FROM " + bTable + "." + bEntry + ")"
+            elif step == 2:
+                bStr = "EXTRACT(YEAR FROM " + bTable + "." + bEntry + ") "
+                tailStr = "GROUP BY EXTRACT(YEAR FROM " + bTable + "." + bEntry + ") ORDER BY EXTRACT(YEAR FROM " + bTable + "." + bEntry + ")"
+            else:
+                return jsonify("Invalid step provided for DATE datatype!")
         else:
-            # We have not defined any other types, kill it.
-            kill = True
-        
-        if kill:
             return jsonify("Failed to provide valid type for item B.")
         
         #build string!
-        comStr = "SELECT " + aStr + bStr + "FROM " + joinStr + bTail
+        comStr = "SELECT " + aStr + bStr + "FROM " + joinStr + tailStr
         
         result = DB.__execute_com(comStr)
         # Build SQL query as needed

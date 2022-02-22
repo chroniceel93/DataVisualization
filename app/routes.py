@@ -59,7 +59,7 @@ def req():
     Returns:
         string: JSON String containing result of abstracted SQL query
     """
-    return db.DB.request(0, "salaries,salary", "salaries,from_date,date", 0)
+    return db.DB.request(0, "salaries,salary", "salaries,from_date,date", 1)
 
 # @app.route('/dbtest')
 # def dbtest():
