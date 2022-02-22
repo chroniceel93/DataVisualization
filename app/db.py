@@ -33,8 +33,8 @@ class DB:
         Returns:
             string: SQL snippet
         """
-        command1 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableA + "\""
-        command2 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableB + "\""
+        command1 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableA + "\" "
+        command2 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableB + "\" "
         keyA = DB.__execute_com(command1)
         keyB = DB.__execute_com(command2)
         for x in range(0, len(keyA)):
@@ -116,6 +116,8 @@ class DB:
         return json.dumps(result)
 
     def request(type, itemA, itemB, step):
+        kill = False # Kills request if we run into issue building query
+        
         #TODO: Push into it's own function.
         # Parse CSV input, temp var is the CSV parser
         temp = csv.reader([itemA], delimiter=',')
@@ -146,15 +148,38 @@ class DB:
         
         # If items A and B are on different tables, then we will need to join them. Get back the join string!
         if aTable != bTable :
-            comStr = DB.__join(aTable, bTable)
+            joinStr = DB.__join(aTable, bTable) + " "
         else :
-            comStr = aTable
+            joinStr = aTable + " "
             
-        # If B is a date, then it needs to be encapsulated with "DATE()"
+        # I wish I could use a switch statement here. Oh well.
+        # Build aStr, or portion of SQL query that selects for A, with appropriate modifier.
+        if type == 0:
+            aStr = "AVG(" + aTable + "." + aEntry + "), "
+        elif type == 1:
+            aStr = "SUM(" + aTable + "." + aEntry + "), "
+        else:
+            # we don't know what we should do, kill it
+            kill = True
+            
+        if kill:
+            return jsonify("Failed to provide valide type for item A.")
+        
+        # Build bStr, or portion of SQL query that selects for B, with appropriate modifier
+        # Build bTail, or portion of SQL query that groups/orders the data, tied to B's type.
         if bType == "date":
-            comStr = "SELECT AVG(" + aTable + "." + aEntry + "), DATE(" + bTable + "." + bEntry + ") FROM " + comStr + " GROUP BY (" + bTable + "." + bEntry + ") ORDER BY ("  + bTable + "." + bEntry + ")"
-            
-        # Execute SQL Query, and return
+            bStr = "DATE(" + bTable + "." + bEntry + ") "
+            bTail = "GROUP BY (" + bTable + "." + bEntry + ") ORDER BY ("  + bTable + "." + bEntry + ")"
+        else:
+            # We have not defined any other types, kill it.
+            kill = True
+        
+        if kill:
+            return jsonify("Failed to provide valid type for item B.")
+        
+        #build string!
+        comStr = "SELECT " + aStr + bStr + "FROM " + joinStr + bTail
+        
         result = DB.__execute_com(comStr)
         # Build SQL query as needed
         return jsonify(result)

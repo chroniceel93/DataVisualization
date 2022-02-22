@@ -53,6 +53,7 @@ def req():
     Finally, STEP. This value is used to change the granularity of the input. With very large databases, it might be expected that several hundred thousand results may come back for a given query, leading to a response in the order of hundreds of megabytes. This puts an undue strain on the web-server, the network and the web application for little or no gain. So, increasing the STEP size will decrease the granularity of the data.
     
     #TODO: DATE specific STEP settings.
+    #TODO: Implement STEPs, for that matter. Based on resultion/result size?
     #TODO: Define ENUM
 
     Returns:
