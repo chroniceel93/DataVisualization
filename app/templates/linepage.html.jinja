@@ -1,13 +1,3 @@
-<html>
-
-
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-
-</style>
-</head>
-
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -85,9 +75,11 @@
     <h3>Line Graph Page</h3>
 </body>
 
+<body>
+<button onclick="location.href = '/template'">Main Menu</button>
 
 <div class="dropdown">
-  <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+  <button onclick="dropToggle()" class="dropbtn">Choose</button>
   <div id="myDropdown" class="dropdown-content">
     <a href="#">Link 1</a>
     <a href="#">Link 2</a>
@@ -97,8 +89,7 @@
 
 
 
-<body>
-<button onclick="location.href = '/template'">Main Menu</button>
+
 
 <div class="chartCard">
   <div class="chartBox">
@@ -112,106 +103,105 @@
 
 <script src="{{ url_for('static', filename='chart.js') }}"></script>
 
+
 <script>
+  /* When the user clicks on the button,
+  toggle between hiding and showing the dropdown content */
+  function dropToggle() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
 
-
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function(event) {
-  if (!event.target.matches('.dropbtn')) {
-    var dropdowns = document.getElementsByClassName("dropdown-content");
-    var i;
-    for (i = 0; i < dropdowns.length; i++) {
-      var openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show')) {
-        openDropdown.classList.remove('show');
+  // Close the dropdown menu if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
       }
     }
   }
-}
 
 
 
 
-// setup 
-const data = {
-  labels: [50,60,70,80,90,100,110,120,130,140,150],
-  datasets: [{
-    label: 'Line Graph Name',
-    pointRadius: 4,
-    backgroundColor: 'rgb(255, 255, 255)',
-    pointBackgroundColor: "rgb(0,0,255)",
-    data: [7,8,8,9,9,9,10,11,14,14,15]
-  }]
-};
+  // setup 
+  const data = {
+    labels: [50,60,70,80,90,100,110,120,130,140,150],
+    datasets: [{
+      label: 'Line Graph Name',
+      pointRadius: 4,
+      backgroundColor: 'rgb(255, 255, 255)',
+      pointBackgroundColor: "rgb(0,0,255)",
+      data: [7,8,8,9,9,9,10,11,14,14,15]
+    }]
+  };
 
-//plugin
-const plugin = {
-  id: 'custom_canvas_background_color',
-  beforeDraw: (chart) => {
-    const ctx = chart.canvas.getContext('2d');
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-over';
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, chart.width, chart.height);
-    ctx.restore();
-  }
-};
-
-// config 
-const config = {
-  type: 'line',
-  data,
-  plugins: [plugin],
-  options: {
-    legend: {display: false},
-    scales: {
-        y: {
-          suggestedMin: 0,
-          suggestedMax: 20
-        },
-        x: {
-          suggestedMin: 0,
-          suggestedMax: 200
-        }
+  //plugin
+  const plugin = {
+    id: 'custom_canvas_background_color',
+    beforeDraw: (chart) => {
+      const ctx = chart.canvas.getContext('2d');
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      ctx.restore();
     }
+  };
+
+  // config 
+  const config = {
+    type: 'line',
+    data,
+    plugins: [plugin],
+    options: {
+      legend: {display: false},
+      scales: {
+          y: {
+            suggestedMin: 0,
+            suggestedMax: 20
+          },
+          x: {
+            suggestedMin: 0,
+            suggestedMax: 200
+          }
+      }
+    }
+  };
+
+  // render init block
+  const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+
+  function updatename(nameval){
+      myChart.config.data.datasets[0].label = nameval.value;
+      myChart.update();
   }
-};
 
-// render init block
-const myChart = new Chart(
-  document.getElementById('myChart'),
-  config
-);
+  function updateymax(numval){
+    myChart.config.options.scales.y.suggestedMax = numval.value;
+    myChart.update()
+  }
 
-function updatename(nameval){
-    myChart.config.data.datasets[0].label = nameval.value;
-    myChart.update();
-}
+  function updateymin(numval){
+    myChart.config.options.scales.y.suggestedMin = numval.value;
+    myChart.update()
+  }
 
-function updateymax(numval){
-  myChart.config.options.scales.y.suggestedMax = numval.value;
-  myChart.update()
-}
+  function exportimage(){
+    var a = document.createElement('a');
+    a.href = myChart.toBase64Image();
+    a.download = 'graph.png';
 
-function updateymin(numval){
-  myChart.config.options.scales.y.suggestedMin = numval.value;
-  myChart.update()
-}
-
-function exportimage(){
-  var a = document.createElement('a');
-  a.href = myChart.toBase64Image();
-  a.download = 'graph.png';
-
-  // Trigger the download
-  a.click();
-}
+    // Trigger the download
+    a.click();
+  }
 </script>
 
 </body>
