@@ -118,6 +118,10 @@ class DB:
     def request(type, itemA, itemB, step):
         # Parse CSV input, temp var is the CSV parser
         temp = csv.reader([itemA], delimiter=',')
+        # As a consequence of the JSON request, type and step will always be given as strings.
+        # Here we conver them back into ints
+        type = int(type)
+        step = int(step)
         # tempRow holds the parsed row
         tempRow = []
         # for loop is basically the only document way I could find to get data out of this
@@ -149,6 +153,7 @@ class DB:
         else :
             joinStr = aTable + " "
             
+
         # I wish I could use a switch statement here. Oh well.
         # Build aStr, or portion of SQL query that selects for A, with appropriate modifier.
         if type == 0:
@@ -157,7 +162,7 @@ class DB:
             aStr = "SUM(" + aTable + "." + aEntry + "), "
         else:
             # we don't know what we should do, kill it
-            return jsonify("Failed to provide valide type for item A.")
+            return jsonify("Failed to provide valid mode: " + type)
         
         # Build bStr, or portion of SQL query that selects for B, with appropriate modifier
         # Build bTail, or portion of SQL query that groups/orders the data, tied to B's type.
@@ -174,7 +179,7 @@ class DB:
             else:
                 return jsonify("Invalid step provided for DATE datatype!")
         else:
-            return jsonify("Failed to provide valid type for item B.")
+            return jsonify("Failed to provide valid type for item B."  + itemB)
         
         #build string!
         comStr = "SELECT " + aStr + bStr + "FROM " + joinStr + tailStr

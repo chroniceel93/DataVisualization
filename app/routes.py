@@ -2,6 +2,7 @@
 
 from flask import current_app as app
 from flask import render_template
+from flask import request
 from . import db
 
 @app.route('/')
@@ -36,7 +37,7 @@ def dbtest_allfields():
 def db_all():
     return db.DB.get_all()
 
-@app.route('/request')
+@app.route('/request', methods=['POST'])
 def req():
     """ This function returns the JSON formatted results of an abstracted SQL request.
     
@@ -59,7 +60,13 @@ def req():
     Returns:
         string: JSON String containing result of abstracted SQL query
     """
-    return db.DB.request(0, "salaries,salary", "salaries,from_date,date", 1)
+    query = request.form
+    return db.DB.request(query.get('type')
+                        , query.get('itemA')
+                        , query.get('itemB')
+                        , query.get('step'))
+
+#db.DB.request(0, "salaries,salary", "salaries,from_date,date", 1)
 
 # @app.route('/dbtest')
 # def dbtest():
