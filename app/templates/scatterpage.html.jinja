@@ -49,9 +49,7 @@
       </div>
     </div>
 
-    
-
-    <script src="{{ url_for('static', filename='chart.js') }}"></script>
+        <script src="{{ url_for('static', filename='chart.js') }}"></script>
     
     <script>
     // setup 
@@ -61,24 +59,38 @@
         label: 'Scatter Graph Name',
         pointRadius: 4,
         pointBackgroundColor: "rgb(0,0,255)",
-        data: [{x:1,y:1},{x:2,y:2},{x:3,y:3}]
+        data: [{x:1,y:1},{x:2,y:2},{x:3,y:3}],
       }]
+    };
+
+    //plugin
+    const plugin = {
+      id: 'custom_canvas_background_color',
+      beforeDraw: (chart) => {
+        const ctx = chart.canvas.getContext('2d');
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+      }
     };
 
     // config 
     const config = {
       type: 'scatter',
       data,
+      plugins: [plugin],
       options: {
         legend: {display: false},
         scales: {
           y: {
             suggestedMin: 0,
-            suggestedMax: 20
+            suggestedMax: 5
           },
           x: {
             suggestedMin: 0,
-            suggestedMax: 20
+            suggestedMax: 5
           }
         }
       }

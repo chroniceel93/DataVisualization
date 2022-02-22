@@ -41,17 +41,13 @@
       <div class="chartBox">
         <canvas id="myChart"></canvas>
         Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
+        Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
         <button onclick="exportimage()">Download Image</button>
       </div>
     </div>
 
-<<<<<<< HEAD
-    
-
-=======
     <script src="{{ url_for('static', filename='chart.js') }}"></script>
     
->>>>>>> 9619dc794f4d8a7929ed1df96ce9010d6517c81c
     <script>
     // setup 
     const data = {
@@ -81,14 +77,29 @@
       }]
     };
 
+    //plugin
+    const plugin = {
+      id: 'custom_canvas_background_color',
+      beforeDraw: (chart) => {
+        const ctx = chart.canvas.getContext('2d');
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+      }
+    };
+
     // config 
     const config = {
       type: 'bar',
       data,
+      plugins: [plugin],
       options: {
         scales: {
           y: {
-            beginAtZero: true
+            suggestedMin: 0,
+            suggestedMax: 20
           }
         }
       }
@@ -103,6 +114,11 @@
     function updatename(nameval){
         myChart.config.data.datasets[0].label = nameval.value;
         myChart.update();
+    }
+
+    function updateymax(numval){
+      myChart.config.options.scales.y.suggestedMax = numval.value;
+      myChart.update()
     }
 
     function exportimage(){
