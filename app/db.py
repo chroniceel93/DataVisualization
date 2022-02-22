@@ -23,7 +23,7 @@ class DB:
     def __join(tableA, tableB):
         """ This function generates a snippet of SQL that joins two tables.
 
-        It's fairly naieve, first querying for all keys between the two tables,
+        It's fairly naive, first querying for all keys between the two tables,
         and then picking the first matching key pair.
 
         Args:

@@ -1,179 +1,218 @@
 <html>
+
+
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-.dropbtn {
-  background-color: #3498DB;
-  color: white;
-  padding: 16px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-}
 
-.dropbtn:hover, .dropbtn:focus {
-  background-color: #2980B9;
-}
+</style>
+</head>
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+  }
+  .chartMenu p {
+    padding: 10px;
+    font-size: 20px;
+  }
+  .chartCard {
+    width: 100vw;
+    height: calc(100vh - 40px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .chartBox {
+    width: 700px;
+    padding: 20px;
+    border-radius: 20px;
+    background: white;
+    }
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
-  overflow: auto;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.dropdown a:hover {background-color: #ddd;}
-
-.show {display: block;}
+    // for drop-down box
+  .dropbtn {
+    background-color: #3498DB;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .dropbtn:hover, .dropbtn:focus {
+    background-color: #2980B9;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown a:hover {background-color: #ddd;}
+  
+  .show {display: block;}
 </style>
 </head>
 
 
 
 
+<body>
+    <h3>Line Graph Page</h3>
+</body>
 
 
-    <button onclick="location.href = '/template'">Back</button>
+<div class="dropdown">
+  <button onclick="myFunction()" class="dropbtn">Dropdown</button>
+  <div id="myDropdown" class="dropdown-content">
+    <a href="#">Link 1</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a>
+  </div>
+</div>
 
-    <body>
-        <h3>Line Graph Page</h3>
-    </body>
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        font-family: sans-serif;
+
+
+<body>
+<button onclick="location.href = '/template'">Main Menu</button>
+
+<div class="chartCard">
+  <div class="chartBox">
+    <canvas id="myChart"></canvas>
+    Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
+    Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
+    Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
+    <button onclick="exportimage()">Download Image</button>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='chart.js') }}"></script>
+
+<script>
+
+
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
       }
-      .chartMenu p {
-        padding: 10px;
-        font-size: 20px;
-      }
-      .chartCard {
-        width: 100vw;
-        height: calc(100vh - 40px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .chartBox {
-        width: 700px;
-        padding: 20px;
-        border-radius: 20px;
-        background: white;
-      }
-    </style>
-  </head>
-  <body>
-    <button onclick="location.href = '/template'">Main Menu</button>
+    }
+  }
+}
 
-    <div class="chartCard">
-      <div class="chartBox">
-        <canvas id="myChart"></canvas>
-        Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
-        Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
-        Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
-        <button onclick="exportimage()">Download Image</button>
-      </div>
-    </div>
 
-    <script src="{{ url_for('static', filename='chart.js') }}"></script>
-    
-    <script>
-    // setup 
-    const data = {
-      labels: [50,60,70,80,90,100,110,120,130,140,150],
-      datasets: [{
-        label: 'Line Graph Name',
-        pointRadius: 4,
-        backgroundColor: 'rgb(255, 255, 255)',
-        pointBackgroundColor: "rgb(0,0,255)",
-        data: [7,8,8,9,9,9,10,11,14,14,15]
-      }]
-    };
 
-    //plugin
-    const plugin = {
-      id: 'custom_canvas_background_color',
-      beforeDraw: (chart) => {
-        const ctx = chart.canvas.getContext('2d');
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        ctx.restore();
-      }
-    };
 
-    // config 
-    const config = {
-      type: 'line',
-      data,
-      plugins: [plugin],
-      options: {
-        legend: {display: false},
-        scales: {
-            y: {
-              suggestedMin: 0,
-              suggestedMax: 20
-            },
-            x: {
-              suggestedMin: 0,
-              suggestedMax: 200
-            }
+// setup 
+const data = {
+  labels: [50,60,70,80,90,100,110,120,130,140,150],
+  datasets: [{
+    label: 'Line Graph Name',
+    pointRadius: 4,
+    backgroundColor: 'rgb(255, 255, 255)',
+    pointBackgroundColor: "rgb(0,0,255)",
+    data: [7,8,8,9,9,9,10,11,14,14,15]
+  }]
+};
+
+//plugin
+const plugin = {
+  id: 'custom_canvas_background_color',
+  beforeDraw: (chart) => {
+    const ctx = chart.canvas.getContext('2d');
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, chart.width, chart.height);
+    ctx.restore();
+  }
+};
+
+// config 
+const config = {
+  type: 'line',
+  data,
+  plugins: [plugin],
+  options: {
+    legend: {display: false},
+    scales: {
+        y: {
+          suggestedMin: 0,
+          suggestedMax: 20
+        },
+        x: {
+          suggestedMin: 0,
+          suggestedMax: 200
         }
-      }
-    };
-
-    // render init block
-    const myChart = new Chart(
-      document.getElementById('myChart'),
-      config
-    );
-
-    function updatename(nameval){
-        myChart.config.data.datasets[0].label = nameval.value;
-        myChart.update();
     }
+  }
+};
 
-    function updateymax(numval){
-      myChart.config.options.scales.y.suggestedMax = numval.value;
-      myChart.update()
-    }
+// render init block
+const myChart = new Chart(
+  document.getElementById('myChart'),
+  config
+);
 
-    function updateymin(numval){
-      myChart.config.options.scales.y.suggestedMin = numval.value;
-      myChart.update()
-    }
+function updatename(nameval){
+    myChart.config.data.datasets[0].label = nameval.value;
+    myChart.update();
+}
 
-    function exportimage(){
-      var a = document.createElement('a');
-      a.href = myChart.toBase64Image();
-      a.download = 'graph.png';
+function updateymax(numval){
+  myChart.config.options.scales.y.suggestedMax = numval.value;
+  myChart.update()
+}
 
-      // Trigger the download
-      a.click();
-    }
-    </script>
+function updateymin(numval){
+  myChart.config.options.scales.y.suggestedMin = numval.value;
+  myChart.update()
+}
 
-  </body>
+function exportimage(){
+  var a = document.createElement('a');
+  a.href = myChart.toBase64Image();
+  a.download = 'graph.png';
+
+  // Trigger the download
+  a.click();
+}
+</script>
+
+</body>
 </html>
