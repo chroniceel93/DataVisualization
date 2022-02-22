@@ -2,7 +2,7 @@
     <button onclick="location.href = '/template'">Back</button>
     
     <body>
-        <h3>Line Graph Page</h3>
+        <h3>Bar Graph Page</h3>
     </body>
 <!doctype html>
 <html lang="en">
@@ -40,7 +40,8 @@
     <div class="chartCard">
       <div class="chartBox">
         <canvas id="myChart"></canvas>
-        Change name of graph: <input onkeyup="updatename(this)" type="text">
+        Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
+        <button onclick="exportimage()">Download Image</button>
       </div>
     </div>
 
@@ -102,6 +103,15 @@
     function updatename(nameval){
         myChart.config.data.datasets[0].label = nameval.value;
         myChart.update();
+    }
+
+    function exportimage(){
+      var a = document.createElement('a');
+      a.href = myChart.toBase64Image();
+      a.download = 'graph.png';
+
+      // Trigger the download
+      a.click();
     }
     </script>
 

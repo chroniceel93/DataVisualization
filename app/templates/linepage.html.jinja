@@ -89,7 +89,10 @@
     <div class="chartCard">
       <div class="chartBox">
         <canvas id="myChart"></canvas>
-        Change name of graph: <input onkeyup="updatename(this)" type="text">
+        Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
+        Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
+        Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
+        <button onclick="exportimage()">Download Image</button>
       </div>
     </div>
 
@@ -102,6 +105,7 @@
       datasets: [{
         label: 'Line Graph Name',
         pointRadius: 4,
+        backgroundColor: 'rgb(255, 255, 255)',
         pointBackgroundColor: "rgb(0,0,255)",
         data: [7,8,8,9,9,9,10,11,14,14,15]
       }]
@@ -114,7 +118,14 @@
       options: {
         legend: {display: false},
         scales: {
-            yAxes: [{ticks: {min: 0, max:16}}],
+            y: {
+              suggestedMin: 0,
+              suggestedMax: 20
+            },
+            x: {
+              suggestedMin: 0,
+              suggestedMax: 200
+            }
         }
       }
     };
@@ -128,6 +139,25 @@
     function updatename(nameval){
         myChart.config.data.datasets[0].label = nameval.value;
         myChart.update();
+    }
+
+    function updateymax(numval){
+      myChart.config.options.scales.y.suggestedMax = numval.value;
+      myChart.update()
+    }
+
+    function updateymin(numval){
+      myChart.config.options.scales.y.suggestedMin = numval.value;
+      myChart.update()
+    }
+
+    function exportimage(){
+      var a = document.createElement('a');
+      a.href = myChart.toBase64Image();
+      a.download = 'graph.png';
+
+      // Trigger the download
+      a.click();
     }
     </script>
 
