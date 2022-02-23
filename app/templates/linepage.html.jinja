@@ -185,8 +185,8 @@
   );
 
   function updatename(nameval){
-      myChart.config.data.datasets[0].label = nameval.value;
-      myChart.update();
+    myChart.config.data.datasets[0].label = nameval.value;
+    myChart.update();
   }
 
   function updateymax(numval){
@@ -222,7 +222,18 @@
     $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
         var tmp = JSON.toString();
         var tmp2 = tmp.split(",");
-        document.write(tmp2[1]);
+
+        var oddnums = tmp2.filter((element, index) => {
+          return index % 2 === 1;
+        });
+
+        var evennums = tmp2.filter((element, index) => {
+          return index % 2 === 0;
+        });
+
+        document.write(oddnums);
+
+
         //myChart.config.data.labels = JSON.toString().value;
         //myChart.update();
     }, "json");
