@@ -231,11 +231,9 @@
           return index % 2 === 0;
         });
 
-        document.write(oddnums);
-
-
-        //myChart.config.data.labels = JSON.toString().value;
-        //myChart.update();
+        myChart.config.data.labels = oddnums;
+        myChart.config.data.datasets[0].data = evennums;
+        myChart.update();
     }, "json");
   }
 </script>
