@@ -68,6 +68,11 @@
 </style>
 </head>
 
+<script>
+  // jinja substitutes the scripts root directory upon creation.
+  $SCRIPT_ROOT = {{ request.script_root|tojson }};
+</script>
+
 <body>
     <h3>Line Graph Page</h3>
 </body>
@@ -98,6 +103,7 @@
 </div>
 
 <script src="{{ url_for('static', filename='chart.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
 
 <script>
   /* When the user clicks on the button,
@@ -210,6 +216,16 @@
 
     // Trigger the download
     a.click();
+  }
+
+  function testRequest() {
+    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+        var tmp = JSON.toString();
+        var tmp2 = tmp.split(",");
+        document.write(tmp2[1]);
+        //myChart.config.data.labels = JSON.toString().value;
+        //myChart.update();
+    }, "json");
   }
 </script>
 
