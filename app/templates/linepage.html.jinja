@@ -68,9 +68,6 @@
 </style>
 </head>
 
-
-
-
 <body>
     <h3>Line Graph Page</h3>
 </body>
@@ -87,22 +84,20 @@
   </div>
 </div>
 
-
-
-
-
 <div class="chartCard">
   <div class="chartBox">
     <canvas id="myChart"></canvas>
     Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
     Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
     Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
-    <button onclick="exportimage()">Download Image</button>
+    Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
+    Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
+    <button onclick="exportimage()">Download Image</button><br>
+    <button onclick="testRequest()"> Show request result </button>
   </div>
 </div>
 
 <script src="{{ url_for('static', filename='chart.js') }}"></script>
-
 
 <script>
   /* When the user clicks on the button,
@@ -124,9 +119,6 @@
       }
     }
   }
-
-
-
 
   // setup 
   const data = {
@@ -159,13 +151,20 @@
     data,
     plugins: [plugin],
     options: {
-      legend: {display: false},
       scales: {
           y: {
+            title: {
+              display: true,
+              text: 'y axis'
+            },
             suggestedMin: 0,
             suggestedMax: 20
           },
           x: {
+            title: {
+              display: true,
+              text: 'x axis'
+            },
             suggestedMin: 0,
             suggestedMax: 200
           }
@@ -191,6 +190,16 @@
 
   function updateymin(numval){
     myChart.config.options.scales.y.suggestedMin = numval.value;
+    myChart.update()
+  }
+
+  function updatexname(nameval){
+    myChart.config.options.scales.x.title.text = nameval.value;
+    myChart.update()
+  }
+
+  function updateyname(nameval){
+    myChart.config.options.scales.y.title.text = nameval.value;
     myChart.update()
   }
 

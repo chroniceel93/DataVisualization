@@ -45,6 +45,8 @@
         Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
         Change max x axis: <input onkeyup="updatexmax(this)" type="number"><br>
         Change min x axis: <input onkeyup="updatexmin(this)" type="number"><br>
+        Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
+        Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
         <button onclick="exportimage()">Download Image</button>
       </div>
     </div>
@@ -85,10 +87,18 @@
         legend: {display: false},
         scales: {
           y: {
+            title: {
+              display: true,
+              text: 'y axis'
+            },
             suggestedMin: 0,
             suggestedMax: 5
           },
           x: {
+            title: {
+              display: true,
+              text: 'x axis'
+            },
             suggestedMin: 0,
             suggestedMax: 5
           }
@@ -127,6 +137,16 @@
       myChart.update()
     }
 
+    function updatexname(nameval){
+      myChart.config.options.scales.x.title.text = nameval.value;
+      myChart.update()
+    }
+  
+    function updateyname(nameval){
+      myChart.config.options.scales.y.title.text = nameval.value;
+      myChart.update()
+    }
+    
     function exportimage(){
       var a = document.createElement('a');
       a.href = myChart.toBase64Image();
