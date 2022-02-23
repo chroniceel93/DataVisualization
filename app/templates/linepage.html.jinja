@@ -83,16 +83,19 @@
 <div class="dropdown">
   <button onclick="dropToggleX()" class="dropbtn">Choose x-axis</button>
   <div id="setX" class="dropdown-content">
-    <button onclick=setX("Time")>Time</button>
+    <button onclick=setX('Time')>Time</button>
   </div>
 </div>
 
 <div class="dropdown">
   <button onclick="dropToggleY()" class="dropbtn">Choose y-axis</button>
   <div id="setY" class="dropdown-content">
-    <button onclick=setY("Salary")>Salary</button>
+    <button onclick=setY('totalSalary')>Total Salary</button>
+    <button onclick=setY('avgSalary')>Average Salary</button>
   </div>
 </div>
+
+<button onclick=updateGraph()> Update Graph </button>
 
 
 
@@ -100,13 +103,84 @@
 <script>
   // sets x-axis
   function setX(x) {
-    alert(x);
+    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+      var tmp = JSON.toString();
+      var allVars = tmp.split(",");
+
+      // gets odd values from array, which are dates
+      var dates = allVars.filter((element, index) => {
+        return index % 2 === 1;
+      });
+
+      // sets graph x-values to dates
+      myChart.config.data.labels = dates;
+    }, "json");
   }
 
   // sets y-axis
   function setY(y) {
-    alert(y);
+
+    if (y == 'totalSalary') {
+      $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+        var tmp = JSON.toString();
+        var allVars = tmp.split(",");
+
+        // gets even values from array, which are salaries
+        var salaries = allVars.filter((element, index) => {
+          return index % 2 === 0;
+        });
+
+        // sets graph y-values to salaries
+        myChart.config.data.datasets[0].data = salaries;
+      }, "json");
+    }
+
+    else if (y == 'avgSalary') {
+      $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+        var tmp = JSON.toString();
+        var allVars = tmp.split(",");
+
+        // gets even values from array, which are salaries
+        var salaries = allVars.filter((element, index) => {
+          return index % 2 === 0;
+        });
+
+        // sets graph y-values to salaries
+        myChart.config.data.datasets[0].data = salaries;
+      }, "json");
+    }
+
+  
   }
+
+  function updateGraph() {
+    myChart.update();
+  }
+
+  // to be removed
+  function testRequest() {
+    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+        var tmp = JSON.toString();
+        var allVars = tmp.split(",");
+
+        // gets odd values from array, which are dates
+        var dates = tmp2.filter((element, index) => {
+          return index % 2 === 1;
+        });
+
+        var evennums = tmp2.filter((element, index) => {
+          return index % 2 === 0;
+        });
+
+        myChart.config.data.labels = dates;
+        myChart.config.data.datasets[0].data = evennums;
+        myChart.update();
+    }, "json");
+  }
+
+
+
+
 
   /* When the user clicks on the button,
   toggle between hiding and showing the dropdown content */
@@ -117,7 +191,7 @@
   function dropToggleY() {
     document.getElementById("setY").classList.toggle("show");
   }
-  
+
   // Close the dropdown menu if the user clicks outside of it
   window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
