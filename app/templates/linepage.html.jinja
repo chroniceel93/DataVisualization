@@ -1,346 +1,305 @@
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-  }
-  .chartMenu p {
-    padding: 10px;
-    font-size: 20px;
-  }
-  .chartCard {
-    width: 100vw;
-    height: calc(100vh - 40px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .chartBox {
-    width: 700px;
-    padding: 20px;
-    border-radius: 20px;
-    background: white;
-    }
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      .chartMenu p {
+        padding: 10px;
+        font-size: 20px;
+      }
+      .chartCard {
+        width: 100vw;
+        height: calc(100vh - 40px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chartBox {
+        width: 700px;
+        padding: 20px;
+        border-radius: 20px;
+        background: white;
+        }
 
-    // for drop-down box
-  .dropbtn {
-    background-color: #3498DB;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .dropbtn:hover, .dropbtn:focus {
-    background-color: #2980B9;
-  }
-  
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f1f1f1;
-    min-width: 160px;
-    overflow: auto;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-  }
-  
-  .dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-  }
-  
-  .dropdown a:hover {background-color: #ddd;}
-  
-  .show {display: block;}
-</style>
-</head>
+        // for drop-down box
+      .dropbtn {
+        background-color: #3498DB;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+      }
+      
+      .dropbtn:hover, .dropbtn:focus {
+        background-color: #2980B9;
+      }
+      
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        overflow: auto;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+      }
+      
+      .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+      
+      .dropdown a:hover {background-color: #ddd;}
+      
+      .show {display: block;}
+    </style>
+  </head>
 
-<script>
-  // jinja substitutes the scripts root directory upon creation.
-  $SCRIPT_ROOT = {{ request.script_root|tojson }};
-</script>
-
-<body>
+  <body>
     <h3>Line Graph Page</h3>
-</body>
 
-<body>
-<button onclick="location.href = '/'">Main Menu</button>
+    <button onclick="location.href = '/'">Main Menu</button>
 
-<div class="dropdown">
-  <button onclick="dropToggleX()" class="dropbtn">Choose x-axis</button>
-  <div id="setX" class="dropdown-content">
-    <button onclick=setX('Time')>Time</button>
-  </div>
-</div>
+    <div class="dropdown">
+      <button onclick="dropToggleX()" class="dropbtn">Choose x-axis</button>
+      <div id="setX" class="dropdown-content">
+        <button onclick=setX('Time')>Time</button>
+      </div>
+    </div>
 
-<div class="dropdown">
-  <button onclick="dropToggleY()" class="dropbtn">Choose y-axis</button>
-  <div id="setY" class="dropdown-content">
-    <button onclick=setY('totalSalary')>Total Salary</button>
-    <button onclick=setY('avgSalary')>Average Salary</button>
-  </div>
-</div>
+    <div class="dropdown">
+      <button onclick="dropToggleY()" class="dropbtn">Choose y-axis</button>
+      <div id="setY" class="dropdown-content">
+        <button onclick=setY('totalSalary')>Total Salary</button>
+        <button onclick=setY('avgSalary')>Average Salary</button>
+      </div>
+    </div>
 
-<button onclick=updateGraph()> Update Graph </button>
+    <button onclick=updateGraph()> Update Graph </button>
 
+    <div class="chartCard">
+      <div class="chartBox">
+        <canvas id="myChart"></canvas>
+        Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
+        Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
+        Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
+        Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
+        Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
+        <button onclick="exportimage()">Download Image</button><br>
+        <button onclick="testRequest()"> Show request result </button>
+      </div>
+    </div>
 
+    <script src="{{ url_for('static', filename='chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='jquery.js') }}"></script>
 
+    <script>
+      // jinja substitutes the scripts root directory upon creation.
+      $SCRIPT_ROOT = {{ request.script_root|tojson }};
 
-<script>
-  // sets x-axis
-  function setX(x) {
-    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
-      var tmp = JSON.toString();
-      var allVars = tmp.split(",");
+      // sets x-axis
+      function setX(x) {
+        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+          var tmp = JSON.toString();
+          var allVars = tmp.split(",");
 
-      // gets odd values from array, which are dates
-      var dates = allVars.filter((element, index) => {
-        return index % 2 === 1;
-      });
+          // gets odd values from array, which are dates
+          var dates = allVars.filter((element, index) => {
+            return index % 2 === 1;
+          });
 
-      // sets graph x-values to dates
-      myChart.config.data.labels = dates;
-    }, "json");
-  }
+          // sets graph x-values to dates
+          myChart.config.data.labels = dates;
+        }, "json");
+      }
 
-  // sets y-axis
-  function setY(y) {
+      // sets y-axis
+      function setY(y) {
+        if (y == 'totalSalary') {
+          $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+            var tmp = JSON.toString();
+            var allVars = tmp.split(",");
 
-    if (y == 'totalSalary') {
-      $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
-        var tmp = JSON.toString();
-        var allVars = tmp.split(",");
+            // gets even values from array, which are salaries
+            var salaries = allVars.filter((element, index) => {
+              return index % 2 === 0;
+            });
 
-        // gets even values from array, which are salaries
-        var salaries = allVars.filter((element, index) => {
-          return index % 2 === 0;
-        });
+            // sets graph y-values to salaries
+            myChart.config.data.datasets[0].data = salaries;
+          }, "json");
+        }
 
-        // sets graph y-values to salaries
-        myChart.config.data.datasets[0].data = salaries;
-      }, "json");
-    }
+        else if (y == 'avgSalary') {
+          $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+            var tmp = JSON.toString();
+            var allVars = tmp.split(",");
 
-    else if (y == 'avgSalary') {
-      $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
-        var tmp = JSON.toString();
-        var allVars = tmp.split(",");
+            // gets even values from array, which are salaries
+            var salaries = allVars.filter((element, index) => {
+              return index % 2 === 0;
+            });
 
-        // gets even values from array, which are salaries
-        var salaries = allVars.filter((element, index) => {
-          return index % 2 === 0;
-        });
-
-        // sets graph y-values to salaries
-        myChart.config.data.datasets[0].data = salaries;
-      }, "json");
-    }
-
-  
-  }
-
-  function updateGraph() {
-    myChart.update();
-  }
-
-  // to be removed
-  function testRequest() {
-    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
-        var tmp = JSON.toString();
-        var allVars = tmp.split(",");
-
-        // gets odd values from array, which are dates
-        var dates = tmp2.filter((element, index) => {
-          return index % 2 === 1;
-        });
-
-        var evennums = tmp2.filter((element, index) => {
-          return index % 2 === 0;
-        });
-
-        myChart.config.data.labels = dates;
-        myChart.config.data.datasets[0].data = evennums;
-        myChart.update();
-    }, "json");
-  }
-
-
-
-
-
-  /* When the user clicks on the button,
-  toggle between hiding and showing the dropdown content */
-  function dropToggleX() {
-    document.getElementById("setX").classList.toggle("show");
-  }
-
-  function dropToggleY() {
-    document.getElementById("setY").classList.toggle("show");
-  }
-
-  // Close the dropdown menu if the user clicks outside of it
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
+            // sets graph y-values to salaries
+            myChart.config.data.datasets[0].data = salaries;
+          }, "json");
         }
       }
-    }
-  }
-</script>
 
-
-
-<div class="chartCard">
-  <div class="chartBox">
-    <canvas id="myChart"></canvas>
-    Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
-    Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
-    Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
-    Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
-    Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
-    <button onclick="exportimage()">Download Image</button><br>
-    <button onclick="testRequest()"> Show request result </button>
-  </div>
-</div>
-
-<script src="{{ url_for('static', filename='chart.js') }}"></script>
-<script src="{{ url_for('static', filename='jquery.js') }}"></script>
-
-
-
-
-<script>
-
-  // setup 
-  const data = {
-    labels: [50,60,70,80,90,100,110,120,130,140,150],
-    datasets: [{
-      label: 'Line Graph Name',
-      pointRadius: 4,
-      backgroundColor: 'rgb(255, 255, 255)',
-      pointBackgroundColor: "rgb(0,0,255)",
-      data: [7,8,8,9,9,9,10,11,14,14,15]
-    }]
-  };
-
-  //plugin
-  const plugin = {
-    id: 'custom_canvas_background_color',
-    beforeDraw: (chart) => {
-      const ctx = chart.canvas.getContext('2d');
-      ctx.save();
-      ctx.globalCompositeOperation = 'destination-over';
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, chart.width, chart.height);
-      ctx.restore();
-    }
-  };
-
-  // config 
-  const config = {
-    type: 'line',
-    data,
-    plugins: [plugin],
-    options: {
-      scales: {
-          y: {
-            title: {
-              display: true,
-              text: 'y axis'
-            },
-            suggestedMin: 0,
-            suggestedMax: 20
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'x axis'
-            },
-            suggestedMin: 0,
-            suggestedMax: 200
-          }
-      }
-    }
-  };
-
-  // render init block
-  const myChart = new Chart(
-    document.getElementById('myChart'),
-    config
-  );
-
-  function updatename(nameval){
-    myChart.config.data.datasets[0].label = nameval.value;
-    myChart.update();
-  }
-
-  function updateymax(numval){
-    myChart.config.options.scales.y.suggestedMax = numval.value;
-    myChart.update()
-  }
-
-  function updateymin(numval){
-    myChart.config.options.scales.y.suggestedMin = numval.value;
-    myChart.update()
-  }
-
-  function updatexname(nameval){
-    myChart.config.options.scales.x.title.text = nameval.value;
-    myChart.update()
-  }
-
-  function updateyname(nameval){
-    myChart.config.options.scales.y.title.text = nameval.value;
-    myChart.update()
-  }
-
-  function exportimage(){
-    var a = document.createElement('a');
-    a.href = myChart.toBase64Image();
-    a.download = 'graph.png';
-
-    // Trigger the download
-    a.click();
-  }
-
-  function testRequest() {
-    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
-        var tmp = JSON.toString();
-        var tmp2 = tmp.split(",");
-
-        var oddnums = tmp2.filter((element, index) => {
-          return index % 2 === 1;
-        });
-
-        var evennums = tmp2.filter((element, index) => {
-          return index % 2 === 0;
-        });
-
-        myChart.config.data.labels = oddnums;
-        myChart.config.data.datasets[0].data = evennums;
+      function updateGraph() {
         myChart.update();
-    }, "json");
-  }
-</script>
+      }
 
-</body>
+      // to be removed
+      function testRequest() {
+        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+            var tmp = JSON.toString();
+            var allVars = tmp.split(",");
+
+            // gets odd values from array, which are dates
+            var dates = tmp2.filter((element, index) => {
+              return index % 2 === 1;
+            });
+
+            var evennums = tmp2.filter((element, index) => {
+              return index % 2 === 0;
+            });
+
+            myChart.config.data.labels = dates;
+            myChart.config.data.datasets[0].data = evennums;
+            myChart.update();
+        }, "json");
+      }
+
+      /* When the user clicks on the button,
+      toggle between hiding and showing the dropdown content */
+      function dropToggleX() {
+        document.getElementById("setX").classList.toggle("show");
+      }
+
+      function dropToggleY() {
+        document.getElementById("setY").classList.toggle("show");
+      }
+
+      // Close the dropdown menu if the user clicks outside of it
+      window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+          var dropdowns = document.getElementsByClassName("dropdown-content");
+          var i;
+          for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+              openDropdown.classList.remove('show');
+            }
+          }
+        }
+      }
+
+      // setup 
+      const data = {
+        labels: [50,60,70,80,90,100,110,120,130,140,150],
+        datasets: [{
+          label: 'Line Graph Name',
+          pointRadius: 4,
+          backgroundColor: 'rgb(255, 255, 255)',
+          pointBackgroundColor: "rgb(0,0,255)",
+          data: [7,8,8,9,9,9,10,11,14,14,15]
+        }]
+      };
+
+      //plugin
+      const plugin = {
+        id: 'custom_canvas_background_color',
+        beforeDraw: (chart) => {
+          const ctx = chart.canvas.getContext('2d');
+          ctx.save();
+          ctx.globalCompositeOperation = 'destination-over';
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, chart.width, chart.height);
+          ctx.restore();
+        }
+      };
+
+      // config 
+      const config = {
+        type: 'line',
+        data,
+        plugins: [plugin],
+        options: {
+          scales: {
+              y: {
+                title: {
+                  display: true,
+                  text: 'y axis'
+                },
+                suggestedMin: 0,
+                suggestedMax: 20
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'x axis'
+                },
+                suggestedMin: 0,
+                suggestedMax: 200
+              }
+          }
+        }
+      };
+
+      // render init block
+      const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
+
+      function updatename(nameval){
+        myChart.config.data.datasets[0].label = nameval.value;
+        myChart.update();
+      }
+
+      function updateymax(numval){
+        myChart.config.options.scales.y.suggestedMax = numval.value;
+        myChart.update()
+      }
+
+      function updateymin(numval){
+        myChart.config.options.scales.y.suggestedMin = numval.value;
+        myChart.update()
+      }
+
+      function updatexname(nameval){
+        myChart.config.options.scales.x.title.text = nameval.value;
+        myChart.update()
+      }
+
+      function updateyname(nameval){
+        myChart.config.options.scales.y.title.text = nameval.value;
+        myChart.update()
+      }
+
+      function exportimage(){
+        var a = document.createElement('a');
+        a.href = myChart.toBase64Image();
+        a.download = 'graph.png';
+
+        // Trigger the download
+        a.click();
+      }
+    </script>
+
+  </body>
 </html>
