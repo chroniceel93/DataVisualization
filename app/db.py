@@ -100,7 +100,7 @@ class DB:
         """
         command = "SHOW TABLES"
         items = DB.__execute_com(command)
-        return json.dumps(items)
+        return items
 
     def get_table_columns(table):
         """Gets a list of all columns in a table.
@@ -113,7 +113,7 @@ class DB:
         """
         command = "SHOW COLUMNS FROM " + table
         items = DB.__execute_com(command)
-        return json.dumps(items)
+        return items
 
     def get_all():
         """ Queries the database for all fields.
