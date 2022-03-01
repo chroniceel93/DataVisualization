@@ -22,10 +22,15 @@
         });
     }
 
-    function testRequest() {
-        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+    function testQuery() {
+        var type = document.getElementById("type");
+        var itemA = document.getElementById("itemA");
+        var itemB = document.getElementById("itemB");
+        var step = document.getElementById("step");
+        $.post($SCRIPT_ROOT + '/request', { type: parseInt(type.value, 10), itemA: itemA.value, itemB: itemB.value, step: parseInt(step.value, 10)}, function(JSON) {
             alert(JSON.toString())
         }, "json");
+        
     }
 
 </script>
@@ -34,7 +39,33 @@
 {% else %}
 nothing
 {% endif %}
+
+<p>
 <button onclick="testElements()"> Show table elements </button>
-<button onclick="testRequest()"> Show request result </button>
+
+<h3> API Test </h3>
+
+<form id="myForm" name="myForm">
+  <div>
+    <label for="type">Enter type:</label>
+    <input type="text" id="type" name="type" value="0">
+  </div>
+  <div>
+    <label for="itemA">Enter Item A:</label>
+    <input type="text" id="itemA" name="itemA" value="salaries,salary">
+  </div>
+  <div>
+    <label for="itemB">Enter Item B:</label>
+    <input type="text" id="itemB" name="itemB" value="salaries,from_date,date">
+  </div>
+  <div>
+    <label for="step">Enter Step:</label>
+    <input type="text" id="step" name="step" value=1>
+  </div>
+  <input type="button" onclick="testQuery()" value="Submit!">
+</form>
+
+<h3 id=result> </h3>
+
 </body>
 </html>
