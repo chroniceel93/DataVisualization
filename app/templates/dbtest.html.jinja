@@ -26,8 +26,9 @@
         var type = document.getElementById("type");
         var itemA = document.getElementById("itemA");
         var itemB = document.getElementById("itemB");
+        var filter = document.getElementById("filter");
         var step = document.getElementById("step");
-        $.post($SCRIPT_ROOT + '/request', { type: parseInt(type.value, 10), itemA: itemA.value, itemB: itemB.value, step: parseInt(step.value, 10)}, function(JSON) {
+        $.post($SCRIPT_ROOT + '/request', { type: parseInt(type.value, 10), itemA: itemA.value, itemB: itemB.value, filter: filter.value, step: parseInt(step.value, 10)}, function(JSON) {
             alert(JSON.toString())
         }, "json");
         
@@ -57,6 +58,10 @@ nothing
   <div>
     <label for="itemB">Enter Item B:</label>
     <input type="text" id="itemB" name="itemB" value="salaries,from_date,date">
+  </div>
+  <div>
+    <label for="filter">Enter Filter:</label>
+    <input type="text" id="filter" name="filter" value="employees,gender,F,0">
   </div>
   <div>
     <label for="step">Enter Step:</label>

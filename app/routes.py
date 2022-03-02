@@ -36,6 +36,7 @@ def req():
     return db.DB.request(query.get('type')
                         , query.get('itemA')
                         , query.get('itemB')
+                        , query.get('filter')
                         , query.get('step'))
 
 #db.DB.request(0, "salaries,salary", "salaries,from_date,date", 1)

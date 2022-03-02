@@ -53,11 +53,11 @@ class DB:
         # if keyA returned empty
         if (keyA == []):
             #then we use keyB
-            command = tableA + " JOIN " +  \
+            command = tableA + " JOIN " + tableB + \
             " ON " + tableB + "." + keyB + " = " + tableA + "." + keyB
         else:
             #otherwise, we use keyA
-            command =  tableA +" JOIN " + \
+            command =  tableA +" JOIN " + tableB + \
             " ON " + tableA + "." + keyA + " = " + tableB + "." + keyA
             
         return command
@@ -132,7 +132,7 @@ class DB:
                 result.append([str(items[x])[2:-3], str(cols[y][0]), str(cols[y][1])[2:-1]])
         return json.dumps(result)
 
-    def request(type, itemA, itemB, step):
+    def request(type, itemA, itemB, Filter, step):
         """ This function returns the JSON formatted results of an abstracted SQL request.
 
         The abstraction currently relies on a few core assumptions. We will only be returning two fields per request, and we will only average or sum the requests. The current syntax is designed so that it can be extended.
@@ -149,8 +149,10 @@ class DB:
 
         Args:
             type (int): Operation type, (-1=NOP, 0=AVG, 1=SUM)
-            itemA (string): Y-axis string, ("Table,Item", "Table,Item,Value")
+            itemA (string): Y-axis string, ("Table,Item")
             itemB (string): X-axis string, ("Table,Item,Type")
+            Filter (string): Row filter string, ("Table,Entry,Item,Type (0'=', 1'>', 2'>=', 3'<', 4'<=')
+            TODO: Support multiple filters.
             step (int): Sets Step size, grouping N objects together. (0-3 for date fields)
 
         Returns:
@@ -180,13 +182,6 @@ class DB:
         aTable = tempRow[0]
         aEntry = tempRow[1]
         
-        # Length of itemA is variable, if statement to check for 
-        # case where we pass three items.
-        if len(tempRow) == 3 :
-            aValue = tempRow[2]
-        else:
-            aValue = ""
-        
         #same as above for item B    
         temp = csv.reader([itemB], delimiter=',')
         for row in temp:
@@ -196,14 +191,6 @@ class DB:
         bTable = tempRow[0]
         bEntry = tempRow[1]
         bType = tempRow[2]
-        
-        # If items A and B are on different tables, then we will need to 
-        # join them. We can call a function to generate a JOIN statement,
-        # and pass that on to the final command string.
-        if aTable != bTable :
-            joinStr = DB.__join(aTable, bTable) + " "
-        else :
-            joinStr = aTable + " "    
 
         # I wish I could use a switch statement here...
         # Build aStr with the appropriate modifier.
@@ -242,10 +229,40 @@ class DB:
             else: # out of range value got pushed somehow, error out.
                 return jsonify("Invalid step provided for DATE datatype!")
         else: #TODO: General case.
-            return jsonify("Failed to provide valid type for item B."  + itemB)
+            return jsonify("Failed to provide valid type for item B."  + itemB)   
+            
+        # If Filter is non-empty, Parse CSV
+        if Filter != "":
+            temp = csv.reader([Filter], delimiter=',')
+            for row in temp:
+                tempRow = row
+                
+            filterTable = tempRow[0]
+            filterEntry = tempRow[1]
+            filterItem = tempRow[2]
+            filterType = int(tempRow[3])
+        
+            if filterType == 0:
+                whereStr = "WHERE " + filterTable + "." + filterEntry+  " = \"" + filterItem + "\" "
+            else:
+                return jsonify("Unsupported filterType!")
+        else:
+            whereStr = ""
+        
+        joinStr = ""
+        # If items are on different tables, then we will need to 
+        # join them. We can call a function to generate a JOIN statement,
+        # and pass that on to the final command string.
+        if aTable != bTable :
+            joinStr = DB.__join(aTable, bTable) + " "
+        if aTable != filterTable:
+            joinStr += DB.__join(aTable, filterTable) + " "
+        if aTable == filterTable == bTable:
+            joinStr = aTable + " "
+            
         
         #build string!
-        comStr = "SELECT " + aStr + bStr + "FROM " + joinStr + tailStr
+        comStr = "SELECT " + aStr + bStr + "FROM " + joinStr + whereStr +  tailStr
         
         result = DB.__execute_com(comStr)
         # Build SQL query as needed

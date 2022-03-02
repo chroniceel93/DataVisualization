@@ -112,7 +112,7 @@
 
       // sets x-axis
       function setX(x) {
-        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
           var tmp = JSON.toString();
           var allVars = tmp.split(",");
 
@@ -129,7 +129,7 @@
       // sets y-axis
       function setY(y) {
         if (y == 'totalSalary') {
-          $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+          $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
             var tmp = JSON.toString();
             var allVars = tmp.split(",");
 
@@ -144,7 +144,7 @@
         }
 
         else if (y == 'avgSalary') {
-          $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+          $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
             var tmp = JSON.toString();
             var allVars = tmp.split(",");
 
@@ -165,7 +165,7 @@
 
       // to be removed
       function testRequest() {
-        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", step: 1 }, function(JSON) {
+        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
             var tmp = JSON.toString();
             var allVars = tmp.split(",");
 
