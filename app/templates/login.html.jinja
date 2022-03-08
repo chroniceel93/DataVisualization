@@ -1,0 +1,40 @@
+<html>
+  <style>
+  .container {
+      width: 100vw;
+      height: calc(100vh - 40px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .child {
+      width: 200px;
+      padding: 20px;
+      border-radius: 20px;
+      background: white;
+    }
+  </style>
+  
+  <body>
+    <div class="container">
+      <div class="child">
+        <h1>Login</h1>
+        <form action="" method="post">
+          <label for="uname"><b>Username</b></label>
+          <input type="text" placeholder="Username" name="username" value="{{request.form.username }}"><br><br>
+      
+          <label for="psw"><b>Password</b></label>
+          <input type="password" placeholder="Password" name="password" value="{{request.form.password }}"><br><br>
+      
+          <input class="btn btn-default" type="submit" value="Login"><br>
+        </div>
+
+        {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+        {% endif %}
+        
+      </form>
+    </div>
+  </body>
+</html>
