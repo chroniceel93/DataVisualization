@@ -39,6 +39,17 @@ def req():
                         , query.get('filter')
                         , query.get('step'))
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != 'employees' or request.form['password'] != 'employees':
+            error = 'Invalid Credentials. Please try again.'
+        else:
+            return render_template("template.html.jinja")
+    return render_template("login.html.jinja", error=error)
+
+
 #db.DB.request(0, "salaries,salary", "salaries,from_date,date", 1)
 
 # @app.route('/dbtest')
