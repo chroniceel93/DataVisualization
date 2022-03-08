@@ -15,6 +15,19 @@ class DB:
                                         , host='localhost'
                                         , database='employees')
         
+    def __filterParse(comStr):
+        fullArr = []
+        andArr = comStr.split("&")
+        for x in range(0, len(andArr)-1):
+            if (andArr[x][0][-1] != '^') and (x != len(andArr)):
+                andArr[x] += '&'
+        for andCom in andArr:
+            fullArr.append(andCom.split("^"))
+        for x in range(0, len(fullArr[0])-1):
+            if (fullArr[0][x][-1] != '&') and (x != len(fullArr)):
+                fullArr[0][x] += '^'
+        return fullArr
+        
     def __join(tableA, tableB):
         """ This function generates a snippet of SQL that joins two tables.
 
@@ -54,12 +67,12 @@ class DB:
         if (keyA == []):
             #then we use keyB
             command = tableA + " JOIN " + tableB + \
-            " ON " + tableB + "." + keyB + " = " + tableA + "." + keyB
+            " ON " + tableB + "." + keyB + " = " + tableA + "." + keyB + " "
         else:
             #otherwise, we use keyA
             command =  tableA +" JOIN " + tableB + \
-            " ON " + tableA + "." + keyA + " = " + tableB + "." + keyA
-            
+            " ON " + tableA + "." + keyA + " = " + tableB + "." + keyA + " "
+        ## TODO: Throw error on failure   
         return command
 
     def __execute_com(string):
@@ -147,12 +160,16 @@ class DB:
         
         Finally, STEP. This value is used to change the granularity of the input. With very large databases, it might be expected that several hundred thousand results may come back for a given query, leading to a response in the order of hundreds of megabytes. This puts an undue strain on the web-server, the network and the web application for little or no gain. So, increasing the STEP size will decrease the granularity of the data.
 
+        Note on the Filter argument. The filter is the implemented interface for SQL WHERE statements. We can pass multiple filter arguments using '&'(AND) and '^'OR joiners.
+        EX. "employees.gender.F.0^employees.gender.M.0"
+        There shouldn't be a limit on how many objects can be filtered with this command. If you experience issues, make a github issue.
+
         Args:
             type (int): Operation type, (-1=NOP, 0=AVG, 1=SUM)
             itemA (string): Y-axis string, ("Table,Item")
             itemB (string): X-axis string, ("Table,Item,Type")
-            Filter (string): Row filter string, ("Table,Entry,Item,Type (0'=', 1'>', 2'>=', 3'<', 4'<=')
-            TODO: Support multiple filters.
+            Filter (string): Row filter string ("Table,Item,Value,COMP(&/^)Table,Item,...)
+            NOTE: Types other than 0 unimplemented
             step (int): Sets Step size, grouping N objects together. (0-3 for date fields)
 
         Returns:
@@ -230,37 +247,69 @@ class DB:
                 return jsonify("Invalid step provided for DATE datatype!")
         else: #TODO: General case.
             return jsonify("Failed to provide valid type for item B."  + itemB)   
-            
-        # If Filter is non-empty, Parse CSV
-        if Filter != "":
-            temp = csv.reader([Filter], delimiter=',')
-            for row in temp:
-                tempRow = row
-                
-            filterTable = tempRow[0]
-            filterEntry = tempRow[1]
-            filterItem = tempRow[2]
-            filterType = int(tempRow[3])
+           
+        whereStr = "" # Holds generated WHERE statement
         
-            if filterType == 0:
-                whereStr = "WHERE " + filterTable + "." + filterEntry+  " = \"" + filterItem + "\" "
-            else:
-                return jsonify("Unsupported filterType!")
-        else:
-            whereStr = ""
+        # Put this here because WHERE statement can call outside tables.
+        joinStr = "" # Holds generated JOIN statement
+        tableArr = [] # Holds list of tables
         
-        joinStr = ""
         # If items are on different tables, then we will need to 
         # join them. We can call a function to generate a JOIN statement,
         # and pass that on to the final command string.
         if aTable != bTable :
-            joinStr = DB.__join(aTable, bTable) + " "
-        if aTable != filterTable:
-            joinStr += DB.__join(aTable, filterTable) + " "
-        if aTable == filterTable == bTable:
-            joinStr = aTable + " "
-            
+            tableArr.append(aTable)
+            # best-case no filters from other tables
+            joinStr += DB.join(aTable, bTable)
+        if aTable == bTable :
+            tableArr.append(bTable)
+            joinStr += aTable + " "
         
+        # If Filter is non-empty, Parse CSV
+        if Filter != "":
+            temp = DB.__filterParse(Filter)
+            whereStr = "WHERE "
+            for command in temp: 
+                for x in range(0, len(command)):
+                    temp = csv.reader([command[x]], delimiter=',')
+                    for row in temp:
+                        tempRow = row
+                        
+                    filterTable = tempRow[0]
+                    filterItem = tempRow[1]
+                    filterValue = tempRow[2]
+                    # Clean up last value if opeartor is included
+                    if (tempRow[3][-1:] == '&' or tempRow[3][-1:] == '^'):
+                        filterType = int(tempRow[3][:-1])
+                    else:
+                        filterType = int(tempRow[3])
+                
+                    if filterType == 0:
+                        whereStr += filterTable + "." + filterItem +  " = \"" + filterValue + "\" "
+                    else:
+                        return jsonify("Unsupported filterType on filter:", command[0])
+                    
+                    if (tempRow[3][-1:] == '&'):
+                        whereStr += "AND "
+                    elif (tempRow[3][-1:] == '^'):
+                        whereStr += "OR "
+                    # else do nothing
+                    
+                    # Add table to tableArr if needed
+                    if filterTable not in tableArr:
+                        tableArr.append(filterTable)
+                        # clear best-case join
+                        joinStr = ""
+        else:
+            whereStr = ""
+            
+
+        for x in range(1, len(tableArr)):
+            joinStr += DB.__join(tableArr[0], tableArr[x])
+            ## TODO: Try all combinations on successive errors.
+
+        
+        #HANDLE JOIN ACROSS SEPERATE TABLES
         #build string!
         comStr = "SELECT " + aStr + bStr + "FROM " + joinStr + whereStr +  tailStr
         
