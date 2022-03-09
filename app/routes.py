@@ -17,6 +17,14 @@ def linepage():
 def barpage():
 	return render_template("barpage.html.jinja")
 
+@app.route('/piepage')
+def piepage():
+	return render_template("piepage.html.jinja")
+
+@app.route('/donutpage')
+def donutpage():
+	return render_template("donutpage.html.jinja")
+
 @app.route('/scatterpage')
 def scatterpage():
 	return render_template("scatterpage.html.jinja")

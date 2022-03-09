@@ -28,13 +28,13 @@
           <input type="password" placeholder="Password" name="password" value="{{request.form.password }}"><br><br>
       
           <input class="btn btn-default" type="submit" value="Login"><br>
-        </div>
-
-        {% if error %}
-        <p class="error"><strong>Error:</strong> {{ error }}
-        {% endif %}
         
-      </form>
+          {% if error %}
+          <p class="error"><strong>Error:</strong> {{ error }}
+          {% endif %}
+        </form>
+      </div>
+      <button onclick="location.href = '/'">Back to Template(debug)</button>
     </div>
   </body>
 </html>
