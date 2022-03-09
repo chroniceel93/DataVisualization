@@ -9,10 +9,12 @@
         padding: 0;
         font-family: sans-serif;
       }
+
       .chartMenu p {
         padding: 10px;
         font-size: 20px;
       }
+      
       .chartCard {
         width: 100vw;
         height: calc(100vh - 40px);
@@ -20,25 +22,66 @@
         align-items: center;
         justify-content: center;
       }
+
       .chartBox {
         width: 700px;
         padding: 20px;
         border-radius: 20px;
         background: white;
       }
+
+      .button {
+        background-color: #008CBA;
+        border: #555555;
+        color: white;
+        padding: 15px 25px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 12px;
+        transition-duration: 0.4s;
+      }
+
+      .logoutbutton {
+          background-color: #4CAF50;
+          border: none;
+          color: white;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 12px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 12px;
+          transition-duration: 0.4s;
+      }
+
+      .button:hover {
+          background-color: #4CAF50;
+          color: white;
+      }
+
+      .logoutbutton:hover {
+          background-color: #f44336;
+          color: white;
+      }
     </style>
   </head>
   <body>
     <h3>Pie Graph Page</h3>
-    <button onclick="location.href = '/login'">Logout</button><br>
-    <button onclick="location.href = '/'">Back</button>
+    <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
+    <button class="button" onclick="location.href = '/'">Back</button>
 
     <div class="chartCard">
       <div class="chartBox">
         <canvas id="myChart"></canvas>
         Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
-        <button onclick="exportimage()">Download Image</button>
-        <button onclick="favgraph()">Favorite Graph</button>
+        <button class="button" onclick="exportimage()">Download Image</button>
+        <button class="button" onclick="favgraph()">Favorite Graph</button>
       </div>
     </div>
 
