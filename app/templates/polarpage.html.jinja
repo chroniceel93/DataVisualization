@@ -29,7 +29,7 @@
     </style>
   </head>
   <body>
-    <h3>Donut Graph Page</h3>
+    <h3>Polar Area Graph Page</h3>
     <button onclick="location.href = '/login'">Logout</button><br>
     <button onclick="location.href = '/'">Back</button>
 
@@ -49,20 +49,23 @@
     // setup 
     const data = {
         labels: [
-        'Red',
-        'Blue',
-        'Yellow'
-      ],
-      datasets: [{
-        label: 'My First Dataset',
-        data: [300, 50, 100],
-        backgroundColor: [
-          'rgb(255, 99, 132)',
-          'rgb(54, 162, 235)',
-          'rgb(255, 205, 86)'
+          'Red',
+          'Green',
+          'Yellow',
+          'Grey',
+          'Blue'
         ],
-        hoverOffset: 4
-      }]
+        datasets: [{
+          label: 'My First Dataset',
+          data: [11, 16, 7, 3, 14],
+          backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(75, 192, 192)',
+            'rgb(255, 205, 86)',
+            'rgb(201, 203, 207)',
+            'rgb(54, 162, 235)'
+          ]
+        }]
     };
 
     //plugin
@@ -80,7 +83,7 @@
 
     // config 
     const config = {
-      type: 'doughnut',
+      type: 'polarArea',
       data: data,
       plugins: [plugin],
       options: {
@@ -91,7 +94,7 @@
             },
             title: {
                 display: true,
-                text: 'Donut Chart'
+                text: 'Polar Area Chart'
             }
         }
      },

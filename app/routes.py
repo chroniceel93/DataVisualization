@@ -29,6 +29,18 @@ def donutpage():
 def scatterpage():
 	return render_template("scatterpage.html.jinja")
 
+@app.route('/bubblepage')
+def bubblepage():
+	return render_template("bubblepage.html.jinja")
+
+@app.route('/radarpage')
+def radarpage():
+	return render_template("radarpage.html.jinja")
+
+@app.route('/polarpage')
+def polarpage():
+	return render_template("polarpage.html.jinja")
+
 @app.route('/dbtest')
 def dbtest_allfields():
     return render_template("dbtest.html.jinja", string="Have fun!")

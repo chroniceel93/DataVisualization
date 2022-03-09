@@ -37,6 +37,7 @@
       <div class="chartBox">
         <canvas id="myChart"></canvas>
         Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
+        Change name of dataset: <input onkeyup="updatedname(this)" type="text"><br>
         Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
         Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
         Change max x axis: <input onkeyup="updatexmax(this)" type="number"><br>
@@ -54,7 +55,7 @@
     const data = {
       labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       datasets: [{
-        label: 'Scatter Graph Name',
+        label: 'Scatter Graph Dataset',
         pointRadius: 4,
         pointBackgroundColor: "rgb(0,0,255)",
         data: [{x:1,y:1},{x:2,y:2},{x:3,y:3}],
@@ -98,6 +99,12 @@
             suggestedMin: 0,
             suggestedMax: 5
           }
+        },
+        plugins: {
+          title: {
+              display: true,
+              text: 'Scatter Graph'
+          }
         }
       }
     };
@@ -109,6 +116,11 @@
     );
 
     function updatename(nameval){
+      myChart.config.options.plugins.title.text = nameval.value;
+      myChart.update();
+    }
+
+    function updatedname(nameval){
         myChart.config.data.datasets[0].label = nameval.value;
         myChart.update();
     }

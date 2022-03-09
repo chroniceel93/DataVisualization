@@ -29,7 +29,7 @@
     </style>
   </head>
   <body>
-    <h3>Bar Graph Page</h3>
+    <h3>Radar Graph Page</h3>
     <button onclick="location.href = '/login'">Logout</button><br>
     <button onclick="location.href = '/'">Back</button>
 
@@ -37,10 +37,8 @@
       <div class="chartBox">
         <canvas id="myChart"></canvas>
         Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
-        Change name of dataset: <input onkeyup="updatedname(this)" type="text"><br>
-        Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
-        Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
-        Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
+        Change name of dataset 1: <input onkeyup="updated1name(this)" type="text"><br>
+        Change name of dataset 2: <input onkeyup="updated2name(this)" type="text"><br>
         <button onclick="exportimage()">Download Image</button>
       </div>
     </div>
@@ -50,31 +48,37 @@
     <script>
     // setup 
     const data = {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [{
-        label: 'Bar Graph Dataset',
-        data: [18, 12, 6, 9, 12, 3, 9],
-        backgroundColor: [
-          'rgba(255, 26, 104, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-          'rgba(0, 0, 0, 0.2)'
+        labels: [
+          'Eating',
+          'Drinking',
+          'Sleeping',
+          'Designing',
+          'Coding',
+          'Cycling',
+          'Running'
         ],
-        borderColor: [
-          'rgba(255, 26, 104, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-          'rgba(0, 0, 0, 1)'
-        ],
-        borderWidth: 1
-      }]
-    };
+        datasets: [{
+          label: 'My First Dataset',
+          data: [65, 59, 90, 81, 56, 55, 40],
+          fill: true,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgb(255, 99, 132)',
+          pointBackgroundColor: 'rgb(255, 99, 132)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgb(255, 99, 132)'
+        }, {
+          label: 'My Second Dataset',
+          data: [28, 48, 40, 19, 96, 27, 100],
+          fill: true,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgb(54, 162, 235)',
+          pointBackgroundColor: 'rgb(54, 162, 235)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgb(54, 162, 235)'
+        }]
+      };
 
     //plugin
     const plugin = {
@@ -91,33 +95,22 @@
 
     // config 
     const config = {
-      type: 'bar',
-      data,
+      type: 'radar',
+      data: data,
       plugins: [plugin],
       options: {
-        scales: {
-          y: {
-            title: {
-              display: true,
-              text: 'y axis'
-            },
-            suggestedMin: 0,
-            suggestedMax: 20
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'x axis'
-            }
+        elements: {
+          line: {
+            borderWidth: 3
           }
         },
         plugins: {
-          title: {
-              display: true,
-              text: 'Bar Graph'
-          }
+            title: {
+                display: true,
+                text: 'Radar Graph'
+            }
         }
-      }
+      },
     };
 
     // render init block
@@ -127,28 +120,18 @@
     );
 
     function updatename(nameval){
-      myChart.config.options.plugins.title.text = nameval.value;
-      myChart.update();
+        myChart.config.options.plugins.title.text = nameval.value;
+        myChart.update();
     }
 
-    function updatedname(nameval){
+    function updated1name(nameval){
         myChart.config.data.datasets[0].label = nameval.value;
         myChart.update();
     }
 
-    function updateymax(numval){
-      myChart.config.options.scales.y.suggestedMax = numval.value;
-      myChart.update()
-    }
-
-    function updatexname(nameval){
-      myChart.config.options.scales.x.title.text = nameval.value;
-      myChart.update()
-    }
-  
-    function updateyname(nameval){
-      myChart.config.options.scales.y.title.text = nameval.value;
-      myChart.update()
+    function updated2name(nameval){
+        myChart.config.data.datasets[1].label = nameval.value;
+        myChart.update();
     }
 
     function exportimage(){
