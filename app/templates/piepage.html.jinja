@@ -38,6 +38,7 @@
         <canvas id="myChart"></canvas>
         Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
         <button onclick="exportimage()">Download Image</button>
+        <button onclick="favgraph()">Favorite Graph</button>
       </div>
     </div>
 
@@ -116,7 +117,11 @@
       // Trigger the download
       a.click();
     }
-    </script>
 
+    function favgraph(){
+      var image = myChart.toBase64Image();
+      localStorage.favgraph = image;
+    }
+    </script>
   </body>
 </html>
