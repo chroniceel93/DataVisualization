@@ -99,10 +99,115 @@
   Click here to get tables
 </button>
 
+<button onclick='getTables();'> Test getTables() </button>
+
+<button onclick='getColumns("departments");'> Test getColumns('departments') </button>
+
 
 
 
 <script>
+  // returns list of tables in the database
+  function getTables() {
+    var tables = [];
+
+    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
+      var currentTable;
+
+      // loop through JSON object and create object with keys as table names and values as associated column names
+      // ASSUMES: first element of 2d array is table name, second is column name
+      for (var i = 0, len = JSON.length; i < len; i++) {
+        currentTable = JSON[i][0];
+        var inTables = (tables.indexOf(currentTable) > -1);
+
+        // if currentTable is not already in tables,
+        if (!inTables) //(!(currentTable in tables))
+          tables.push(currentTable); // add it to tables
+      }
+    
+    });
+    return tables;
+  }
+
+
+  // returns list of columns corresponding to given table name
+  function getColumns(tableName) {
+    var columns = [];
+    
+
+    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
+      var currentTable;
+      var currentColumn;
+      // loop through JSON object and grab column names associated with given table name
+      // ASSUMES: first element of 2d array is table name, second is column name
+      for (var i = 0, len = JSON.length; i < len; i++) {
+        currentTable = JSON[i][0];
+        currentColumn = JSON[i][1];
+
+        // if table name matches
+        if (tableName == currentTable) {
+          columns.push(currentColumn);
+        }
+      }
+    
+    });
+    return columns;
+
+  }
+  
+  
+  
+  
+  
+  
+  
+  /*
+  // returns list of tables in the database
+  function getTables() {
+    var tables = {};
+
+    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
+      
+      var currentTable;
+      var prevTable;
+      var currentColumn;
+      var currentColumns = []; // array to store columns associated with single table
+
+      // loop through JSON object and create object with keys as table names and values as associated column names
+      // ASSUMES: first element of 2d array is table name, second is column name
+      for (var i = 0, len = JSON.length; i < len; i++) {
+        currentTable = JSON[i][0];
+        currentColumn = JSON[i][1];
+        //var inTables = (tables.indexOf(currentTable) > -1); this worked when tables was an array
+
+        // if currentTable is not already in tables,
+        if (!(currentTable in tables)) {
+          tables.push(currentTable); // add it to tables
+          
+          // if not first table,
+          if (tables.length != 0) {
+            tables[prevTable].push(currentColumns); // append currentColumns to previous  tables
+            currentColumns = [] // erase currentColumns
+          }
+        }
+        // no matter what, add column to currentColumns
+        currentColumns.push(currentColumn);
+
+        // if last table name (and iteration)
+        if (i == len - 1) {
+          tables[currentTable].push(currentColumns); // add currentColumns to tables object
+        }
+
+        prevTable = JSON[i][0];
+      }
+    
+    });
+    return tables;
+  }
+
+  */
+  
+  
   var tableDropdown = document.getElementById("tables");
   var tableChoices = ["dummy table 1", "dummy table 2"];
   //var tables = getTables();   // this produces an error: '$ is not defined'
@@ -137,26 +242,7 @@
     document.getElementById("toggleTable").classList.toggle("show");
   }
 
-  // returns list of tables in the database
-  function getTables() {
-    var tables = [];
-
-    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
-      // loop through JSON object and retrieve unique table names (assumes first element of 2d array is table name)
-      var current;
-      for (var i = 0, len = JSON.length; i < len; i++) {
-        
-        current = JSON[i][0];
-        var alreadyInTables = (tables.indexOf(current) > -1);
-
-        // if string not already in table,
-        if (!alreadyInTables)
-          tables.push(JSON[i][0]); // add it to tables
-      }
-    
-    });
-    return tables;
-  }
+  
 
   // saves user's choice of table
   // TODO
@@ -200,10 +286,10 @@
 <script>
   var columnDropdown = document.getElementById("columns");
   var columnChoices = ["dummy column 1", "dummy column 2"];
-  //var tables = getColumns();   // this produces an error: '$ is not defined'
+  //var columns = getColumns();   // this produces an error: '$ is not defined'
 
 
-  function displayColumnDropdown() {
+  function displayColumnDropdown(table) {
     for (var i = 0; i < columnChoices.length; i++) {
       var optn = columnChoices[i];
       var el = document.createElement("option");
@@ -220,54 +306,22 @@
     }
   }
 
+  // sets y-axis
+  function setColumn(y) {
+    if (y == 'totalSalary') {
+      $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
+        var tmp = JSON.toString();
+        var allVars = tmp.split(",");
 
-  function getColumns() {
-    var columns = [];
+        // gets even values from array, which are salaries
+        var salaries = allVars.filter((element, index) => {
+          return index % 2 === 0;
+        });
 
-    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
-      // loop through JSON object and retrieve column names (assumes second element of 2d array is column name)
-      var current;
-      for (var i = 0, len = JSON.length; i < len; i++) {
-        
-        current = JSON[i][1];
-
-        columns.push(JSON[i][1]); // add it to columns
-      }
-    
-    });
-    return columns;
-  }
-
-</script>
-
-
-
-
-<div class="dropdown">
-  <button onclick="dropToggleColumn()" class="dropbtn">Choose column</button>
-  <div id="setColumn" class="dropdown-content">
-    <button onclick=setColumn('totalSalary')>Column 1 (dummy)</button>
-    <button onclick=setColumn('avgSalary')>Column 2 (dummy)</button>
-  </div>
-</div>
-
-<script>
-// sets y-axis
-function setColumn(y) {
-  if (y == 'totalSalary') {
-    $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
-      var tmp = JSON.toString();
-      var allVars = tmp.split(",");
-
-      // gets even values from array, which are salaries
-      var salaries = allVars.filter((element, index) => {
-        return index % 2 === 0;
-      });
-
-      // sets graph y-values to salaries
-      myChart.config.data.datasets[0].data = salaries;
-    }, "json");
-  }
+        // sets graph y-values to salaries
+        myChart.config.data.datasets[0].data = salaries;
+      }, "json");
+    }
 
   else if (y == 'avgSalary') {
     $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
@@ -285,10 +339,43 @@ function setColumn(y) {
   }
 }
 
-function dropToggleColumn() {
-  document.getElementById("setColumn").classList.toggle("show");
-}
+  function dropToggleColumn() {
+    document.getElementById("setColumn").classList.toggle("show");
+  }
 
+  /* old getColumns (all columns)
+  function getColumns() {
+    var columns = [];
+
+    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
+      // loop through JSON object and retrieve column names (assumes second element of 2d array is column name)
+      var current;
+      for (var i = 0, len = JSON.length; i < len; i++) {
+        
+        current = JSON[i][1];
+
+        columns.push(JSON[i][1]); // add it to columns
+      }
+    
+    });
+    return columns;
+  }
+  */ 
+
+</script>
+
+
+
+
+<div class="dropdown">
+  <button onclick="dropToggleColumn()" class="dropbtn">Choose column</button>
+  <div id="setColumn" class="dropdown-content">
+    <button onclick=setColumn('totalSalary')>Column 1 (dummy)</button>
+    <button onclick=setColumn('avgSalary')>Column 2 (dummy)</button>
+  </div>
+</div>
+
+<script>
 // Close the dropdown menu if the user clicks outside of it
 window.onclick = function(event) {
   if (!event.target.matches('.dropbtn')) {
