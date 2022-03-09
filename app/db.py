@@ -163,13 +163,21 @@ class DB:
         Note on the Filter argument. The filter is the implemented interface for SQL WHERE statements. We can pass multiple filter arguments using '&'(AND) and '^'OR joiners.
         EX. "employees.gender.F.0^employees.gender.M.0"
         There shouldn't be a limit on how many objects can be filtered with this command. If you experience issues, make a github issue.
+        
+        The COMP option is passed as an integer value, because python thinks enums are silly. Values are as follows:
+        0:= - Is equal to.
+        1:<= - Is less than or equal to.
+        2:< - Is strictly less than.
+        3:> - Is strictly greater than.
+        4:>= - Is greater tan or equal to.
+        5:! - Is not.
 
         Args:
             type (int): Operation type, (-1=NOP, 0=AVG, 1=SUM)
             itemA (string): Y-axis string, ("Table,Item")
             itemB (string): X-axis string, ("Table,Item,Type")
             Filter (string): Row filter string ("Table,Item,Value,COMP(&/^)Table,Item,...)
-            NOTE: Types other than 0 unimplemented
+            NOTE: Comparitors other than 0 unimplemented
             step (int): Sets Step size, grouping N objects together. (0-3 for date fields)
 
         Returns:
@@ -286,6 +294,16 @@ class DB:
                 
                     if filterType == 0:
                         whereStr += filterTable + "." + filterItem +  " = \"" + filterValue + "\" "
+                    elif filterType == 1:
+                        whereStr += filterTable + "." + filterItem +  " <= \"" + filterValue + "\" "
+                    elif filterType == 2:
+                        whereStr += filterTable + "." + filterItem +  " < \"" + filterValue + "\" "
+                    elif filterType == 3:
+                        whereStr += filterTable + "." + filterItem +  " > \"" + filterValue + "\" "
+                    elif filterType == 4:
+                        whereStr += filterTable + "." + filterItem +  " >= \"" + filterValue + "\" "
+                    elif filterType == 5:
+                        whereStr += filterTable + "." + filterItem +  " <> \"" + filterValue + "\" "
                     else:
                         return jsonify("Unsupported filterType on filter:", command[0])
                     
