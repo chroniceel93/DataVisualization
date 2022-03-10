@@ -67,7 +67,6 @@
 .show {display: block;}
 </style>
 </head>
-
 <body>
 <h3>Line Graph Page</h3>
 
@@ -91,7 +90,7 @@
 
 
 
-<select id="tables"></select>
+<select id="tables" onchange="displayColumnDropdown(value)"></select>
 
 <br><br>
 
@@ -107,11 +106,14 @@
 
 
 <script>
+  // jinja substitutes the scripts root directory upon creation.
+  $SCRIPT_ROOT = {{ request.script_root|tojson }};
+
   // returns list of tables in the database
   function getTables() {
     var tables = [];
-
-    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
+    
+    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) { // replacing $ with jQuery yields same error
       var currentTable;
 
       // loop through JSON object and create object with keys as table names and values as associated column names
@@ -124,7 +126,6 @@
         if (!inTables) //(!(currentTable in tables))
           tables.push(currentTable); // add it to tables
       }
-    
     });
     return tables;
   }
@@ -134,7 +135,6 @@
   function getColumns(tableName) {
     var columns = [];
     
-
     $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
       var currentTable;
       var currentColumn;
@@ -149,68 +149,16 @@
           columns.push(currentColumn);
         }
       }
-    
     });
     return columns;
-
   }
   
-  
-  
-  
-  
-  
-  
-  /*
-  // returns list of tables in the database
-  function getTables() {
-    var tables = {};
-
-    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
-      
-      var currentTable;
-      var prevTable;
-      var currentColumn;
-      var currentColumns = []; // array to store columns associated with single table
-
-      // loop through JSON object and create object with keys as table names and values as associated column names
-      // ASSUMES: first element of 2d array is table name, second is column name
-      for (var i = 0, len = JSON.length; i < len; i++) {
-        currentTable = JSON[i][0];
-        currentColumn = JSON[i][1];
-        //var inTables = (tables.indexOf(currentTable) > -1); this worked when tables was an array
-
-        // if currentTable is not already in tables,
-        if (!(currentTable in tables)) {
-          tables.push(currentTable); // add it to tables
-          
-          // if not first table,
-          if (tables.length != 0) {
-            tables[prevTable].push(currentColumns); // append currentColumns to previous  tables
-            currentColumns = [] // erase currentColumns
-          }
-        }
-        // no matter what, add column to currentColumns
-        currentColumns.push(currentColumn);
-
-        // if last table name (and iteration)
-        if (i == len - 1) {
-          tables[currentTable].push(currentColumns); // add currentColumns to tables object
-        }
-
-        prevTable = JSON[i][0];
-      }
-    
-    });
-    return tables;
-  }
-
-  */
   
   
   var tableDropdown = document.getElementById("tables");
   var tableChoices = ["dummy table 1", "dummy table 2"];
-  //var tables = getTables();   // this produces an error: '$ is not defined'
+  //var tableChoices = 
+  //getTables();   // this produces an error: '$ is not defined'
 
   // updates dropdown with array values
   // TODO: figure out how generalize this function by passing in a parameter
@@ -222,19 +170,13 @@
       el.textContent = optn;
       el.value = optn;
 
-      /*if (typeDropdown == 'tableDropdown')
-        tableDropdown.appendChild(el);
-      if (typeDropdown == 'columnDropdown')
-        columnDropdown.appendChild(el);
-        */
       tableDropdown.appendChild(el);
 
     }
   }
 
 
-  // jinja substitutes the scripts root directory upon creation.
-  $SCRIPT_ROOT = {{ request.script_root|tojson }};
+
 
 
   // Toggle between hiding and showing the dropdown content when clicking the button
@@ -244,22 +186,7 @@
 
   
 
-  // saves user's choice of table
-  // TODO
-  function chooseTable(x) {
-    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
-      var tmp = JSON.toString();
-      var allVars = tmp.split(",");
-
-      // gets odd values from array, which are dates
-      var dates = allVars.filter((element, index) => {
-        return index % 2 === 1;
-      });
-
-      // sets graph x-values to dates
-      myChart.config.data.labels = dates;
-    }, "json");
-  }
+  
 </script>
 
 
@@ -286,10 +213,10 @@
 <script>
   var columnDropdown = document.getElementById("columns");
   var columnChoices = ["dummy column 1", "dummy column 2"];
-  //var columns = getColumns();   // this produces an error: '$ is not defined'
+  //var columns = getColumns(table);   // gets columns from given table
 
 
-  function displayColumnDropdown(table) {
+  function displayColumnDropdown() {
     for (var i = 0; i < columnChoices.length; i++) {
       var optn = columnChoices[i];
       var el = document.createElement("option");
@@ -305,6 +232,25 @@
 
     }
   }
+
+
+  // saves user's choice of table
+  // TODO
+  function chooseTable(x) {
+    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
+      var tmp = JSON.toString();
+      var allVars = tmp.split(",");
+
+      // gets odd values from array, which are dates
+      var dates = allVars.filter((element, index) => {
+        return index % 2 === 1;
+      });
+
+      // sets graph x-values to dates
+      myChart.config.data.labels = dates;
+    }, "json");
+  }
+
 
   // sets y-axis
   function setColumn(y) {
@@ -323,21 +269,21 @@
       }, "json");
     }
 
-  else if (y == 'avgSalary') {
-    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
-      var tmp = JSON.toString();
-      var allVars = tmp.split(",");
+    else if (y == 'avgSalary') {
+      $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
+        var tmp = JSON.toString();
+        var allVars = tmp.split(",");
 
-      // gets even values from array, which are salaries
-      var salaries = allVars.filter((element, index) => {
-        return index % 2 === 0;
-      });
+        // gets even values from array, which are salaries
+        var salaries = allVars.filter((element, index) => {
+          return index % 2 === 0;
+        });
 
-      // sets graph y-values to salaries
-      myChart.config.data.datasets[0].data = salaries;
-    }, "json");
+        // sets graph y-values to salaries
+        myChart.config.data.datasets[0].data = salaries;
+      }, "json");
+    }
   }
-}
 
   function dropToggleColumn() {
     document.getElementById("setColumn").classList.toggle("show");
