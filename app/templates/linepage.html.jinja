@@ -3,77 +3,117 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-}
-.chartMenu p {
-  padding: 10px;
-  font-size: 20px;
-}
-.chartCard {
-  width: 100vw;
-  height: calc(100vh - 40px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.chartBox {
-  width: 700px;
-  padding: 20px;
-  border-radius: 20px;
-  background: white;
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+  }
+  .chartMenu p {
+    padding: 10px;
+    font-size: 20px;
+  }
+  .chartCard {
+    width: 100vw;
+    height: calc(100vh - 40px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .chartBox {
+    width: 700px;
+    padding: 20px;
+    border-radius: 20px;
+    background: white;
+    }
+
+    // for drop-down box
+  .dropbtn {
+    background-color: #3498DB;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
   }
 
-  // for drop-down box
-.dropbtn {
-  background-color: #3498DB;
-  color: white;
-  padding: 16px;
-  font-size: 16px;
-  border: none;
-  cursor: pointer;
-}
+  .dropbtn:hover, .dropbtn:focus {
+    background-color: #2980B9;
+  }
 
-.dropbtn:hover, .dropbtn:focus {
-  background-color: #2980B9;
-}
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
 
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
-  overflow: auto;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
 
-.dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
+  .dropdown a:hover {background-color: #ddd;}
 
-.dropdown a:hover {background-color: #ddd;}
+  .show {display: block;}
 
-.show {display: block;}
+  .button {
+    background-color: #008CBA;
+    border: #555555;
+    color: white;
+    padding: 15px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition-duration: 0.4s;
+  }
+
+  .logoutbutton {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 12px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 12px;
+      transition-duration: 0.4s;
+  }
+
+  .button:hover {
+      background-color: #4CAF50;
+      color: white;
+  }
+
+  .logoutbutton:hover {
+      background-color: #f44336;
+      color: white;
+  }
 </style>
 
 <script src="{{ url_for('static', filename='chart.js') }}"></script>
 <script src="{{ url_for('static', filename='jquery.js') }}"></script>
 </head>
 <body>
-<h3>Line Graph Page</h3>
-
-<button onclick="location.href = '/'">Main Menu</button>
+  <h3>Line Graph Page</h3>
+  <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
+  <button class="button" onclick="location.href = '/'">Back</button>
 
 
 
@@ -349,8 +389,8 @@ function updateGraph() {
     Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
     Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
     Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
-    <button onclick="exportimage()">Download Image</button><br>
-    <button onclick="testRequest()"> Show request result </button>
+    <button class="button" onclick="exportimage()">Download Image</button><br>
+    <button class="button" onclick="testRequest()"> Show request result </button>
   </div>
 </div>
 

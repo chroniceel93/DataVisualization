@@ -14,6 +14,26 @@
       border-radius: 20px;
       background: white;
     }
+
+    .button {
+      background-color: #008CBA;
+      border: #555555;
+      color: white;
+      padding: 15px 25px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 12px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 12px;
+      transition-duration: 0.4s;
+    }
+
+    .button:hover {
+        background-color: #4CAF50;
+        color: white;
+    }
   </style>
   
   <body>
@@ -27,7 +47,7 @@
           <label for="psw"><b>Password</b></label>
           <input type="password" placeholder="Password" name="password" value="{{request.form.password }}"><br><br>
       
-          <input class="btn btn-default" type="submit" value="Login"><br>
+          <input class="button" type="submit" value="Login"><br>
         
           {% if error %}
           <p class="error"><strong>Error:</strong> {{ error }}
