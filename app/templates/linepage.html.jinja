@@ -72,12 +72,6 @@
 
 <button onclick="location.href = '/'">Main Menu</button>
 
-<div class="dropdown">
-  <button onclick="dropToggleTable()" class="dropbtn">Choose Table</button>
-  <div id="toggleTable" class="dropdown-content">
-    <button onclick=getTables()>Dummy table</button>
-  </div>
-</div>
 
 
 
@@ -86,21 +80,10 @@
 
 
 
-
-
-
-
-<select id="tables" onchange="displayColumnDropdown(value)"></select>
-
-<br><br>
-
-<button onclick="displayTableDropdown();">
-  Click here to get tables
-</button>
-
-<button onclick='getTables();'> Test getTables() </button>
-
-<button onclick='getColumns("departments");'> Test getColumns('departments') </button>
+<!-- Dropdown with table choices -->
+<select id="tables" onchange="displayColumnDropdown(value)">
+  <option> Select a table </option>  
+</select>
 
 
 
@@ -109,35 +92,107 @@
   // jinja substitutes the scripts root directory upon creation.
   $SCRIPT_ROOT = {{ request.script_root|tojson }};
 
-  // returns list of tables in the database
-  function getTables() {
-    var tables = [];
-    
-    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) { // replacing $ with jQuery yields same error
-      var currentTable;
+  var tableDropdown = document.getElementById("tables");
+  var tableChoices = ["dummy table 1", "dummy table 2"]; // table names to be displayed in dropdown
+  var rawJSON = [[],[]]; // defining global 2d array
 
-      // loop through JSON object and create object with keys as table names and values as associated column names
-      // ASSUMES: first element of 2d array is table name, second is column name
-      for (var i = 0, len = JSON.length; i < len; i++) {
-        currentTable = JSON[i][0];
-        var inTables = (tables.indexOf(currentTable) > -1);
+  // load tables from JSON from db
+  //var tableChoices = [];
+  //getTables(tableChoices);
 
-        // if currentTable is not already in tables,
-        if (!inTables) //(!(currentTable in tables))
-          tables.push(currentTable); // add it to tables
-      }
-    });
-    return tables;
+  displayTableDropdown(); // on page load, automatically display table dropdown
+
+
+  // gets tables from raw JSON data
+  // pass by reference/value? Arrays are weird in JS
+  function getTables(tablesTemp) {
+    getRawJSON(); // ensures rawJSON is assigned
+    var currentTable;
+
+    // loop through JSON object and create object with keys as table names and values as associated column names
+    // ASSUMES: first element of 2d array is table name, second is column name
+    for (var i = 0, len = rawJSON.length; i < len; i++) {
+      currentTable = rawJSON[i][0];
+      var inTables = (tablesTemp.indexOf(currentTable) > -1);
+
+      // if currentTable is not already in tables,
+      if (!inTables) //(!(currentTable in tables))
+        tablesTemp.push(currentTable); // add it to tables
+    }
+    return tablesTemp;
   }
 
 
-  // returns list of columns corresponding to given table name
+  // copies rawJSON data from db
+  function getRawJSON() {
+    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) { // replacing $ with jQuery yields same error
+      rawJSON = JSON;
+    });
+  }
+
+  
+  // displays elements of (global variable) tableChoices in tableDropdown element
+  // TODO: figure out how generalize this function by passing in a parameter
+  function displayTableDropdown() {
+    for (var i = 0; i < tableChoices.length; i++) {
+      var optn = tableChoices[i];
+      var el = document.createElement("option");
+      el.textContent = optn;
+      el.value = optn;
+
+      tableDropdown.appendChild(el);
+    }
+  }
+</script>
+
+
+
+
+
+
+<!-- Column dropdown, dependent on what table user chooses -->
+<select id="columns"></select>
+
+<br><br>
+
+<!-- For testing, to be removed-->
+<button onclick='getRawJSON();'> Test getRawJSON() </button>
+<button onclick='getColumns("departments");'> Test getColumns('departments') </button>
+
+
+
+
+
+<script>
+  var columnDropdown = document.getElementById("columns");
+  var columnChoices = ["dummy column 1", "dummy column 2"];
+  //var columnChoices = getColumns(table);   // gets columns from given table
+
+  // displays column dropdown from columnChoices
+  // TODO: modify to erase previous dropdown before displaying new one
+  function displayColumnDropdown(table) {
+    //columnChoices = getColumns(table); // assigns appropriate columns to columnChoices
+
+    // loops over columns from db, adding those that correspond to table
+    for (var i = 0; i < columnChoices.length; i++) {
+      var optn = columnChoices[i];
+      var el = document.createElement("option");
+      el.textContent = optn;
+      el.value = optn;
+
+      columnDropdown.appendChild(el);
+    }
+  }
+
+
+  // returns list of columns associated with given table name
   function getColumns(tableName) {
     var columns = [];
     
     $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
       var currentTable;
       var currentColumn;
+
       // loop through JSON object and grab column names associated with given table name
       // ASSUMES: first element of 2d array is table name, second is column name
       for (var i = 0, len = JSON.length; i < len; i++) {
@@ -152,87 +207,6 @@
     });
     return columns;
   }
-  
-  
-  
-  var tableDropdown = document.getElementById("tables");
-  var tableChoices = ["dummy table 1", "dummy table 2"];
-  //var tableChoices = 
-  //getTables();   // this produces an error: '$ is not defined'
-
-  // updates dropdown with array values
-  // TODO: figure out how generalize this function by passing in a parameter
-  // and fix it, currently not working
-  function displayTableDropdown() {
-    for (var i = 0; i < tableChoices.length; i++) {
-      var optn = tableChoices[i];
-      var el = document.createElement("option");
-      el.textContent = optn;
-      el.value = optn;
-
-      tableDropdown.appendChild(el);
-
-    }
-  }
-
-
-
-
-
-  // Toggle between hiding and showing the dropdown content when clicking the button
-  function dropToggleTable() {
-    document.getElementById("toggleTable").classList.toggle("show");
-  }
-
-  
-
-  
-</script>
-
-
-
-
-
-
-
-
-
-
-
-<select id="columns"></select>
-
-<br><br>
-
-<button onclick="displayColumnDropdown();">
-  Click here to get columns 
-</button>
-
-
-
-
-<script>
-  var columnDropdown = document.getElementById("columns");
-  var columnChoices = ["dummy column 1", "dummy column 2"];
-  //var columns = getColumns(table);   // gets columns from given table
-
-
-  function displayColumnDropdown() {
-    for (var i = 0; i < columnChoices.length; i++) {
-      var optn = columnChoices[i];
-      var el = document.createElement("option");
-      el.textContent = optn;
-      el.value = optn;
-
-      /*if (typeDropdown == 'tableDropdown')
-        tableDropdown.appendChild(el);
-      if (typeDropdown == 'columnDropdown')
-        columnDropdown.appendChild(el);
-        */
-      columnDropdown.appendChild(el);
-
-    }
-  }
-
 
   // saves user's choice of table
   // TODO
@@ -289,37 +263,8 @@
     document.getElementById("setColumn").classList.toggle("show");
   }
 
-  /* old getColumns (all columns)
-  function getColumns() {
-    var columns = [];
-
-    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
-      // loop through JSON object and retrieve column names (assumes second element of 2d array is column name)
-      var current;
-      for (var i = 0, len = JSON.length; i < len; i++) {
-        
-        current = JSON[i][1];
-
-        columns.push(JSON[i][1]); // add it to columns
-      }
-    
-    });
-    return columns;
-  }
-  */ 
-
 </script>
 
-
-
-
-<div class="dropdown">
-  <button onclick="dropToggleColumn()" class="dropbtn">Choose column</button>
-  <div id="setColumn" class="dropdown-content">
-    <button onclick=setColumn('totalSalary')>Column 1 (dummy)</button>
-    <button onclick=setColumn('avgSalary')>Column 2 (dummy)</button>
-  </div>
-</div>
 
 <script>
 // Close the dropdown menu if the user clicks outside of it
