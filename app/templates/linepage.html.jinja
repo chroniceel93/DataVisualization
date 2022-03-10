@@ -66,6 +66,9 @@
 
 .show {display: block;}
 </style>
+
+<script src="{{ url_for('static', filename='chart.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
 </head>
 <body>
 <h3>Line Graph Page</h3>
@@ -85,49 +88,54 @@
   <option> Select a table </option>  
 </select>
 
+<button onclick='displayTableDropdown();'> Display table dropdown </button>
 
 
 
 <script>
+
   // jinja substitutes the scripts root directory upon creation.
   $SCRIPT_ROOT = {{ request.script_root|tojson }};
 
   var tableDropdown = document.getElementById("tables");
-  var tableChoices = ["dummy table 1", "dummy table 2"]; // table names to be displayed in dropdown
+  //var tableChoices = ["dummy table 1", "dummy table 2"]; // table names to be displayed in dropdown
+
   var rawJSON = [[],[]]; // defining global 2d array
 
   // load tables from JSON from db
-  //var tableChoices = [];
-  //getTables(tableChoices);
 
+  // pass by reference
+  var tableChoices = [];
+  //getTables(tableChoices);
+  getTables(tableChoices);
+
+  // pass by value (doesn't work)
+  ///var tableChoices = getTables();
+
+  // this is being called before getTables for some reason
   displayTableDropdown(); // on page load, automatically display table dropdown
 
 
   // gets tables from raw JSON data
-  // pass by reference/value? Arrays are weird in JS
-  function getTables(tablesTemp) {
-    getRawJSON(); // ensures rawJSON is assigned
+  // passing by value, but might need to change this - Arrays are weird in JS
+  function getTables(tableChoices) {
+    //getRawJSON(); // ensures rawJSON is assigned
     var currentTable;
 
-    // loop through JSON object and create object with keys as table names and values as associated column names
-    // ASSUMES: first element of 2d array is table name, second is column name
-    for (var i = 0, len = rawJSON.length; i < len; i++) {
-      currentTable = rawJSON[i][0];
-      var inTables = (tablesTemp.indexOf(currentTable) > -1);
 
-      // if currentTable is not already in tables,
-      if (!inTables) //(!(currentTable in tables))
-        tablesTemp.push(currentTable); // add it to tables
-    }
-    return tablesTemp;
-  }
-
-
-  // copies rawJSON data from db
-  function getRawJSON() {
     $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) { // replacing $ with jQuery yields same error
-      rawJSON = JSON;
+      // loop through JSON object and create array with unique table names
+      // ASSUMES: first element of 2d array is table name, second is column name
+      for (var i = 0, len = JSON.length; i < len; i++) {
+        currentTable = JSON[i][0];
+        var inTables = (tableChoices.indexOf(currentTable) > -1);
+
+        // if currentTable is not already in tables,
+        if (!inTables) //(!(currentTable in tables))
+          tableChoices.push(currentTable); // add it to tables
+      }
     });
+    //return tableChoices; // no need to return if just modifying a global var
   }
 
   
@@ -166,7 +174,11 @@
 <script>
   var columnDropdown = document.getElementById("columns");
   var columnChoices = ["dummy column 1", "dummy column 2"];
+
+  //var columnChoices = [];
+
   //var columnChoices = getColumns(table);   // gets columns from given table
+
 
   // displays column dropdown from columnChoices
   // TODO: modify to erase previous dropdown before displaying new one
@@ -208,6 +220,7 @@
     return columns;
   }
 
+
   // saves user's choice of table
   // TODO
   function chooseTable(x) {
@@ -227,6 +240,7 @@
 
 
   // sets y-axis
+  // TODO
   function setColumn(y) {
     if (y == 'totalSalary') {
       $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
@@ -263,11 +277,9 @@
     document.getElementById("setColumn").classList.toggle("show");
   }
 
-</script>
 
-
-<script>
 // Close the dropdown menu if the user clicks outside of it
+// Not sure if this is necessary?
 window.onclick = function(event) {
   if (!event.target.matches('.dropbtn')) {
     var dropdowns = document.getElementsByClassName("dropdown-content");
