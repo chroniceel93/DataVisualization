@@ -201,16 +201,20 @@
 
 
 <!-- Column dropdowns, dependent on what table user chooses-->
-<select id="xColumn" onchange = 'chosenX = value'>
+<select id="xColumn" onchange = "chooseX(value)">
   <option> Select x-axis </option>  
 </select>
 
-<select id="yColumn" onchange = 'chosenY = value'>
+<select id="yColumn" onchange = 'chooseY(value)'>
   <option> Select y-axis </option>  
 </select>
 
 <button onclick='graph();'> Graph </button>
 
+<p id='table'></p>
+<p id = 'columnX'></p>
+<p id = 'columnY'></p>
+<p id = 'columnYType'></p>
 
 
 
@@ -219,9 +223,27 @@
   var xColumn = document.getElementById("xColumn");
   var yColumn = document.getElementById("yColumn");
 
+  // what to do when user chooses x
+  function chooseX(x) {
+    chosenX = x; // set global variable
+    document.getElementById('columnX').innerHTML = "Current x-axis - " + x; // update html
+  }
+
+  // when user chooses y
+  function chooseY(y) {
+    // set global variables
+    chosenY = y; 
+    chosenYType = getType(y);
+
+    // update html
+    document.getElementById('columnY').innerHTML = "Current y-axis - " + y; 
+    document.getElementById('columnYType').innerHTML = "Current y type - " + chosenYType; // FIX
+  }
+
   // displays column dropdown from columnChoices
   // TODO: modify to erase previous dropdown before displaying new one
   function displayColumnDropdown(table) {
+    document.getElementById('table').innerHTML = "Current table - " + table;
     getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
     chosenTable = table; // sets global var
 
@@ -287,9 +309,9 @@
 
   // TODO
   // type: -1 for no operation (disables step), 0 for avg, 1 for sum
-  function chooseX(table, columnX, columnY, columnYType) {
+  function graphX(chosenTable, chosenY, chosenX, chosenYType) {
     chosenX = columnX; // not sure if these are needed
-    choseY = columnY;
+    chosenY = columnY;
 
     var A = table + "," + columnX;
     var B = table + "," + columnY + "," + columnYType;
@@ -312,7 +334,7 @@
 
   // sets y-axis
   // TODO
-  function chooseY(table, column) {
+  function graphY(table, column) {
     chosenY = column;
     if (y == 'totalSalary') {
       $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
