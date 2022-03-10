@@ -94,35 +94,37 @@
 
 
 <script>
-
   // jinja substitutes the scripts root directory upon creation.
   $SCRIPT_ROOT = {{ request.script_root|tojson }};
 
+  // global variables
+  var columnChoices = [[],[]]; // 2d array with columns and corresponding types
+  var tableChoices = [];
+  
+  var chosenTable;
+  var chosenX;
+  var chosenY;
+  var chosenYType;
+  
+
   var tableDropdown = document.getElementById("tables");
-  //var tableChoices = ["dummy table 1", "dummy table 2"]; // table names to be displayed in dropdown
-
-  var rawJSON = [[],[]]; // defining global 2d array
-
-  // load tables from JSON from db
 
   // pass by reference
-  var tableChoices = [];
-  //getTables(tableChoices);
   getTables(tableChoices);
 
   // pass by value (doesn't work)
   ///var tableChoices = getTables();
 
-  // this is being called before getTables for some reason
+  // this is being called before getTables for some reason, 
+  // so currently useless and need button to manually do this
   displayTableDropdown(); // on page load, automatically display table dropdown
 
 
   // gets tables from raw JSON data
-  // passing by value, but might need to change this - Arrays are weird in JS
+  // passing by reference, but might need to change this - Arrays are weird in JS
+  // TODO: clean this up by figuring out better way to pass value out (instead of global variable reference)
   function getTables(tableChoices) {
-    //getRawJSON(); // ensures rawJSON is assigned
     var currentTable;
-
 
     $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) { // replacing $ with jQuery yields same error
       // loop through JSON object and create array with unique table names
@@ -132,11 +134,10 @@
         var inTables = (tableChoices.indexOf(currentTable) > -1);
 
         // if currentTable is not already in tables,
-        if (!inTables) //(!(currentTable in tables))
+        if (!inTables)
           tableChoices.push(currentTable); // add it to tables
       }
     });
-    //return tableChoices; // no need to return if just modifying a global var
   }
 
   
@@ -159,14 +160,16 @@
 
 
 
-<!-- Column dropdown, dependent on what table user chooses -->
-<select id="xColumn" onchange = 'chooseX(value)'>
+<!-- Column dropdowns, dependent on what table user chooses-->
+<select id="xColumn" onchange = 'chosenX = value'>
   <option> Select x-axis </option>  
 </select>
 
-<select id="yColumn" onchange = 'chooseY(value)'>
+<select id="yColumn" onchange = 'chosenY = value'>
   <option> Select y-axis </option>  
 </select>
+
+<button onclick='graph();'> Graph </button>
 
 
 
@@ -175,16 +178,12 @@
 <script>
   var xColumn = document.getElementById("xColumn");
   var yColumn = document.getElementById("yColumn");
-  //var columnChoices = ["dummy column 1", "dummy column 2"];
-
-  // global variable with choice of columns for given table
-  var columnChoices = [];
-
 
   // displays column dropdown from columnChoices
   // TODO: modify to erase previous dropdown before displaying new one
   function displayColumnDropdown(table) {
     getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
+    chosenTable = table; // sets global var
 
     // loops over columns from db, adding those that correspond to table
     // TODO: don't know why need elx and ely separately, but it works
@@ -225,10 +224,37 @@
     });
   }
 
+  // returns type associated with column passed in
+  function getType(chosenY) {
+    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
+      var currentColumn;
+      var currentType;
 
-  // saves user's choice of table
+      // loop through JSON object and grab column type associated with chosen column
+      // ASSUMES: third element of 2d array is column type
+      for (var i = 0, len = JSON.length; i < len; i++) {
+        currentColumn = JSON[i][1];
+        currentType = JSON[i][2];
+
+        // if column name matches
+        if (chosenY == currentColumn) {
+          chosenYType = currentType;
+        }
+      }
+    });
+  }
+
+
   // TODO
-  function chooseTable(x) {
+  // type: -1 for no operation (disables step), 0 for avg, 1 for sum
+  function chooseX(table, columnX, columnY, columnYType) {
+    chosenX = columnX; // not sure if these are needed
+    choseY = columnY;
+
+    var A = table + "," + columnX;
+    var B = table + "," + columnY + "," + columnYType;
+
+    //TODO: Assign itemA = A etc.
     $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
       var tmp = JSON.toString();
       var allVars = tmp.split(",");
@@ -246,7 +272,8 @@
 
   // sets y-axis
   // TODO
-  function setColumn(y) {
+  function chooseY(table, column) {
+    chosenY = column;
     if (y == 'totalSalary') {
       $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
         var tmp = JSON.toString();
