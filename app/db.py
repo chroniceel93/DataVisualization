@@ -58,7 +58,6 @@ class DB:
                 
         # Check table A for key B
         for y in range(0, len(keyB)):
-            print(y)
             if keyB[y][0] == tableA:
                 keyB = keyB[y][1]
                 break
@@ -330,6 +329,8 @@ class DB:
         #HANDLE JOIN ACROSS SEPERATE TABLES
         #build string!
         comStr = "SELECT " + aStr + bStr + "FROM " + joinStr + whereStr +  tailStr
+        
+        print("Executing: ", comStr)
         
         result = DB.__execute_com(comStr)
         # Build SQL query as needed
