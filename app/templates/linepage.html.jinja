@@ -138,13 +138,15 @@
   $SCRIPT_ROOT = {{ request.script_root|tojson }};
 
   // global variables
-  var columnChoices = [[],[]]; // 2d array with columns and corresponding types
+  var columnChoices = []; // 2d array with columns and corresponding types
   var tableChoices = [];
   
   var chosenTable;
   var chosenX;
   var chosenY;
   var chosenYType;
+
+  var firstTable = 'empty';
   
 
   var tableDropdown = document.getElementById("tables");
@@ -209,12 +211,20 @@
   <option> Select y-axis </option>  
 </select>
 
+
+<!-- // TODO: fix this
 <button onclick='graph();'> Graph </button>
+-->
 
 <p id='table'></p>
 <p id = 'columnX'></p>
 <p id = 'columnY'></p>
+
+<!-- // TODO: add back in later
 <p id = 'columnYType'></p>
+-->
+
+<button onclick = 'graphX(firstTable, chosenX, chosenY, chosenYType)'> Update Values </button>
 
 
 
@@ -233,19 +243,28 @@
   function chooseY(y) {
     // set global variables
     chosenY = y; 
-    chosenYType = getType(y);
+    getType(y);
 
     // update html
+    // FIX: why is javascript doing this before entering getType(y)?????
+    // seems to be executing asynchronously (fun)
     document.getElementById('columnY').innerHTML = "Current y-axis - " + y; 
-    document.getElementById('columnYType').innerHTML = "Current y type - " + chosenYType; // FIX
+    //document.getElementById('columnYType').innerHTML = "Current y type - " + chosenYType; // FIX
   }
 
   // displays column dropdown from columnChoices
   // TODO: modify to erase previous dropdown before displaying new one
   function displayColumnDropdown(table) {
-    document.getElementById('table').innerHTML = "Current table - " + table;
+    // TODO: fix this
+    if (firstTable == 'empty') {
+      firstTable = table;
+    }
+
+    document.getElementById('table').innerHTML = "Current table - " + firstTable;//table; TODO: fix this back
     getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
     chosenTable = table; // sets global var
+
+    
 
     // loops over columns from db, adding those that correspond to table
     // TODO: don't know why need elx and ely separately, but it works
@@ -287,7 +306,7 @@
   }
 
   // returns type associated with column passed in
-  function getType(chosenY) {
+  function getType(y) {
     $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
       var currentColumn;
       var currentType;
@@ -309,25 +328,34 @@
 
   // TODO
   // type: -1 for no operation (disables step), 0 for avg, 1 for sum
-  function graphX(chosenTable, chosenY, chosenX, chosenYType) {
-    chosenX = columnX; // not sure if these are needed
-    chosenY = columnY;
+  function graphX(firstTable, chosenX, chosenY, chosenYType) {
 
-    var A = table + "," + columnX;
-    var B = table + "," + columnY + "," + columnYType;
+    var A = firstTable + "," + chosenX;
+    var B = firstTable + "," + chosenY + "," + chosenYType;
 
-    //TODO: Assign itemA = A etc.
-    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
+    //TODO: make sure this actually gets x-values
+    // add y-val filtering
+    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
       var tmp = JSON.toString();
       var allVars = tmp.split(",");
 
       // gets odd values from array, which are dates
-      var dates = allVars.filter((element, index) => {
+      var x = allVars.filter((element, index) => {
         return index % 2 === 1;
       });
 
+      // gets even values from array, which are salaries
+      var y = allVars.filter((element, index) => {
+        return index % 2 === 0;
+      });
+
       // sets graph x-values to dates
-      myChart.config.data.labels = dates;
+      myChart.config.data.labels = x;
+
+      // sets graph y-values to salaries
+      myChart.config.data.datasets[0].data = y;
+
+      
     }, "json");
   }
 
@@ -390,7 +418,7 @@ window.onclick = function(event) {
 
 
 
-<button onclick=updateGraph()> Update Graph </button>
+<button onclick=updateGraph()> Graph </button>
 
 <script>
 function updateGraph() {
