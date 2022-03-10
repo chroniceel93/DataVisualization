@@ -160,14 +160,21 @@
 
 
 <!-- Column dropdown, dependent on what table user chooses -->
-<select id="columns"></select>
+<select id="xColumn" onchange = 'chooseX(value)'>
+  <option> Select x-axis </option>  
+</select>
+
+<select id="yColumn" onchange = 'chooseY(value)'>
+  <option> Select y-axis </option>  
+</select>
 
 
 
 
 
 <script>
-  var columnDropdown = document.getElementById("columns");
+  var xColumn = document.getElementById("xColumn");
+  var yColumn = document.getElementById("yColumn");
   //var columnChoices = ["dummy column 1", "dummy column 2"];
 
   // global variable with choice of columns for given table
@@ -180,13 +187,20 @@
     getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
 
     // loops over columns from db, adding those that correspond to table
+    // TODO: don't know why need elx and ely separately, but it works
     for (var i = 0; i < columnChoices.length; i++) {
       var optn = columnChoices[i];
-      var el = document.createElement("option");
-      el.textContent = optn;
-      el.value = optn;
 
-      columnDropdown.appendChild(el);
+      var elx = document.createElement("option");
+      elx.textContent = optn;
+      elx.value = optn;
+
+      var ely = document.createElement("option");
+      ely.textContent = optn;
+      ely.value = optn;
+
+      yColumn.appendChild(elx);
+      xColumn.appendChild(ely);
     }
   }
 
