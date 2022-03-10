@@ -81,14 +81,15 @@
 
 
 
+<button onclick='displayTableDropdown();'> Display table dropdown </button>
 
-
-<!-- Dropdown with table choices -->
+<!-- Dropdown with table choices 
+     When dropdown choice is changed, call displayColumnDropdown with corresponding value (table name)-->
 <select id="tables" onchange="displayColumnDropdown(value)">
   <option> Select a table </option>  
 </select>
 
-<button onclick='displayTableDropdown();'> Display table dropdown </button>
+
 
 
 
@@ -161,29 +162,22 @@
 <!-- Column dropdown, dependent on what table user chooses -->
 <select id="columns"></select>
 
-<br><br>
-
-<!-- For testing, to be removed-->
-<button onclick='getRawJSON();'> Test getRawJSON() </button>
-<button onclick='getColumns("departments");'> Test getColumns('departments') </button>
-
 
 
 
 
 <script>
   var columnDropdown = document.getElementById("columns");
-  var columnChoices = ["dummy column 1", "dummy column 2"];
+  //var columnChoices = ["dummy column 1", "dummy column 2"];
 
-  //var columnChoices = [];
-
-  //var columnChoices = getColumns(table);   // gets columns from given table
+  // global variable with choice of columns for given table
+  var columnChoices = [];
 
 
   // displays column dropdown from columnChoices
   // TODO: modify to erase previous dropdown before displaying new one
   function displayColumnDropdown(table) {
-    //columnChoices = getColumns(table); // assigns appropriate columns to columnChoices
+    getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
 
     // loops over columns from db, adding those that correspond to table
     for (var i = 0; i < columnChoices.length; i++) {
@@ -198,9 +192,7 @@
 
 
   // returns list of columns associated with given table name
-  function getColumns(tableName) {
-    var columns = [];
-    
+  function getColumns(tableName, columnChoices) {
     $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
       var currentTable;
       var currentColumn;
@@ -213,11 +205,10 @@
 
         // if table name matches
         if (tableName == currentTable) {
-          columns.push(currentColumn);
+          columnChoices.push(currentColumn);
         }
       }
     });
-    return columns;
   }
 
 
