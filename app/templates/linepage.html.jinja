@@ -169,11 +169,22 @@
             tableChoices.push(currentTable); // add it to tables
         }
       }
-    });
-
+    })
   }
-  
-  
+        
+        // for drop-down box
+      .dropbtn {
+        background-color: #3498DB;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .dropbtn:hover, .dropbtn:focus {
+        background-color: #2980B9;
+      }
 
   
   // displays elements of (global variable) tableChoices in tableDropdown element
@@ -320,16 +331,30 @@
       var currentColumn;
       var currentType;
 
-      // loop through JSON object and grab column type associated with chosen column
-      // ASSUMES: third element of 2d array is column type
-      for (var i = 0, len = JSON.length; i < len; i++) {
-        currentColumn = JSON[i][1];
-        currentType = JSON[i][2];
+      .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
 
-        // if column name matches
-        if (chosenY == currentColumn) {
-          chosenYType = currentType;
-        }
+      .dropdown a:hover {background-color: #ddd;}
+
+      .show {display: block;}
+
+      .button {
+        background-color: #008CBA;
+        border: #555555;
+        color: white;
+        padding: 15px 25px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 12px;
+        transition-duration: 0.4s;
       }
     });
     */
@@ -356,6 +381,25 @@
     });
   }
 
+      .logoutbutton {
+          background-color: #4CAF50;
+          border: none;
+          color: white;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 12px;
+          margin: 4px 2px;
+          cursor: pointer;
+          border-radius: 12px;
+          transition-duration: 0.4s;
+      }
+
+      .button:hover {
+          background-color: #4CAF50;
+          color: white;
+      }
 
 // I WAS HERE BEFORE COMMIT
 
@@ -366,248 +410,449 @@
     var A = chosenTable + "," + chosenX;
     var B = chosenTable + "," + chosenY + "," + chosenYType;
 
-    //TODO: make sure this actually gets x-values
-    // add y-val filtering
-    $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
-      var tmp = JSON.toString();
-      var allVars = tmp.split(",");
 
-      // gets odd values from array, which are dates
-      var x = allVars.filter((element, index) => {
-        return index % 2 === 1;
-      });
+    <button onclick='displayTableDropdown();'> Display table dropdown </button>
 
-      // gets even values from array, which are salaries
-      var y = allVars.filter((element, index) => {
-        return index % 2 === 0;
-      });
+    <!-- Dropdown with table choices 
+        When dropdown choice is changed, call displayColumnDropdown with corresponding value (table name)-->
+    <select id="tables" onchange="displayColumnDropdown(value)">
+      <option> Select a table </option>  
+    </select>
 
-      // sets graph x-values to dates
-      myChart.config.data.labels = x;
+    <script>
+      // jinja substitutes the scripts root directory upon creation.
+      $SCRIPT_ROOT = {{ request.script_root|tojson }};
 
-      // sets graph y-values to salaries
-      myChart.config.data.datasets[0].data = y;
+      // global variables
+      var columnChoices = []; // 2d array with columns and corresponding types
+      var tableChoices = [];
+      
+      var chosenTable;
+      var chosenX;
+      var chosenY;
+      var chosenYType;
+
+      var firstTable = 'empty';
+      
+
+      var tableDropdown = document.getElementById("tables");
+
+      // pass by reference
+      getTables(tableChoices);
+
+      // pass by value (doesn't work)
+      ///var tableChoices = getTables();
+
+      // this is being called before getTables for some reason, 
+      // so currently useless and need button to manually do this
+      displayTableDropdown(); // on page load, automatically display table dropdown
+
+
+      // gets tables from raw JSON data
+      // passing by reference, but might need to change this - Arrays are weird in JS
+      // TODO: clean this up by figuring out better way to pass value out (instead of global variable reference)
+      function getTables(tableChoices) {
+        var currentTable;
+
+        $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) { // replacing $ with jQuery yields same error
+          // loop through JSON object and create array with unique table names
+          // ASSUMES: first element of 2d array is table name, second is column name
+          for (var i = 0, len = JSON.length; i < len; i++) {
+            currentTable = JSON[i][0];
+            var inTables = (tableChoices.indexOf(currentTable) > -1);
+
+            // if currentTable is not already in tables,
+            if (!inTables)
+              tableChoices.push(currentTable); // add it to tables
+          }
+        });
+      }
 
       
-    }, "json");
-  }
+      // displays elements of (global variable) tableChoices in tableDropdown element
+      // TODO: figure out how generalize this function by passing in a parameter
+      function displayTableDropdown() {
+        for (var i = 0; i < tableChoices.length; i++) {
+          var optn = tableChoices[i];
+          var el = document.createElement("option");
+          el.textContent = optn;
+          el.value = optn;
 
-
-  // sets y-axis
-  // TODO
-  function graphY(table, column) {
-    chosenY = column;
-    if (y == 'totalSalary') {
-      $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
-        var tmp = JSON.toString();
-        var allVars = tmp.split(",");
-
-        // gets even values from array, which are salaries
-        var salaries = allVars.filter((element, index) => {
-          return index % 2 === 0;
-        });
-
-        // sets graph y-values to salaries
-        myChart.config.data.datasets[0].data = salaries;
-      }, "json");
-    }
-
-    else if (y == 'avgSalary') {
-      $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
-        var tmp = JSON.toString();
-        var allVars = tmp.split(",");
-
-        // gets even values from array, which are salaries
-        var salaries = allVars.filter((element, index) => {
-          return index % 2 === 0;
-        });
-
-        // sets graph y-values to salaries
-        myChart.config.data.datasets[0].data = salaries;
-      }, "json");
-    }
-  }
-
-  function dropToggleColumn() {
-    document.getElementById("setColumn").classList.toggle("show");
-  }
-
-
-  // Close the dropdown menu if the user clicks outside of it
-  // Not sure if this is necessary?
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
+          tableDropdown.appendChild(el);
         }
       }
-    }
-  }
-</script>
+    </script>
 
 
-<button onclick=updateGraph()> Graph </button>
+    <!-- Column dropdowns, dependent on what table user chooses-->
+    <select id="xColumn" onchange = "chooseX(value)">
+      <option> Select x-axis </option>  
+    </select>
 
-<script>
-  function updateGraph() {
-    myChart.update();
-  }
-</script>
-
-
-<div class="chartCard">
-  <div class="chartBox">
-    <canvas id="myChart"></canvas>
-    Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
-    Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
-    Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
-    Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
-    Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
-    <button class="button" onclick="exportimage()">Download Image</button>
-    <button class="button" onclick="favgraph()">Favorite Graph</button>
-    <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
-    <button class="button" onclick="testRequest()"> Show request result </button>
-  </div>
-</div>
+    <select id="yColumn" onchange = 'chooseY(value)'>
+      <option> Select y-axis </option>  
+    </select>
 
 
+    <!-- // TODO: fix this
+    <button onclick='graph();'> Graph </button>
+    -->
+
+    <p id='table'></p>
+    <p id = 'columnX'></p>
+    <p id = 'columnY'></p>
+
+    <!-- // TODO: add back in later
+    <p id = 'columnYType'></p>
+    -->
+
+    <button onclick = 'graphX(firstTable, chosenX, chosenY, chosenYType)'> Update Values </button>
 
 
-  <script src="{{ url_for('static', filename='chart.js') }}"></script>
-  <script src="{{ url_for('static', filename='jquery.js') }}"></script>
+    <script>
+      var xColumn = document.getElementById("xColumn");
+      var yColumn = document.getElementById("yColumn");
 
-  <script>
-    // jinja substitutes the scripts root directory upon creation.
-    $SCRIPT_ROOT = {{ request.script_root|tojson }};
+      // what to do when user chooses x
+      function chooseX(x) {
+        chosenX = x; // set global variable
+        document.getElementById('columnX').innerHTML = "Current x-axis - " + x; // update html
+      }
+
+      // when user chooses y
+      function chooseY(y) {
+        // set global variables
+        chosenY = y; 
+        getType(y);
+
+        // update html
+        // FIX: why is javascript doing this before entering getType(y)?????
+        // seems to be executing asynchronously (fun)
+        document.getElementById('columnY').innerHTML = "Current y-axis - " + y; 
+        //document.getElementById('columnYType').innerHTML = "Current y type - " + chosenYType; // FIX
+      }
+
+      // displays column dropdown from columnChoices
+      // TODO: modify to erase previous dropdown before displaying new one
+      function displayColumnDropdown(table) {
+        // TODO: fix this
+        if (firstTable == 'empty') {
+          firstTable = table;
+        }
+
+        document.getElementById('table').innerHTML = "Current table - " + firstTable;//table; TODO: fix this back
+        getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
+        chosenTable = table; // sets global var
+
+        
+
+        // loops over columns from db, adding those that correspond to table
+        // TODO: don't know why need elx and ely separately, but it works
+        for (var i = 0; i < columnChoices.length; i++) {
+          var optn = columnChoices[i];
+
+          var elx = document.createElement("option");
+          elx.textContent = optn;
+          elx.value = optn;
+
+          var ely = document.createElement("option");
+          ely.textContent = optn;
+          ely.value = optn;
+
+          yColumn.appendChild(elx);
+          xColumn.appendChild(ely);
+        }
+      }
 
 
+      // returns list of columns associated with given table name
+      function getColumns(tableName, columnChoices) {
+        $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
+          var currentTable;
+          var currentColumn;
 
-    // to be removed
-    function testRequest() {
-      $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
+          // loop through JSON object and grab column names associated with given table name
+          // ASSUMES: first element of 2d array is table name, second is column name
+          for (var i = 0, len = JSON.length; i < len; i++) {
+            currentTable = JSON[i][0];
+            currentColumn = JSON[i][1];
+
+            // if table name matches
+            if (tableName == currentTable) {
+              columnChoices.push(currentColumn);
+            }
+          }
+        });
+      }
+
+      // returns type associated with column passed in
+      function getType(y) {
+        $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
+          var currentColumn;
+          var currentType;
+
+          // loop through JSON object and grab column type associated with chosen column
+          // ASSUMES: third element of 2d array is column type
+          for (var i = 0, len = JSON.length; i < len; i++) {
+            currentColumn = JSON[i][1];
+            currentType = JSON[i][2];
+
+            // if column name matches
+            if (chosenY == currentColumn) {
+              chosenYType = currentType;
+            }
+          }
+        });
+      }
+
+
+      // TODO
+      // type: -1 for no operation (disables step), 0 for avg, 1 for sum
+      function graphX(firstTable, chosenX, chosenY, chosenYType) {
+
+        var A = firstTable + "," + chosenX;
+        var B = firstTable + "," + chosenY + "," + chosenYType;
+
+        //TODO: make sure this actually gets x-values
+        // add y-val filtering
+        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
           var tmp = JSON.toString();
           var allVars = tmp.split(",");
 
           // gets odd values from array, which are dates
-          var dates = tmp2.filter((element, index) => {
+          var x = allVars.filter((element, index) => {
             return index % 2 === 1;
           });
 
-          var evennums = tmp2.filter((element, index) => {
+          // gets even values from array, which are salaries
+          var y = allVars.filter((element, index) => {
             return index % 2 === 0;
           });
 
-          myChart.config.data.labels = dates;
-          myChart.config.data.datasets[0].data = evennums;
-          myChart.update();
-      }, "json");
-    }
+          // sets graph x-values to dates
+          myChart.config.data.labels = x;
 
+          // sets graph y-values to salaries
+          myChart.config.data.datasets[0].data = y;
 
-
-
-    // setup 
-    const data = {
-      labels: [50,60,70,80,90,100,110,120,130,140,150],
-      datasets: [{
-        label: 'Line Graph Name',
-        pointRadius: 4,
-        backgroundColor: 'rgb(255, 255, 255)',
-        pointBackgroundColor: "rgb(0,0,255)",
-        data: [7,8,8,9,9,9,10,11,14,14,15]
-      }]
-    };
-
-    //plugin
-    const plugin = {
-      id: 'custom_canvas_background_color',
-      beforeDraw: (chart) => {
-        const ctx = chart.canvas.getContext('2d');
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        ctx.restore();
+          
+        }, "json");
       }
-    };
 
-    // config 
-    const config = {
-      type: 'line',
-      data,
-      plugins: [plugin],
-      options: {
-        scales: {
-            y: {
-              title: {
-                display: true,
-                text: 'y axis'
-              },
-              suggestedMin: 0,
-              suggestedMax: 20
-            },
-            x: {
-              title: {
-                display: true,
-                text: 'x axis'
-              },
-              suggestedMin: 0,
-              suggestedMax: 200
-            }
+
+      // sets y-axis
+      // TODO
+      function graphY(table, column) {
+        chosenY = column;
+        if (y == 'totalSalary') {
+          $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
+            var tmp = JSON.toString();
+            var allVars = tmp.split(",");
+
+            // gets even values from array, which are salaries
+            var salaries = allVars.filter((element, index) => {
+              return index % 2 === 0;
+            });
+
+            // sets graph y-values to salaries
+            myChart.config.data.datasets[0].data = salaries;
+          }, "json");
+        }
+
+        else if (y == 'avgSalary') {
+          $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
+            var tmp = JSON.toString();
+            var allVars = tmp.split(",");
+
+            // gets even values from array, which are salaries
+            var salaries = allVars.filter((element, index) => {
+              return index % 2 === 0;
+            });
+
+            // sets graph y-values to salaries
+            myChart.config.data.datasets[0].data = salaries;
+          }, "json");
         }
       }
-    };
 
-    // render init block
-    const myChart = new Chart(
-      document.getElementById('myChart'),
-      config
-    );
+      function dropToggleColumn() {
+        document.getElementById("setColumn").classList.toggle("show");
+      }
 
-    function updatename(nameval){
-      myChart.config.data.datasets[0].label = nameval.value;
-      myChart.update();
-    }
 
-    function updateymax(numval){
-      myChart.config.options.scales.y.suggestedMax = numval.value;
-      myChart.update()
-    }
+      // Close the dropdown menu if the user clicks outside of it
+      // Not sure if this is necessary?
+      window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+          var dropdowns = document.getElementsByClassName("dropdown-content");
+          var i;
+          for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+              openDropdown.classList.remove('show');
+            }
+          }
+        }
+      }
+    </script>
 
-    function updateymin(numval){
-      myChart.config.options.scales.y.suggestedMin = numval.value;
-      myChart.update()
-    }
+    <button onclick=updateGraph()> Graph </button>
 
-    function updatexname(nameval){
-      myChart.config.options.scales.x.title.text = nameval.value;
-      myChart.update()
-    }
+    <script>
+      function updateGraph() {
+        myChart.update();
+      }
+    </script>
 
-    function updateyname(nameval){
-      myChart.config.options.scales.y.title.text = nameval.value;
-      myChart.update()
-    }
 
-    function exportimage(){
-      var a = document.createElement('a');
-      a.href = myChart.toBase64Image();
-      a.download = 'graph.png';
+    <div class="chartCard">
+      <div class="chartBox">
+        <canvas id="myChart"></canvas>
+        Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
+        Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
+        Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
+        Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
+        Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
+        <button class="button" onclick="exportimage()">Download Image</button>
+        <button class="button" onclick="favgraph()">Favorite Graph</button>
+        <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
+        <button class="button" onclick="testRequest()"> Show request result </button>
+      </div>
+    </div>
 
-      // Trigger the download
-      a.click();
-    }
+    <script src="{{ url_for('static', filename='chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='jquery.js') }}"></script>
 
-    //favorite graph function
-    function favgraph(){
-      var image = myChart.toBase64Image();
-      localStorage.favgraph = image;
-    }
-  </script>
+    <script>
+      // jinja substitutes the scripts root directory upon creation.
+      $SCRIPT_ROOT = {{ request.script_root|tojson }};
 
-</body>
+
+
+      // to be removed
+      function testRequest() {
+        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
+            var tmp = JSON.toString();
+            var allVars = tmp.split(",");
+
+            // gets odd values from array, which are dates
+            var dates = tmp2.filter((element, index) => {
+              return index % 2 === 1;
+            });
+
+            var evennums = tmp2.filter((element, index) => {
+              return index % 2 === 0;
+            });
+
+            myChart.config.data.labels = dates;
+            myChart.config.data.datasets[0].data = evennums;
+            myChart.update();
+        }, "json");
+      }
+
+
+
+
+      // setup 
+      const data = {
+        labels: [50,60,70,80,90,100,110,120,130,140,150],
+        datasets: [{
+          label: 'Line Graph Name',
+          pointRadius: 4,
+          backgroundColor: 'rgb(255, 255, 255)',
+          pointBackgroundColor: "rgb(0,0,255)",
+          data: [7,8,8,9,9,9,10,11,14,14,15]
+        }]
+      };
+
+      //plugin
+      const plugin = {
+        id: 'custom_canvas_background_color',
+        beforeDraw: (chart) => {
+          const ctx = chart.canvas.getContext('2d');
+          ctx.save();
+          ctx.globalCompositeOperation = 'destination-over';
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, chart.width, chart.height);
+          ctx.restore();
+        }
+      };
+
+      // config 
+      const config = {
+        type: 'line',
+        data,
+        plugins: [plugin],
+        options: {
+          scales: {
+              y: {
+                title: {
+                  display: true,
+                  text: 'y axis'
+                },
+                suggestedMin: 0,
+                suggestedMax: 20
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'x axis'
+                },
+                suggestedMin: 0,
+                suggestedMax: 200
+              }
+          }
+        }
+      };
+
+      // render init block
+      const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
+
+      function updatename(nameval){
+        myChart.config.data.datasets[0].label = nameval.value;
+        myChart.update();
+      }
+
+      function updateymax(numval){
+        myChart.config.options.scales.y.suggestedMax = numval.value;
+        myChart.update()
+      }
+
+      function updateymin(numval){
+        myChart.config.options.scales.y.suggestedMin = numval.value;
+        myChart.update()
+      }
+
+      function updatexname(nameval){
+        myChart.config.options.scales.x.title.text = nameval.value;
+        myChart.update()
+      }
+
+      function updateyname(nameval){
+        myChart.config.options.scales.y.title.text = nameval.value;
+        myChart.update()
+      }
+
+      function exportimage(){
+        var a = document.createElement('a');
+        a.href = myChart.toBase64Image();
+        a.download = 'graph.png';
+
+        // Trigger the download
+        a.click();
+      }
+
+      //favorite graph function
+      function favgraph(){
+        var tmp = localStorage.getItem('myArray');
+        var image = myChart.toBase64Image();
+        var tmp2 = tmp + " " + image;
+        localStorage.setItem('myArray', tmp2);
+      }
+    </script>
+
+  </body>
 </html>
