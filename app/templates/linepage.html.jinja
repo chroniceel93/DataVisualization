@@ -552,8 +552,10 @@
 
       //favorite graph function
       function favgraph(){
+        var tmp = localStorage.getItem('myArray');
         var image = myChart.toBase64Image();
-        localStorage.favgraph = image;
+        var tmp2 = tmp + " " + image;
+        localStorage.setItem('myArray', tmp2);
       }
     </script>
 

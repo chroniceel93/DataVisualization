@@ -82,6 +82,7 @@
         Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
         <button class="button" onclick="exportimage()">Download Image</button>
         <button class="button" onclick="favgraph()">Favorite Graph</button>
+        <button class="button" onclick="location.href = '/viewpage'">View Page</button>
       </div>
     </div>
 
@@ -161,9 +162,12 @@
       a.click();
     }
 
+    //favorite graph function
     function favgraph(){
+      var tmp = localStorage.getItem('myArray');
       var image = myChart.toBase64Image();
-      localStorage.favgraph = image;
+      var tmp2 = tmp + " " + image;
+      localStorage.setItem('myArray', tmp2);
     }
     </script>
   </body>
