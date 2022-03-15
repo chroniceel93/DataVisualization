@@ -41,6 +41,10 @@ def radarpage():
 def polarpage():
 	return render_template("polarpage.html.jinja")
 
+@app.route('/viewpage')
+def viewpage():
+	return render_template("viewpage.html.jinja")
+
 @app.route('/dbtest')
 def dbtest_allfields():
     return render_template("dbtest.html.jinja", string="Have fun!")

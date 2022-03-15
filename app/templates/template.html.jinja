@@ -66,46 +66,17 @@
         <div class="container">
             <div class="child">
                 <h3> Choose a type of graph</h3>
-                <button class="button" onclick="location.href = '/linepage'">Line Graphs</button><br>
                 <button class="button" onclick="location.href = '/barpage'">Bar Graphs</button><br>
-                <button class="button" onclick="location.href = '/scatterpage'">Scatter Graphs</button><br>
-                <button class="button" onclick="location.href = '/piepage'">Pie Graphs</button><br>
-                <button class="button" onclick="location.href = '/donutpage'">Donut Graphs</button><br>
-                <button class="button" onclick="location.href = '/radarpage'">Radar Graphs</button><br>
                 <button class="button" onclick="location.href = '/bubblepage'">Bubble Graphs</button><br>
-                <button class="button" onclick="location.href = '/polarpage'">Polar Area Graphs</button>
+                <button class="button" onclick="location.href = '/donutpage'">Donut Graphs</button><br>
+                <button class="button" onclick="location.href = '/linepage'">Line Graphs</button><br>
+                <button class="button" onclick="location.href = '/piepage'">Pie Graphs</button><br>
+                <button class="button" onclick="location.href = '/polarpage'">Polar Area Graphs</button><br>
+                <button class="button" onclick="location.href = '/radarpage'">Radar Graphs</button><br>
+                <button class="button" onclick="location.href = '/scatterpage'">Scatter Graphs</button><br>
                 <br><br>
                 <button onclick="location.href = '/dbtest'">DB Test</button><br>
             </div>
-
-            <div id="favblock" style="display:none;">
-                <h3> Favorite graph</h3>
-                <img src="" id="fg">
-                <button class="button" onclick="claerfav()" id="fbutton">Clear Favorite</button><br>
-                <button class="button" onclick="exportimage()" id="dbutton">Download Favorite</button><br>
-            </div>
-
-            <script>
-                if(typeof(Storage)!=="undefined" && localStorage.favgraph)
-                {
-                    document.getElementById("fg").src = localStorage.favgraph;
-                    document.getElementById("favblock").style.display = "block";
-                }
-
-                function claerfav(){
-                    localStorage.removeItem("favgraph");
-                    document.getElementById("favblock").style.display = "none";
-                }
-
-                function exportimage(){
-                    var a = document.createElement('a');
-                    a.href = localStorage.favgraph;
-                    a.download = 'graph.png';
-              
-                    // Trigger the download
-                    a.click();
-                  }
-            </script>
         </div>
     </body>
 </html>

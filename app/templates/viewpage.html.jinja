@@ -1,0 +1,104 @@
+<html>
+    <style>
+        .container {
+            width: 100vw;
+            height: calc(70vh - 40px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .child {
+            width: 200px;
+            padding: 20px;
+            border-radius: 20px;
+            background: white;
+        }
+
+        .favblock {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    
+        .button {
+            background-color: #008CBA;
+            border: #555555;
+            color: white;
+            padding: 15px 25px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition-duration: 0.4s;
+        }
+
+        .logoutbutton {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition-duration: 0.4s;
+        }
+
+        .button:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .logoutbutton:hover {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+
+    <body>
+        <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
+        <button class="button" onclick="location.href = '/'">Make new Graph</button><br>
+        <input class="button" type="button" value="Back" onclick="history.back()"><br>
+        <div class="container">
+            <h3 id="emptymsg" style="display:block;">No Graphs to display</h3>
+            <div id="favblock" style="display:none;">
+                <h3> Favorite graph</h3>
+                <img src="" id="fg"><br>
+                <button class="button" onclick="claerfav()" id="fbutton">Clear Favorite</button>
+                <button class="button" onclick="exportimage()" id="dbutton">Download Favorite</button><br>
+            </div>
+
+            <script>
+                if(typeof(Storage)!=="undefined" && localStorage.favgraph){
+                    document.getElementById("emptymsg").style.display = "none";
+                    document.getElementById("fg").src = localStorage.favgraph;
+                    document.getElementById("favblock").style.display = "block";
+                }
+                else{
+                    document.getElementById("emptymsg").style.display = "block";
+                }
+
+                function claerfav(){
+                    localStorage.removeItem("favgraph");
+                    document.getElementById("favblock").style.display = "none";
+                    document.getElementById("emptymsg").style.display = "block";
+                }
+
+                function exportimage(){
+                    var a = document.createElement('a');
+                    a.href = localStorage.favgraph;
+                    a.download = 'graph.png';
+              
+                    // Trigger the download
+                    a.click();
+                  }
+            </script>
+        </div>
+    </body>
+</html>
