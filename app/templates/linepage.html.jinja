@@ -116,8 +116,7 @@
 <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
 <button class="button" onclick="location.href = '/'">Back</button>
 
-<!-- Dropdown with table choices 
-    When dropdown choice is changed, call displayColumnDropdown with corresponding value (table name)-->
+<!-- Dropdown with table choices -->
 <select id="tables" onchange="displayColumnDropdown(value)">
   <option> Select a table </option>  
 </select>
@@ -209,10 +208,8 @@
 <p id='table'></p>
 <p id = 'columnX'></p>
 <p id = 'columnY'></p>
-
-<!-- // TODO: add back in later
 <p id = 'columnYType'></p>
--->
+
 
 <button onclick = 'graphX(firstTable, chosenX, chosenY, chosenYType)'> Update Values </button>
 
@@ -234,21 +231,15 @@
     getType(y);
 
     // update html
-    // FIX: why is javascript doing this before entering getType(y)?????
-    // seems to be executing asynchronously (fun)
     document.getElementById('columnY').innerHTML = "Current y-axis - " + y; 
-    //document.getElementById('columnYType').innerHTML = "Current y type - " + chosenYType; // FIX
+    document.getElementById('columnYType').innerHTML = "Current y type - " + chosenYType;
   }
 
   // displays column dropdown from columnChoices
   // TODO: modify to erase previous dropdown before displaying new one
   function displayColumnDropdown(table) {
-    // TODO: fix this
-    if (firstTable == 'empty') {
-      firstTable = table;
-    }
 
-    document.getElementById('table').innerHTML = "Current table - " + firstTable;//table; TODO: fix this back
+    document.getElementById('table').innerHTML = "Current table - " + table;
     getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
     chosenTable = table; // sets global var
 
@@ -273,8 +264,12 @@
   }
 
 
+  
+
   // returns list of columns associated with given table name
   function getColumns(tableName, columnChoices) {
+
+    /*
     $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
       var currentTable;
       var currentColumn;
@@ -291,10 +286,36 @@
         }
       }
     });
+    */
+
+    $.ajax({
+      url: $SCRIPT_ROOT + '/db_all',
+      dataType: 'json',
+      async: false,
+      success: function(JSON) {
+        var currentTable;
+        var currentColumn;
+  
+        // loop through JSON object and grab column names associated with given table name
+        // ASSUMES: first element of 2d array is table name, second is column name
+        for (var i = 0, len = JSON.length; i < len; i++) {
+          currentTable = JSON[i][0];
+          currentColumn = JSON[i][1];
+  
+          // if table name matches
+          if (tableName == currentTable) {
+            columnChoices.push(currentColumn);
+          }
+        }
+      }
+    });
   }
 
+  
   // returns type associated with column passed in
   function getType(y) {
+
+    /*
     $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
       var currentColumn;
       var currentType;
@@ -311,15 +332,39 @@
         }
       }
     });
+    */
+
+    $.ajax({
+      url: $SCRIPT_ROOT + '/db_all',
+      dataType: 'json',
+      async: false,
+      success: function(data) {
+        var currentColumn;
+        var currentType;
+
+        // loop through JSON object and grab column type associated with chosen column
+        // ASSUMES: third element of 2d array is column type
+        for (var i = 0, len = JSON.length; i < len; i++) {
+          currentColumn = JSON[i][1];
+          currentType = JSON[i][2];
+
+          // if column name matches
+          if (chosenY == currentColumn)
+            chosenYType = currentType;
+        }
+      }
+    });
   }
 
 
+// I WAS HERE BEFORE COMMIT
+
   // TODO
   // type: -1 for no operation (disables step), 0 for avg, 1 for sum
-  function graphX(firstTable, chosenX, chosenY, chosenYType) {
+  function graphX(chosenTable, chosenX, chosenY, chosenYType) {
 
-    var A = firstTable + "," + chosenX;
-    var B = firstTable + "," + chosenY + "," + chosenYType;
+    var A = chosenTable + "," + chosenX;
+    var B = chosenTable + "," + chosenY + "," + chosenYType;
 
     //TODO: make sure this actually gets x-values
     // add y-val filtering
