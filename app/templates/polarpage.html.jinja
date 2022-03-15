@@ -89,89 +89,90 @@
     <script src="{{ url_for('static', filename='chart.js') }}"></script>
     
     <script>
-    const DATA_COUNT = 5;
-    const NUMBER_CFG = {count: DATA_COUNT, min: 0, max: 100};
-    // setup 
-    const data = {
-        labels: [
-          'Red',
-          'Green',
-          'Yellow',
-          'Grey',
-          'Blue'
-        ],
-        datasets: [{
-          label: 'My First Dataset',
-          data: [11, 16, 7, 3, 14],
-          backgroundColor: [
-            'rgb(255, 99, 132)',
-            'rgb(75, 192, 192)',
-            'rgb(255, 205, 86)',
-            'rgb(201, 203, 207)',
-            'rgb(54, 162, 235)'
-          ]
-        }]
-    };
+      const DATA_COUNT = 5;
+      const NUMBER_CFG = {count: DATA_COUNT, min: 0, max: 100};
+      // setup 
+      const data = {
+          labels: [
+            'Red',
+            'Green',
+            'Yellow',
+            'Grey',
+            'Blue'
+          ],
+          datasets: [{
+            label: 'My First Dataset',
+            data: [11, 16, 7, 3, 14],
+            backgroundColor: [
+              'rgb(255, 99, 132)',
+              'rgb(75, 192, 192)',
+              'rgb(255, 205, 86)',
+              'rgb(201, 203, 207)',
+              'rgb(54, 162, 235)'
+            ]
+          }]
+      };
 
-    //plugin
-    const plugin = {
-      id: 'custom_canvas_background_color',
-      beforeDraw: (chart) => {
-        const ctx = chart.canvas.getContext('2d');
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        ctx.restore();
-      }
-    };
-
-    // config 
-    const config = {
-      type: 'polarArea',
-      data: data,
-      plugins: [plugin],
-      options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'Polar Area Chart'
-            }
+      //plugin
+      const plugin = {
+        id: 'custom_canvas_background_color',
+        beforeDraw: (chart) => {
+          const ctx = chart.canvas.getContext('2d');
+          ctx.save();
+          ctx.globalCompositeOperation = 'destination-over';
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, chart.width, chart.height);
+          ctx.restore();
         }
-     },
-    };
+      };
 
-    // render init block
-    const myChart = new Chart(
-      document.getElementById('myChart'),
-      config
-    );
+      // config 
+      const config = {
+        type: 'polarArea',
+        data: data,
+        plugins: [plugin],
+        options: {
+          responsive: true,
+          plugins: {
+              legend: {
+                  position: 'top',
+              },
+              title: {
+                  display: true,
+                  text: 'Polar Area Chart'
+              }
+          }
+      },
+      };
 
-    function updatename(nameval){
-        myChart.config.options.plugins.title.text = nameval.value;
-        myChart.update();
-    }
+      // render init block
+      const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
 
-    //download graph as image
-    function exportimage(){
-      var a = document.createElement('a');
-      a.href = myChart.toBase64Image();
-      a.download = 'graph.png';
+      function updatename(nameval){
+          myChart.config.options.plugins.title.text = nameval.value;
+          myChart.update();
+      }
 
-      // Trigger the download
-      a.click();
-    }
+      //download graph as image
+      function exportimage(){
+        var a = document.createElement('a');
+        a.href = myChart.toBase64Image();
+        a.download = 'graph.png';
 
-    //favorite graph function
-    function favgraph(){
-      var image = myChart.toBase64Image();
-      localStorage.favgraph = image;
-    }
+        // Trigger the download
+        a.click();
+      }
+
+      //favorite graph function
+      function favgraph(){
+        var tmp = localStorage.getItem('myArray');
+        var image = myChart.toBase64Image();
+        var tmp2 = tmp + " " + image;
+        localStorage.setItem('myArray', tmp2);
+      }
     </script>
-
   </body>
 </html>
