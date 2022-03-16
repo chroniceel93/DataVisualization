@@ -146,7 +146,7 @@
 
   // gets tables from raw JSON data
   // passing by reference with global vars, but might need to change this - Arrays are weird in JS
-  // TODO: clean this up by figuring out better way to pass value out (instead of global variable reference)
+  // CLEAN: clean this up by figuring out better way to pass value out (instead of global variable reference)
   function getTables(tableChoices) {
     var currentTable;
 
@@ -177,7 +177,7 @@
 
   
   // displays elements of (global variable) tableChoices in tableDropdown element
-  // TODO: figure out how generalize this function by passing in a parameter
+  // CLEAN: figure out how generalize this function by passing in a parameter
   function displayTableDropdown() {
     for (var i = 0; i < tableChoices.length; i++) {
       var optn = tableChoices[i];
@@ -200,35 +200,31 @@
   <option> Select y-axis </option>  
 </select>
 
-
-<!-- // TODO: fix this
-<button onclick='graph();'> Graph </button>
--->
-
+<!--- Keep track of current values, useful for debugging -->
 <p id='table'></p>
 <p id = 'columnX'></p>
 <p id = 'columnY'></p>
 <p id = 'columnYType'></p>
 
 
-<button onclick = 'graphX(firstTable, chosenX, chosenY, chosenYType)'> Update Values </button>
+<button onclick = 'graph(chosenTable, chosenX, chosenY, chosenYType)'> Update Values </button>
 
 
 <script>
   var xColumn = document.getElementById("xColumn");
   var yColumn = document.getElementById("yColumn");
 
-  // what to do when user chooses x
+  // when user chooses x-axis
   function chooseX(x) {
-    chosenX = x; // set global variable
+    chosenX = x; // update global variable
     document.getElementById('columnX').innerHTML = "Current x-axis - " + x; // update html
   }
 
-  // when user chooses y
+  // when user chooses y-axis
   function chooseY(y) {
     // set global variables
     chosenY = y; 
-    getType(y);
+    getType(y, chosenYType);
 
     // update html
     document.getElementById('columnY').innerHTML = "Current y-axis - " + y; 
@@ -240,13 +236,12 @@
   function displayColumnDropdown(table) {
 
     document.getElementById('table').innerHTML = "Current table - " + table;
+
     getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
     chosenTable = table; // sets global var
 
-    
-
     // loops over columns from db, adding those that correspond to table
-    // TODO: don't know why need elx and ely separately, but it works
+    // CLEAN: don't know why need elx and ely separately, but it works
     for (var i = 0; i < columnChoices.length; i++) {
       var optn = columnChoices[i];
 
@@ -268,25 +263,6 @@
 
   // returns list of columns associated with given table name
   function getColumns(tableName, columnChoices) {
-
-    /*
-    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
-      var currentTable;
-      var currentColumn;
-
-      // loop through JSON object and grab column names associated with given table name
-      // ASSUMES: first element of 2d array is table name, second is column name
-      for (var i = 0, len = JSON.length; i < len; i++) {
-        currentTable = JSON[i][0];
-        currentColumn = JSON[i][1];
-
-        // if table name matches
-        if (tableName == currentTable) {
-          columnChoices.push(currentColumn);
-        }
-      }
-    });
-    */
 
     $.ajax({
       url: $SCRIPT_ROOT + '/db_all',
@@ -313,26 +289,7 @@
 
   
   // returns type associated with column passed in
-  function getType(y) {
-
-    /*
-    $.getJSON($SCRIPT_ROOT + '/db_all', function(JSON) {
-      var currentColumn;
-      var currentType;
-
-      // loop through JSON object and grab column type associated with chosen column
-      // ASSUMES: third element of 2d array is column type
-      for (var i = 0, len = JSON.length; i < len; i++) {
-        currentColumn = JSON[i][1];
-        currentType = JSON[i][2];
-
-        // if column name matches
-        if (chosenY == currentColumn) {
-          chosenYType = currentType;
-        }
-      }
-    });
-    */
+  function getType(y, chosenYType) {
 
     $.ajax({
       url: $SCRIPT_ROOT + '/db_all',
@@ -357,27 +314,24 @@
   }
 
 
-// I WAS HERE BEFORE COMMIT
-
-  // TODO
   // type: -1 for no operation (disables step), 0 for avg, 1 for sum
-  function graphX(chosenTable, chosenX, chosenY, chosenYType) {
+  function graph(chosenTable, chosenX, chosenY, chosenYType) {
 
+    // construct strings for sql queries
     var A = chosenTable + "," + chosenX;
     var B = chosenTable + "," + chosenY + "," + chosenYType;
 
-    //TODO: make sure this actually gets x-values
-    // add y-val filtering
+    // requests appropriate data
     $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
       var tmp = JSON.toString();
       var allVars = tmp.split(",");
 
-      // gets odd values from array, which are dates
+      // gets odd values from array, which are x-vals
       var x = allVars.filter((element, index) => {
         return index % 2 === 1;
       });
 
-      // gets even values from array, which are salaries
+      // gets even values from array, which are y-vals
       var y = allVars.filter((element, index) => {
         return index % 2 === 0;
       });
@@ -392,41 +346,6 @@
     }, "json");
   }
 
-
-  // sets y-axis
-  // TODO
-  function graphY(table, column) {
-    chosenY = column;
-    if (y == 'totalSalary') {
-      $.post($SCRIPT_ROOT + '/request', { type: 1, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
-        var tmp = JSON.toString();
-        var allVars = tmp.split(",");
-
-        // gets even values from array, which are salaries
-        var salaries = allVars.filter((element, index) => {
-          return index % 2 === 0;
-        });
-
-        // sets graph y-values to salaries
-        myChart.config.data.datasets[0].data = salaries;
-      }, "json");
-    }
-
-    else if (y == 'avgSalary') {
-      $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: "salaries,salary", itemB: "salaries,from_date,date", filter: "", step: 1 }, function(JSON) {
-        var tmp = JSON.toString();
-        var allVars = tmp.split(",");
-
-        // gets even values from array, which are salaries
-        var salaries = allVars.filter((element, index) => {
-          return index % 2 === 0;
-        });
-
-        // sets graph y-values to salaries
-        myChart.config.data.datasets[0].data = salaries;
-      }, "json");
-    }
-  }
 
   function dropToggleColumn() {
     document.getElementById("setColumn").classList.toggle("show");
