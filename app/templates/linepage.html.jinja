@@ -462,7 +462,8 @@
 <div class="chartCard">
   <div class="chartBox">
     <canvas id="myChart"></canvas>
-    Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
+    Change name of graph: <input onkeyup="updatetitle(this)" type="text"><br>
+    Change name of dataset: <input onkeyup="updatename(this)" type="text"><br>
     Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
     Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
     Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
@@ -558,6 +559,15 @@
               suggestedMin: 0,
               suggestedMax: 200
             }
+        },
+        plugins: {
+          legend: {
+              position: 'top',
+          },
+          title: {
+              display: true,
+              text: 'Line Graph'
+          }
         }
       }
     };
@@ -567,6 +577,11 @@
       document.getElementById('myChart'),
       config
     );
+
+    function updatetitle(nameval){
+      myChart.config.options.plugins.title.text = nameval.value;
+      myChart.update();
+    }
 
     function updatename(nameval){
       myChart.config.data.datasets[0].label = nameval.value;
