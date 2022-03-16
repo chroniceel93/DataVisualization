@@ -133,17 +133,8 @@
                 <button class="button" onclick="clearfav()" id="fbutton">Clear Favorite</button>
                 <button class="button" onclick="exportimage()" id="dbutton">Download Favorite</button><br>
 
-
-                <div class="mySlides fade">
-                  <img id="imgtmp1" src="" style="width:100%, display:none;">
-                </div>
-                
-                <div class="mySlides fade">
-                  <img id="imgtmp2" src="" style="width:100%, display:none;">
-                </div>
-                
-                <div class="mySlides fade">
-                  <img id="imgtmp3" src="" style="width:100%, display:none;">
+                <div class="mySlides fade" id="tmp1" style="display:none;">
+                  <img id="imgtmp1" src="" style="width:100%">
                 </div>
                 
                 <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
@@ -156,22 +147,9 @@
                     document.getElementById("emptymsg").style.display = "none";
                     var tmpstring = localStorage.getItem('myArray');
                     var tmparray = tmpstring.split(" ");
-                    var arraylen = 0;
-                    if(tmparray[1]){
-                        document.getElementById("imgtmp1").src = tmparray[1];
-                        document.getElementById("imgtmp1").style.display = "block";
-                        arraylen = 1;
-                    }
-                    if(tmparray[2]){
-                        document.getElementById("imgtmp2").src = tmparray[2];
-                        document.getElementById("imgtmp2").style.display = "block";
-                        arraylen = 2;
-                    }
-                    if(tmparray[3]){
-                        document.getElementById("imgtmp3").src = tmparray[3];
-                        document.getElementById("imgtmp3").style.display = "block";
-                        arraylen = 3;
-                    }
+                    var arraylen = tmparray.length;                    
+                    document.getElementById("imgtmp1").src = tmparray[1];
+                    document.getElementById("tmp1").style.display = "block";
                     document.getElementById("favblock").style.display = "block";
                 }
                 else{
@@ -211,22 +189,17 @@
                 }
 
                 function showSlides(n) {
-                    var i;
-                    var slides = document.getElementsByClassName("mySlides");
-                    
-                    if (n > arraylen) {
-                        slideIndex = 1
+                    if (n >= arraylen) {
+                        slideIndex = 1;
+                        document.getElementById("imgtmp1").src = tmparray[1];
                     }    
-
-                    if (n < 1) {
-                        slideIndex = arraylen
+                    else if (n < 1) {
+                        slideIndex = arraylen;
+                        document.getElementById("imgtmp1").src = tmparray[arraylen - 1];
                     }
-
-                    for (i = 0; i < arraylen; i++) {
-                        slides[i].style.display = "none";  
+                    else{
+                        document.getElementById("imgtmp1").src = tmparray[slideIndex];
                     }
-
-                    slides[slideIndex-1].style.display = "block";  
                 }
             </script>
         </div>
