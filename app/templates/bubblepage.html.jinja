@@ -79,90 +79,72 @@
     <div class="chartCard">
       <div class="chartBox">
         <canvas id="myChart"></canvas>
-        Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
-        Change name of dataset: <input onkeyup="updatedname(this)" type="text"><br>
+          Change name of graph: <input onkeyup="updatetitle(this)" type="text"><br>
+          Change name of dataset: <input onkeyup="updatedatesetname1(this)" type="text"><br>
         <button class="button" onclick="exportimage()">Download Image</button>
       </div>
     </div>
 
     <script src="{{ url_for('static', filename='chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='allfunctions.js') }}"></script>
     
     <script>
-    const DATA_COUNT = 5;
-    const NUMBER_CFG = {count: DATA_COUNT, min: 0, max: 100};
-    // setup 
-    const data = {
-        datasets: [{
-          label: 'First Dataset',
-          data: [{
-            x: 20,
-            y: 30,
-            r: 15
-          }, {
-            x: 40,
-            y: 10,
-            r: 10
-          }],
-          backgroundColor: 'rgb(255, 99, 132)'
-        }]
-    };
+      const DATA_COUNT = 5;
+      const NUMBER_CFG = {count: DATA_COUNT, min: 0, max: 100};
+      // setup 
+      const data = {
+          datasets: [{
+            label: 'First Dataset',
+            data: [{
+              x: 20,
+              y: 30,
+              r: 15
+            }, {
+              x: 40,
+              y: 10,
+              r: 10
+            }],
+            backgroundColor: 'rgb(255, 99, 132)'
+          }]
+      };
 
-    //plugin
-    const plugin = {
-      id: 'custom_canvas_background_color',
-      beforeDraw: (chart) => {
-        const ctx = chart.canvas.getContext('2d');
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        ctx.restore();
-      }
-    };
-
-    // config 
-    const config = {
-      type: 'bubble',
-      data: data,
-      plugins: [plugin],
-      options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'bubble Chart'
-            }
+      //plugin
+      const plugin = {
+        id: 'custom_canvas_background_color',
+        beforeDraw: (chart) => {
+          const ctx = chart.canvas.getContext('2d');
+          ctx.save();
+          ctx.globalCompositeOperation = 'destination-over';
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, chart.width, chart.height);
+          ctx.restore();
         }
-     },
-    };
+      };
 
-    // render init block
-    const myChart = new Chart(
-      document.getElementById('myChart'),
-      config
-    );
+      // config 
+      const config = {
+        type: 'bubble',
+        data: data,
+        plugins: [plugin],
+        options: {
+          responsive: true,
+          plugins: {
+              legend: {
+                  position: 'top',
+              },
+              title: {
+                  display: true,
+                  text: 'bubble Chart'
+              }
+          }
+      },
+      };
 
-    function updatename(nameval){
-        myChart.config.options.plugins.title.text = nameval.value;
-        myChart.update();
-    }
-
-    function updatedname(nameval){
-        myChart.config.data.datasets[0].label = nameval.value;
-        myChart.update();
-    }
-
-    function exportimage(){
-      var a = document.createElement('a');
-      a.href = myChart.toBase64Image();
-      a.download = 'graph.png';
-
-      // Trigger the download
-      a.click();
-    }
+      // render init block
+      const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
     </script>
 
   </body>

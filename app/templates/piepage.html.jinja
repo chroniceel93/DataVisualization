@@ -79,7 +79,7 @@
     <div class="chartCard">
       <div class="chartBox">
         <canvas id="myChart"></canvas>
-        Change name of graph: <input onkeyup="updatename(this)" type="text"><br>
+        Change name of graph: <input onkeyup="updatetitle(this)" type="text"><br>
         <button class="button" onclick="exportimage()">Download Image</button>
         <button class="button" onclick="favgraph()">Favorite Graph</button>
         <button class="button" onclick="location.href = '/viewpage'">View Page</button>
@@ -87,88 +87,67 @@
     </div>
 
     <script src="{{ url_for('static', filename='chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='allfunctions.js') }}"></script>
     
     <script>
     const DATA_COUNT = 5;
     const NUMBER_CFG = {count: DATA_COUNT, min: 0, max: 100};
-    // setup 
-    const data = {
-        labels: [
-        'Red',
-        'Blue',
-        'Yellow'
-      ],
-      datasets: [{
-        label: 'My First Dataset',
-        data: [300, 50, 100],
-        backgroundColor: [
-          'rgb(255, 99, 132)',
-          'rgb(54, 162, 235)',
-          'rgb(255, 205, 86)'
+      // setup 
+      const data = {
+          labels: [
+          'Red',
+          'Blue',
+          'Yellow'
         ],
-        hoverOffset: 4
-      }]
-    };
+        datasets: [{
+          label: 'My First Dataset',
+          data: [300, 50, 100],
+          backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)'
+          ],
+          hoverOffset: 4
+        }]
+      };
 
-    //plugin
-    const plugin = {
-      id: 'custom_canvas_background_color',
-      beforeDraw: (chart) => {
-        const ctx = chart.canvas.getContext('2d');
-        ctx.save();
-        ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, chart.width, chart.height);
-        ctx.restore();
-      }
-    };
-
-    // config 
-    const config = {
-      type: 'pie',
-      data: data,
-      plugins: [plugin],
-      options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'top',
-            },
-            title: {
-                display: true,
-                text: 'Pie Chart'
-            }
+      //plugin
+      const plugin = {
+        id: 'custom_canvas_background_color',
+        beforeDraw: (chart) => {
+          const ctx = chart.canvas.getContext('2d');
+          ctx.save();
+          ctx.globalCompositeOperation = 'destination-over';
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, chart.width, chart.height);
+          ctx.restore();
         }
-     },
-    };
+      };
 
-    // render init block
-    const myChart = new Chart(
-      document.getElementById('myChart'),
-      config
-    );
+      // config 
+      const config = {
+        type: 'pie',
+        data: data,
+        plugins: [plugin],
+        options: {
+          responsive: true,
+          plugins: {
+              legend: {
+                  position: 'top',
+              },
+              title: {
+                  display: true,
+                  text: 'Pie Chart'
+              }
+          }
+      },
+      };
 
-    function updatename(nameval){
-        myChart.config.options.plugins.title.text = nameval.value;
-        myChart.update();
-    }
-
-    function exportimage(){
-      var a = document.createElement('a');
-      a.href = myChart.toBase64Image();
-      a.download = 'graph.png';
-
-      // Trigger the download
-      a.click();
-    }
-
-    //favorite graph function
-    function favgraph(){
-      var tmp = localStorage.getItem('myArray');
-      var image = myChart.toBase64Image();
-      var tmp2 = tmp + " " + image;
-      localStorage.setItem('myArray', tmp2);
-    }
+      // render init block
+      const myChart = new Chart(
+        document.getElementById('myChart'),
+        config
+      );
     </script>
   </body>
 </html>
