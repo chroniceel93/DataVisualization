@@ -174,9 +174,7 @@
   }
   
   
-
-  
-  // displays elements of (global variable) tableChoices in tableDropdown element
+  // displays elements of tableChoices in tableDropdown element
   // CLEAN: figure out how generalize this function by passing in a parameter
   function displayTableDropdown() {
     for (var i = 0; i < tableChoices.length; i++) {
@@ -224,7 +222,7 @@
   function chooseY(y) {
     // set global variables
     chosenY = y; 
-    getType(y, chosenYType);
+    getType(y);
 
     // update html
     document.getElementById('columnY').innerHTML = "Current y-axis - " + y; 
@@ -259,11 +257,9 @@
   }
 
 
-  
-
   // returns list of columns associated with given table name
+  // CLEAN: eliminate passing in global variable
   function getColumns(tableName, columnChoices) {
-
     $.ajax({
       url: $SCRIPT_ROOT + '/db_all',
       dataType: 'json',
@@ -289,13 +285,13 @@
 
   
   // returns type associated with column passed in
-  function getType(y, chosenYType) {
-
+  // CLEAN: use something other than global variable
+  function getType(y) {
     $.ajax({
       url: $SCRIPT_ROOT + '/db_all',
       dataType: 'json',
       async: false,
-      success: function(data) {
+      success: function(JSON) {
         var currentColumn;
         var currentType;
 
