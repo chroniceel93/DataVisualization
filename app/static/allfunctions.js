@@ -68,3 +68,13 @@ function favgraph(){
     var tmp2 = tmp + " " + image;
     localStorage.setItem('myArray', tmp2);
 }
+
+//export of user settings
+function exportsavedata(charttype, dbin, xin, yin){
+    var sentdata = charttype + " " + dbin + " " + xin + " " + yin;
+    var a = document.createElement('a');
+    a.href = 'data:attachment/text,' + encodeURI(sentdata);
+    a.target = '_blank';
+    a.download = 'GraphData.txt';
+    a.click();
+}
