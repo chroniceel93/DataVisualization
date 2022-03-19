@@ -45,6 +45,10 @@ def polarpage():
 def viewpage():
 	return render_template("viewpage.html.jinja")
 
+@app.route('/importpage')
+def importpage():
+	return render_template("importpage.html.jinja")
+
 @app.route('/dbtest')
 def dbtest_allfields():
     return render_template("dbtest.html.jinja", string="Have fun!")

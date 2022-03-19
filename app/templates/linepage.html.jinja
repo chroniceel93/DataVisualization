@@ -275,6 +275,7 @@
 
 <div class="chartCard">
   <div class="chartBox">
+    <h3 id="importload" style="display:none;">Please wait, loading graph from import</h3>
     <canvas id="myChart"></canvas>
       Change name of graph: <input onkeyup="updatetitle(this)" type="text"><br>
       Change name of dataset: <input onkeyup="updatedatesetname1(this)" type="text"><br>
@@ -285,7 +286,7 @@
     <button class="button" onclick="exportimage()">Download Image</button>
     <button class="button" onclick="favgraph()">Favorite Graph</button>
     <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
-    <button class="button" onclick="exportsavedata('bar', chosenTable, chosenX, chosenY)">Export Graph Settings</button>
+    <button class="button" onclick="exportsavedata('line', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
     <button class="button" onclick="testRequest()"> Show request result </button>
   </div>
 </div>
@@ -294,8 +295,6 @@
   <script>
     // jinja substitutes the scripts root directory upon creation.
     $SCRIPT_ROOT = {{ request.script_root|tojson }};
-
-
 
     // to be removed
     function testRequest() {
@@ -384,6 +383,24 @@
       document.getElementById('myChart'),
       config
     );
+
+    //code for loading graph from import page
+    if(typeof(Storage)!=="undefined" && localStorage.dbchose){
+      graph(localStorage.getItem('dbchose'), localStorage.getItem('x1chose'), localStorage.getItem('y1chose'), localStorage.getItem('y1type'));
+
+      //clear localstorage of import options
+      localStorage.removeItem("dbchose");
+      localStorage.removeItem("x1chose");
+      localStorage.removeItem("y1chose");
+      localStorage.removeItem("y1type");
+
+      document.getElementById("importload").style.display = "block";
+      setTimeout(function() {
+        myChart.update();
+        document.getElementById("importload").style.display = "none";
+      }, 5000);
+      
+    }
   </script>
 
 </body>

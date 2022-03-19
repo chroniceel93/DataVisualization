@@ -70,8 +70,8 @@ function favgraph(){
 }
 
 //export of user settings
-function exportsavedata(charttype, dbin, xin, yin){
-    var sentdata = charttype + " " + dbin + " " + xin + " " + yin;
+function exportsavedata(charttype, dbin, xin, yin, ytype){
+    var sentdata = charttype + " " + dbin + " " + xin + " " + yin + " " + ytype;
     var a = document.createElement('a');
     a.href = 'data:attachment/text,' + encodeURI(sentdata);
     a.target = '_blank';

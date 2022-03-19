@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  
+  <body>
+    <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
+    <input class="button" type="button" value="Back" onclick="history.back()"><br>
+    <div class="container">
+      <div class="child">
+        <input class="button" type="file" name="inputfile" id="inputfile"><br>
+        <pre id="output"></pre>
+        
+        <script type="text/javascript">
+            document.getElementById('inputfile').addEventListener('change', function(){
+                var fr=new FileReader();
+                fr.onload=function(){
+                    document.getElementById('output').textContent=fr.result;
+                    //set var from fr.result to an array
+                    var tmpstring = fr.result;
+                    var tmparray = tmpstring.split(" ");
+
+                    //set to localstorage for retrieval
+                    localStorage.setItem('dbchose', tmparray[1]);
+                    localStorage.setItem('x1chose', tmparray[2]);
+                    localStorage.setItem('y1chose', tmparray[3]);
+                    localStorage.setItem('y1type', tmparray[4]);
+
+                    if(tmparray[0] == "line"){
+                      window.location.href = "/linepage"
+                    }
+                    
+                }
+                
+                //remove this after debug
+                fr.readAsText(this.files[0]);
+            })
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
