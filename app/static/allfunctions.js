@@ -28,6 +28,16 @@ function updateymin(numval){
     myChart.update()
 }
 
+function updatey2max(numval){
+    myChart.config.options.scales.y2.suggestedMax = numval.value;
+    myChart.update()
+}
+
+function updatey2min(numval){
+    myChart.config.options.scales.y2.suggestedMin = numval.value;
+    myChart.update()
+}
+
 //update x axes
 function updatexmax(numval){
     myChart.config.options.scales.x.suggestedMax = numval.value;
@@ -50,6 +60,11 @@ function updateyname(nameval){
     myChart.update()
 }
 
+function updatey2name(nameval){
+    myChart.config.options.scales.y2.title.text = nameval.value;
+    myChart.update()
+}
+
 //user download of graph
 function exportimage(){
     var a = document.createElement('a');
@@ -67,6 +82,16 @@ function favgraph(){
     var image = myChart.toBase64Image();
     var tmp2 = tmp + " " + image;
     localStorage.setItem('myArray', tmp2);
+}
+
+//function for adding to the graph creation history
+function graphhistory(){
+    //make it similar to favgraph, save either pic of it or word data of it selected data
+
+    //var tmp = localStorage.getItem('myArray');
+    //var image = myChart.toBase64Image();
+    //var tmp2 = tmp + " " + image;
+    //localStorage.setItem('myArray', tmp2);
 }
 
 //export of user settings

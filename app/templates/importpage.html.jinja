@@ -26,8 +26,33 @@
                     localStorage.setItem('y1chose', tmparray[3]);
                     localStorage.setItem('y1type', tmparray[4]);
 
-                    if(tmparray[0] == "line"){
+                    
+                    if(tmparray[0] == "bar"){
+                      window.location.href = "/barpage"
+                    }
+                    else if(tmparray[0] == "bubble"){
+                      window.location.href = "/bubblepage"
+                    }
+                    else if(tmparray[0] == "donut"){
+                      window.location.href = "/donutpage"
+                    }
+                    else if(tmparray[0] == "line"){
                       window.location.href = "/linepage"
+                    }
+                    else if(tmparray[0] == "pie"){
+                      window.location.href = "/piepage"
+                    }
+                    else if(tmparray[0] == "polar"){
+                      window.location.href = "/polarpage"
+                    }
+                    else if(tmparray[0] == "radar"){
+                      window.location.href = "/radarpage"
+                    }
+                    else if(tmparray[0] == "scatter"){
+                      window.location.href = "/scatterrpage"
+                    }
+                    else{
+                      document.getElementById('output').textContent = "Error: make sure you upload the correct file.";
                     }
                     
                 }

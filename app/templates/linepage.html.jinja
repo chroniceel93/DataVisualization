@@ -283,9 +283,15 @@
       Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
       Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
       Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
+      <div id="seconddata" style="display:none;">
+        Change name of y2 axis: <input onkeyup="updatey2name(this)" type="text"><br>
+        Change max y axis: <input onkeyup="updatey2max(this)" type="number"><br>
+      Change min y axis: <input onkeyup="updatey2min(this)" type="number"><br>
+      </div>
     <button class="button" onclick="exportimage()">Download Image</button>
     <button class="button" onclick="favgraph()">Favorite Graph</button>
     <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
+    <button class="button" onclick="seconddata()">Add Second Dataset</button>
     <button class="button" onclick="exportsavedata('line', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
     <button class="button" onclick="testRequest()"> Show request result </button>
   </div>
@@ -321,11 +327,21 @@
     const data = {
       labels: [50,60,70,80,90,100,110,120,130,140,150],
       datasets: [{
-        label: 'Line Graph Name',
+        label: 'Dataset 1 Name',
         pointRadius: 4,
         backgroundColor: 'rgb(255, 255, 255)',
         pointBackgroundColor: "rgb(0,0,255)",
-        data: [7,8,8,9,9,9,10,11,14,14,15]
+        data: [7,8,8,9,9,9,10,11,14,14,15],
+        yAxisID: 'y'
+      },
+      {
+        hidden: true,
+        label: '',
+        pointRadius: 4,
+        backgroundColor: 'rgb(255, 255, 255)',
+        pointBackgroundColor: "rgb(0,255,0)",
+        data: [15,14,13,11,10,8,8,7,6,5],
+        yAxisID: 'y2',
       }]
     };
 
@@ -357,6 +373,18 @@
               suggestedMin: 0,
               suggestedMax: 20
             },
+            y2: {
+              title: {
+                display: false,
+                text: 'y2 axis'
+              },
+              position: 'right',
+              suggestedMin: 0,
+              suggestedMax: 30,
+              grid: {
+                drawOnChartArea: false,
+              }
+            },
             x: {
               title: {
                 display: true,
@@ -385,6 +413,7 @@
     );
 
     //code for loading graph from import page
+    //maybe able to move to allfunctions.js depening on what db functions are moved there too
     if(typeof(Storage)!=="undefined" && localStorage.dbchose){
       graph(localStorage.getItem('dbchose'), localStorage.getItem('x1chose'), localStorage.getItem('y1chose'), localStorage.getItem('y1type'));
 
@@ -400,6 +429,15 @@
         document.getElementById("importload").style.display = "none";
       }, 5000);
       
+    }
+
+    //makes things visible for when adding a second dataset
+    function seconddata(){
+      myChart.config.options.scales.y2.title.display = true;
+      myChart.config.data.datasets[1].hidden = false;
+      myChart.config.data.datasets[1].label = 'Dataset 2 Name';
+      document.getElementById("seconddata").style.display = "block";
+      myChart.update();
     }
   </script>
 
