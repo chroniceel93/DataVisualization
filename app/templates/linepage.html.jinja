@@ -378,6 +378,7 @@
                 display: false,
                 text: 'y2 axis'
               },
+              display: false,
               position: 'right',
               suggestedMin: 0,
               suggestedMax: 30,
@@ -434,6 +435,7 @@
     //makes things visible for when adding a second dataset
     function seconddata(){
       myChart.config.options.scales.y2.title.display = true;
+      myChart.config.options.scales.y2.display = true;
       myChart.config.data.datasets[1].hidden = false;
       myChart.config.data.datasets[1].label = 'Dataset 2 Name';
       document.getElementById("seconddata").style.display = "block";
