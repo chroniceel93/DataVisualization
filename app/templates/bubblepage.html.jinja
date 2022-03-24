@@ -15,7 +15,22 @@
         <canvas id="myChart"></canvas>
           Change name of graph: <input onkeyup="updatetitle(this)" type="text"><br>
           Change name of dataset: <input onkeyup="updatedatesetname1(this)" type="text"><br>
+          Change name of y axis: <input onkeyup="updateyname(this)" type="text"><br>
+          Change max y axis: <input onkeyup="updateymax(this)" type="number"><br>
+          Change min y axis: <input onkeyup="updateymin(this)" type="number"><br>
+          Change name of x axis: <input onkeyup="updatexname(this)" type="text"><br>
+          Change max x axis: <input onkeyup="updatexmax(this)" type="number"><br>
+          Change min x axis: <input onkeyup="updatexmin(this)" type="number"><br>
+          <div id="seconddata" style="display:none;">
+            Change name of y2 axis: <input onkeyup="updatey2name(this)" type="text"><br>
+            Change max y axis: <input onkeyup="updatey2max(this)" type="number"><br>
+            Change min y axis: <input onkeyup="updatey2min(this)" type="number"><br>
+          </div>
         <button class="button" onclick="exportimage()">Download Image</button>
+        <button class="button" onclick="favgraph()">Favorite Graph</button>
+        <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
+        <button class="button" onclick="seconddata()">Add Second Dataset</button>
+        <button class="button" onclick="exportsavedata('bubble', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
       </div>
     </div>
 
@@ -28,10 +43,10 @@
       // setup 
       const data = {
           datasets: [{
-            label: 'First Dataset',
+            label: 'Dataset 1',
             data: [{
-              x: 20,
-              y: 30,
+              x: 10,
+              y: 10,
               r: 15
             }, {
               x: 40,
@@ -39,6 +54,21 @@
               r: 10
             }],
             backgroundColor: 'rgb(255, 99, 132)'
+          },
+          {
+            hidden: true,
+            label: '',
+            data: [{
+              x: 30,
+              y: 20,
+              r: 10
+            }, {
+              x: 20,
+              y: 15,
+              r: 15
+            }],
+            backgroundColor: 'rgb(100, 99, 255)',
+            yAxisID: 'y2',
           }]
       };
 
@@ -61,6 +91,37 @@
         data: data,
         plugins: [plugin],
         options: {
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: 'y axis'
+              },
+              suggestedMin: 0,
+              suggestedMax: 20
+            },
+            y2: {
+              title: {
+                display: false,
+                text: 'y2 axis'
+              },
+              display: false,
+              position: 'right',
+              suggestedMin: 0,
+              suggestedMax: 30,
+              grid: {
+                drawOnChartArea: false,
+              }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'x axis'
+              },
+              suggestedMin: 0,
+              suggestedMax: 50
+            }
+          },
           responsive: true,
           plugins: {
               legend: {
@@ -79,6 +140,15 @@
         document.getElementById('myChart'),
         config
       );
+
+      function seconddata(){
+        myChart.config.options.scales.y2.title.display = true;
+        myChart.config.options.scales.y2.display = true;
+        myChart.config.data.datasets[1].hidden = false;
+        myChart.config.data.datasets[1].label = 'Dataset 2';
+        document.getElementById("seconddata").style.display = "block";
+        myChart.update();
+      }
     </script>
 
   </body>
