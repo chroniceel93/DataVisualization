@@ -15,6 +15,10 @@
         <canvas id="myChart"></canvas>
           Change name of graph: <input onkeyup="updatetitle(this)" type="text"><br>
         <button class="button" onclick="exportimage()">Download Image</button>
+        <button class="button" onclick="favgraph()">Favorite Graph</button>
+        <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
+        <button class="button" onclick="seconddata()">Add Second Dataset</button>
+        <button class="button" onclick="exportsavedata('donut', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
       </div>
     </div>
 
@@ -38,6 +42,17 @@
             'rgb(255, 99, 132)',
             'rgb(54, 162, 235)',
             'rgb(255, 205, 86)'
+          ],
+          hoverOffset: 4
+        },
+        {
+          hidden: true,
+          label: 'Dataset 2 ',
+          data: [400, 60, 80],
+          backgroundColor: [
+            'rgb(255, 255, 132)',
+            'rgb(54, 162, 255)',
+            'rgb(255, 205, 100)'
           ],
           hoverOffset: 4
         }]
@@ -80,6 +95,12 @@
         document.getElementById('myChart'),
         config
       );
+
+      function seconddata(){
+        myChart.config.data.datasets[1].hidden = false;
+        myChart.config.data.datasets[1].label = 'Dataset 2 Name';
+        myChart.update();
+      }
     </script>
 
   </body>

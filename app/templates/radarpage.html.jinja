@@ -14,9 +14,15 @@
       <div class="chartBox">
         <canvas id="myChart"></canvas>
         Change name of graph: <input onkeyup="updatetitle(this)" type="text"><br>
-        Change name of dataset 1: <input onkeyup="updatedatesetname1(this)" type="text"><br>
-        Change name of dataset 2: <input onkeyup="updatedatesetname2(this)" type="text"><br>
+        Change name of dataset: <input onkeyup="updatedatesetname1(this)" type="text"><br>
+        <div id="seconddata" style="display:none;">
+          Change name of dataset 2: <input onkeyup="updatedatesetname2(this)" type="text"><br>
+        </div>
         <button class="button" onclick="exportimage()">Download Image</button>
+        <button class="button" onclick="favgraph()">Favorite Graph</button>
+        <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
+        <button class="button" onclick="seconddata()">Add Second Dataset</button>
+        <button class="button" onclick="exportsavedata('radar', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
       </div>
     </div>
 
@@ -36,7 +42,7 @@
             'Running'
           ],
           datasets: [{
-            label: 'My First Dataset',
+            label: 'Dataset 1',
             data: [65, 59, 90, 81, 56, 55, 40],
             fill: true,
             backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -45,8 +51,10 @@
             pointBorderColor: '#fff',
             pointHoverBackgroundColor: '#fff',
             pointHoverBorderColor: 'rgb(255, 99, 132)'
-          }, {
-            label: 'My Second Dataset',
+          }, 
+          {
+            hidden: true,
+            label: '',
             data: [28, 48, 40, 19, 96, 27, 100],
             fill: true,
             backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -96,6 +104,13 @@
         document.getElementById('myChart'),
         config
       );
+
+      function seconddata(){
+        myChart.config.data.datasets[1].hidden = false;
+        myChart.config.data.datasets[1].label = 'Dataset 2 Name';
+        document.getElementById("seconddata").style.display = "block";
+        myChart.update();
+      }
     </script>
 
   </body>
