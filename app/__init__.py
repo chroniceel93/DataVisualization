@@ -1,8 +1,10 @@
 #initialize flask
 
 import os
+import redis
 
 from flask import Flask
+from flask_session import Session
 
 #code pulled from Flask tutorial as needed
 
@@ -26,6 +28,11 @@ def create_app(test_config=None):
     else:
         # load test config if passed in
         app.config.from_mapping(test_config)
+
+    app.config['SESSION_TYPE'] = 'redis'
+    app.config['SESSION_PERMANENT'] = False
+    app.config['SESSION_USE_SIGNER'] = True
+    app.config['SESSION_REDIS'] = redis.from_url('redis://:XsOh4vprLZ7SlNOPzW6j5PJp9e6AjMuk@localhost:6379')
 
 
     with app.app_context():

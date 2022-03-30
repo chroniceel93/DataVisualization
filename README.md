@@ -37,8 +37,10 @@ Once you've entered the virtual environment, we will first install the required 
 
 ```
 flask
+Flask-session (needed for session handling)
+redis (needed to interface with redis)
 wheel (needed to compile some c++ interface code)
-mysql-connector-python
+mysql-connector-python (MySQL interface)
 ```
 
 Finally, we need to get the Flask debug server running.

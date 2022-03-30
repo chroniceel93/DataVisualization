@@ -6,29 +6,49 @@ from flask import current_app, g, jsonify
 import mysql.connector
 import json
 import csv
-from mysqlx import Row
 
-class DB:
-    def __connect():
-        return mysql.connector.connect( user='johndoe'
-                                        , password='password'
-                                        , host='localhost'
-                                        , database='employees')
+class DB(object):
+    user = ""
+    password = ""
+    host = ""
+    schema = ""
+    port = ""
+    connection = None
+    def __init__(self, user=None, password=None, host=None, schema=None, port=None):
+        self.user = user
+        self.password = password
+        self.host = host
+        self.schema = schema
+        self.port = port
+        self.connection = self.connect()
         
-    def __filterParse(comStr):
-        fullArr = []
-        andArr = comStr.split("&")
-        for x in range(0, len(andArr)-1):
-            if (andArr[x][0][-1] != '^') and (x != len(andArr)):
-                andArr[x] += '&'
-        for andCom in andArr:
-            fullArr.append(andCom.split("^"))
-        for x in range(0, len(fullArr[0])-1):
-            if (fullArr[0][x][-1] != '&') and (x != len(fullArr)):
-                fullArr[0][x] += '^'
-        return fullArr
+    def connect(self):
+        return mysql.connector.connect( user=self.user
+                                        , password=self.password
+                                        , host=self.host
+                                        , database=self.schema
+                                        , port=self.port)
         
-    def __join(tableA, tableB):
+    def execute_com(self, string):
+        """ Takes a given string, assuming it is a valid SQL Query, and executes it.
+
+        Args:
+            string (string): SQL Query
+
+        Returns:
+            type: description (it's complicated, I'll sort it out this weekend?)
+        """
+        #TODO: Fill out return fields in docstring
+        #TODO: Implement error handling for mysql connection.
+        
+        cur = self.connection.cursor()
+        cur.execute(string)
+        
+        items = cur.fetchall()
+                
+        return items 
+       
+    def join(self, tableA=None, tableB=None):
         """ This function generates a snippet of SQL that joins two tables.
 
         It's fairly naive, first querying for all keys between the two tables,
@@ -46,8 +66,8 @@ class DB:
         # FIXME: Schema is currently hardcoded.
         command1 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableA + "\" "
         command2 = "SELECT TABLE_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = \"employees\" AND REFERENCED_TABLE_NAME = \"" + tableB + "\" "
-        keyA = DB.__execute_com(command1)
-        keyB = DB.__execute_com(command2)
+        keyA = self.execute_com(command1)
+        keyB = self.execute_com(command2)
         
         # Check table B for key A.
         for x in range(0, len(keyA)):
@@ -72,37 +92,9 @@ class DB:
             command =  tableA +" JOIN " + tableB + \
             " ON " + tableA + "." + keyA + " = " + tableB + "." + keyA + " "
         ## TODO: Throw error on failure   
-        return command
-
-    def __execute_com(string):
-        """ Takes a given string, assuming it is a valid SQL Query, and executes it.
-
-        Args:
-            string (string): SQL Query
-
-        Returns:
-            type: description (it's complicated, I'll sort it out this weekend?)
-        """
-        #TODO: Fill out return fields in docstring
-        #TODO: Implement error handling for mysql connection.
-        
-        connection = mysql.connector.connect( user='johndoe'
-                                            , password='password'
-                                            , host='localhost'
-                                            , database='employees')
-        cur = connection.cursor()
-        cur.execute(string)
-        
-        items = cur.fetchall()
-        
-        cur.close()
-        connection.close()
-                
-        return items
-
-        
-        
-    def get_table_list():
+        return command  
+    
+    def get_table_list(self):
         """ Gets a list of all tables in the schema.
         
         NOTE: I don't think this is used.
@@ -111,10 +103,10 @@ class DB:
             string: JSON list of all tables in the schema
         """
         command = "SHOW TABLES"
-        items = DB.__execute_com(command)
+        items = self.execute_com(command)
         return items
 
-    def get_table_columns(table):
+    def get_table_columns(self, table=None):
         """Gets a list of all columns in a table.
 
         Args:
@@ -124,27 +116,46 @@ class DB:
             string : JSON list of all columns in the table.
         """
         command = "SHOW COLUMNS FROM " + table
-        items = DB.__execute_com(command)
+        items = self.execute_com(command)
         return items
 
-    def get_all():
+    
+    def get_all(self):
         """ Queries the database for all fields.
 
         Returns:
             string: A JSON String containing {"table_name", "item_name", "item_type"}
         """
-        items = DB.get_table_list()
+        items = self.get_table_list()
         cols = 0
         result = []
         for x  in range(0, len(items)):
             # string is padded, cut off the first three and last two chars
-            cols = DB.get_table_columns(str(items[x])[2:-3])
+            cols =self.get_table_columns(table=str(items[x])[2:-3])
             for y in range(0, len(cols)):
                 # append 2d array element with table name, item name and item type, in that order
                 result.append([str(items[x])[2:-3], str(cols[y][0]), str(cols[y][1])[2:-1]])
-        return json.dumps(result)
+        return json.dumps(result)   
+        
+        
+class DBData(DB):
+    def filterParse(self, comStr=None):
+        fullArr = []
+        andArr = comStr.split("&")
+        for x in range(0, len(andArr)-1):
+            if (andArr[x][0][-1] != '^') and (x != len(andArr)):
+                andArr[x] += '&'
+        for andCom in andArr:
+            fullArr.append(andCom.split("^"))
+        for x in range(0, len(fullArr[0])-1):
+            if (fullArr[0][x][-1] != '&') and (x != len(fullArr)):
+                fullArr[0][x] += '^'
+        return fullArr
+    
 
-    def request(type, itemA, itemB, Filter, step):
+
+    
+    def request(self, type=None, itemA=None, itemB=None, Filter=None, step=None):
         """ This function returns the JSON formatted results of an abstracted SQL request.
 
         The abstraction currently relies on a few core assumptions. We will only be returning two fields per request, and we will only average or sum the requests. The current syntax is designed so that it can be extended.
@@ -168,7 +179,7 @@ class DB:
         1:<= - Is less than or equal to.
         2:< - Is strictly less than.
         3:> - Is strictly greater than.
-        4:>= - Is greater tan or equal to.
+        4:>= - Is greater than or equal to.
         5:! - Is not.
 
         Args:
@@ -267,14 +278,14 @@ class DB:
         if aTable != bTable :
             tableArr.append(aTable)
             # best-case no filters from other tables
-            joinStr += DB.join(aTable, bTable)
+            joinStr += self.join(aTable, bTable)
         if aTable == bTable :
             tableArr.append(bTable)
             joinStr += aTable + " "
         
         # If Filter is non-empty, Parse CSV
         if Filter != "":
-            temp = DB.__filterParse(Filter)
+            temp = self.filterParse(Filter)
             whereStr = "WHERE "
             for command in temp: 
                 for x in range(0, len(command)):
@@ -322,7 +333,7 @@ class DB:
             
 
         for x in range(1, len(tableArr)):
-            joinStr += DB.__join(tableArr[0], tableArr[x])
+            joinStr += self.join(tableArr[0], tableArr[x])
             ## TODO: Try all combinations on successive errors.
 
         
@@ -332,6 +343,31 @@ class DB:
         
         print("Executing: ", comStr)
         
-        result = DB.__execute_com(comStr)
+        result = self.execute_com(comStr)
         # Build SQL query as needed
         return jsonify(result)
+    
+class DBUser(DB):
+    def __init__(self):
+        super(DBUser, self).__init__(user="data"
+                                   , password="Cg39rbaioxskMF4WyEfSfvbH"
+                                   , host="localhost"
+                                   , schema="DataVisUser"
+                                   , port="3306")
+        
+    def get_all(self):
+        """ Queries the database for all fields.
+
+        Returns:
+            string: A JSON String containing {"table_name", "item_name", "item_type"}
+        """
+        items = super().get_table_list()
+        cols = 0
+        result = []
+        for x  in range(0, len(items)):
+            # string is padded, cut off the first three and last two chars
+            cols = super().get_table_columns(table=str(items[x])[2:-3])
+            for y in range(0, len(cols)):
+                # append 2d array element with table name, item name and item type, in that order
+                result.append([str(items[x])[2:-3], str(cols[y][0]), str(cols[y][1])[2:-1]])
+        return json.dumps(result)

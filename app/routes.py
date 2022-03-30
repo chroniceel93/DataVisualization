@@ -1,9 +1,11 @@
 # defines all pages that can be reached.
 
 from flask import current_app as app
-from flask import render_template
-from flask import request
+from flask import render_template, request, session, render_template_string, redirect, url_for
+from flask_session import Session
 from . import db
+
+server_session = Session(app)
 
 @app.route('/')
 def index():
@@ -56,12 +58,23 @@ def dbtest_allfields():
 # These do not return actual webpages, just raw JSON data.
 @app.route('/db_all')
 def db_all():
-    return db.DB.get_all()
+    access = db.DBData(user='johndoe'
+                     , password='password'
+                     , host='localhost'
+                     , schema='employees'
+                     , port='3306')
+    return access.get_all()
 
 @app.route('/request', methods=['POST'])
 def req():
     query = request.form
-    return db.DB.request(query.get('type')
+    access = db.DBData(user='johndoe'
+                    , password='password'
+                    , host='localhost'
+                    , schema='employees'
+                    , port='3306')
+    
+    return access.request(query.get('type')
                         , query.get('itemA')
                         , query.get('itemB')
                         , query.get('filter')
@@ -77,6 +90,44 @@ def login():
             return render_template("template.html.jinja")
     return render_template("login.html.jinja", error=error)
 
+
+@app.route('/set_email', methods=['GET', 'POST'])
+def set_email():
+    if request.method == 'POST':
+        # Save the form data to the session object
+        session['email'] = str(request.form['email_address'])
+        return redirect(url_for('get_email'))
+
+    return """
+        <form method="post">
+            <label for="email">Enter your email address:</label>
+            <input type="email" id="email" name="email_address" required />
+            <button type="submit">Submit</button
+        </form>
+        """
+
+
+@app.route('/get_email')
+def get_email():
+    return render_template_string("""
+            {% if session['email'] %}
+                <h1>Welcome {{ session['email'] }}!</h1>
+            {% else %}
+                <h1>Welcome! Please enter your email <a href="{{ url_for('set_email') }}">here.</a></h1>
+            {% endif %}
+        """)
+
+
+@app.route('/delete_email')
+def delete_email():
+    # Clear the email stored in the session object
+    session.pop('email', default=None)
+    return '<h1>Session deleted!</h1>'
+
+@app.route('/api_test')
+def api_test():
+    access = db.DBUser()
+    return access.get_all()
 
 #db.DB.request(0, "salaries,salary", "salaries,from_date,date", 1)
 
