@@ -16,6 +16,8 @@ python3-venv (allows us to create virtual environments)
 python3-mysqldb (python support for sql)
 ```
 
+
+
 When running the actual webserver, we will also need the following packages:
 
 
@@ -24,6 +26,10 @@ apache2 (webserver)
 libapache2-mod-wsgi-py3 (Webserver Gateway Interface for python-based webapps)
 
 ```
+
+We will also be using Redis to store user session information in memory. You can find installation instructions at the following address, but I'm planning on adding only the relevant steps here later.
+
+https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-redis-on-ubuntu-18-04
 
 As usual, all of these can be installed using `apt install`.
 
