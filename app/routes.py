@@ -3,7 +3,7 @@
 from flask import current_app as app
 from flask import render_template, request, session, render_template_string, redirect, url_for
 from flask_session import Session
-from . import db
+from . import db, login
 
 server_session = Session(app)
 
@@ -81,7 +81,7 @@ def req():
                         , query.get('step'))
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login_TEST():
     error = None
     if request.method == 'POST':
         if request.form['username'] != 'employees' or request.form['password'] != 'employees':
@@ -128,6 +128,19 @@ def delete_email():
 def api_test():
     access = db.DBUser()
     return access.get_all()
+
+@app.route('/create_test_user')
+def create_test_user():
+    accessdb = db.DBUser()
+    login_access = login.Login(access=accessdb)
+    return login_access.UserAdd(username='JohnDoe', password='password', email='JohnDoe@email.com')
+    
+
+@app.route('/validate_test_user')
+def validate_test_user():
+    accessdb = db.DBUser()
+    login_access = login.Login(access=accessdb)
+    return login_access.UserValidate(username='JohnDoe', password='password')
 
 #db.DB.request(0, "salaries,salary", "salaries,from_date,date", 1)
 

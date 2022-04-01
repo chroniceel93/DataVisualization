@@ -47,6 +47,7 @@ Flask-session (needed for session handling)
 redis (needed to interface with redis)
 wheel (needed to compile some c++ interface code)
 mysql-connector-python (MySQL interface)
+cryptography (used for cryptographic hashing)
 ```
 
 Finally, we need to get the Flask debug server running.

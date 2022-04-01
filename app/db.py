@@ -40,12 +40,13 @@ class DB(object):
         """
         #TODO: Fill out return fields in docstring
         #TODO: Implement error handling for mysql connection.
-        
+        self.connection.autoCommit = True
         cur = self.connection.cursor()
         cur.execute(string)
+        self.connection.autoCommit = False
         
         items = cur.fetchall()
-                
+        
         return items 
        
     def join(self, tableA=None, tableB=None):
@@ -355,19 +356,12 @@ class DBUser(DB):
                                    , schema="DataVisUser"
                                    , port="3306")
         
-    def get_all(self):
-        """ Queries the database for all fields.
+    def SearchUser(self, username=None, email=None):
+        command = "SELECT "
+        if username == None:
+            command += "user_UUID, email, salt, secret FROM userLogin WHERE email = '" + email + "'"
+        else:
+            command += "user_UUID, username, salt, secret FROM userLogin WHERE username = '" + username + "'"
 
-        Returns:
-            string: A JSON String containing {"table_name", "item_name", "item_type"}
-        """
-        items = super().get_table_list()
-        cols = 0
-        result = []
-        for x  in range(0, len(items)):
-            # string is padded, cut off the first three and last two chars
-            cols = super().get_table_columns(table=str(items[x])[2:-3])
-            for y in range(0, len(cols)):
-                # append 2d array element with table name, item name and item type, in that order
-                result.append([str(items[x])[2:-3], str(cols[y][0]), str(cols[y][1])[2:-1]])
-        return json.dumps(result)
+        result = self.execute_com(command)
+        return result
