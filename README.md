@@ -64,7 +64,7 @@ Remember to enter the IP address you want to access the website from. If you're 
 
 The first step is simply making sure the standard Python extension pack is installed.
 
-Once the extensions are installed and activated, pres Ctrl+Shift+P to opent the command Pallete, and type in `Python: Select Interpreter`. 
+Once the extensions are installed and activated, pres Ctrl+Shift+P to open the command Pallete, and type in `Python: Select Interpreter`. 
 
 You will select the option to enter the interpreter path, and navigate to your virtual environment. Simply select the Python interpreter located at /venv/bin/python. Code will then default to this runtime, and use the libraries therein. 
 
