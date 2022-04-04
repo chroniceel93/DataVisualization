@@ -83,9 +83,12 @@ def req():
 @app.route('/login', methods=['GET', 'POST'])
 def login_TEST():
     error = None
+    accessdb = db.DBUser()
+    login_access = login.Login(access=accessdb)
     if request.method == 'POST':
-        if request.form['username'] != 'employees' or request.form['password'] != 'employees':
-            error = 'Invalid Credentials. Please try again.'
+        uuid = login_access.UserValidate(username=request.form['username'], password=request.form['password'])
+        if uuid == None:
+            error = 'Username or password was incorrect. Please try again.'
         else:
             return render_template("template.html.jinja")
     return render_template("login.html.jinja", error=error)
