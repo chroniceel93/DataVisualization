@@ -3,13 +3,18 @@
 from flask import current_app as app
 from flask import render_template, request, session, render_template_string, redirect, url_for
 from flask_session import Session
+#from sshtunnel import SSHTunnelForwarder
 from . import db, login
 
 server_session = Session(app)
 
 @app.route('/')
 def index():
-	return render_template("template.html.jinja")
+    if session.get("UUID") != None:
+        return render_template("template.html.jinja")
+    else:
+        return redirect(url_for('login_page'))
+ 
 
 @app.route('/linepage')
 def linepage():
@@ -81,7 +86,7 @@ def req():
                         , query.get('step'))
 
 @app.route('/login', methods=['GET', 'POST'])
-def login_TEST():
+def login_page():
     error = None
     accessdb = db.DBUser()
     login_access = login.Login(access=accessdb)
@@ -90,9 +95,15 @@ def login_TEST():
         if uuid == None:
             error = 'Username or password was incorrect. Please try again.'
         else:
+            session['UUID'] = uuid
             return render_template("template.html.jinja")
     return render_template("login.html.jinja", error=error)
 
+@app.route('/logout')
+def logout():
+    for key in list(session.keys()):
+        session.pop(key)
+    return redirect(url_for('login_page'))
 
 @app.route('/set_email', methods=['GET', 'POST'])
 def set_email():
@@ -131,6 +142,14 @@ def delete_email():
 def api_test():
     access = db.DBUser()
     return access.get_all()
+
+# @app.route('/set_db', methods=['POST'])
+# def set_db():
+#     session['url_db'] == str(request.form["url"])
+#     session['port_db'] == str(request.form["port"])
+#     session['user_db'] == str(request.form["user"])
+    
+    
 
 @app.route('/create_test_user')
 def create_test_user():

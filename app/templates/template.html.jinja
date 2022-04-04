@@ -4,7 +4,10 @@
     </head>
 
     <body>
-        <button class="logoutbutton" onclick="location.href = '/login'">Logout</button>
+        {% if session.get("UUID") != None %}
+        {{session["UUID"].hex()}}
+        {% endif %}
+        <button class="logoutbutton" onclick="location.href = '/logout'">Logout</button>
         <div class="container">
             <div class="child">
                 <h3> Choose a type of graph</h3>
