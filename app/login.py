@@ -48,6 +48,6 @@ class Login(object):
         
         print(command)
         
-        print(self.connection.execute_com(command))
+        print(self.connection.execute_com(command, True))
         
         return command

@@ -31,7 +31,29 @@
         $.post($SCRIPT_ROOT + '/request', { type: parseInt(type.value, 10), itemA: itemA.value, itemB: itemB.value, filter: filter.value, step: parseInt(step.value, 10)}, function(JSON) {
             alert(JSON.toString())
         }, "json");
-        
+        return;
+    }
+
+    function create_user() {
+        var username = document.getElementById("username_login");
+        var password = document.getElementById("password_login");
+        var email = document.getElementById("email");
+        $.post($SCRIPT_ROOT + '/create_test_user', { username: username.value , password:password.value , email:email.value}, function(JSON) {
+            alert(JSON.toString())
+        }, "json");
+        return;
+    }
+
+    function set_db() {
+      var server = document.getElementById("Server");
+      var ip = document.getElementById("ip");
+      var port = document.getElementById("port");
+      var username = document.getElementById("username_DB");
+      var password = document.getElementById("password_DB");
+      $.post($SCRIPT_ROOT + '/set_db', { server:server.value, ip:ip.value, port:port.value, username:username.value, password:password.value}, function(JSON) {
+          alert(JSON.toString())
+      }, "json");
+      return;
     }
 
 </script>
@@ -72,7 +94,50 @@ nothing
 
 <h3 id=result> </h3>
 
+<h3> Set User </h3>
 
+<form id="form2" name="form2">
+  <div>
+    <label for="username_login">Enter Username:</label>
+    <input type="text" id="username_login" name="username_login" value="0">
+  </div>
+  <div>
+    <label for="password_login">Enter Password:</label>
+    <input type="text" id="password_login" name="password_login" value="0">
+  </div>
+  <div>
+    <label for="email">Enter Email:</label>
+    <input type="text" id="email" name="email" value="0">
+  </div>
+
+    <input type="button" onclick="create_user()" value="Submit!">
+</form>
+
+<h3> Set DB </h3>
+
+<form id="form2" name="form2">
+  <div>
+    <label for="Server">Enter Server:</label>
+    <input type="text" id="Server" name="Server" value="0">
+  </div>
+  <div>
+    <label for="ip">Enter IP:</label>
+    <input type="text" id="ip" name="ip" value="0">
+  </div>
+  <div>
+    <label for="port">Enter Port:</label>
+    <input type="text" id="port" name="port" value="0">
+  </div>
+  <div>
+    <label for="username_DB">Enter Username:</label>
+    <input type="text" id="username_DB" name="username_DB" value="0">
+  </div>
+  <div>
+    <label for="password_DB">Enter Password:</label>
+    <input type="text" id="password_DB" name="password_DB" value="0">
+  </div>
+    <input type="button" onclick="set_db()" value="Submit!">
+</form>
 
 </body>
 </html>

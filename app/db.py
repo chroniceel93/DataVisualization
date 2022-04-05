@@ -29,7 +29,7 @@ class DB(object):
                                         , database=self.schema
                                         , port=self.port)
         
-    def execute_com(self, string):
+    def execute_com(self, string="", commit=False):
         """ Takes a given string, assuming it is a valid SQL Query, and executes it.
 
         Args:
@@ -40,10 +40,15 @@ class DB(object):
         """
         #TODO: Fill out return fields in docstring
         #TODO: Implement error handling for mysql connection.
-        self.connection.autoCommit = True
+        #self.connection.autoCommit = True
         cur = self.connection.cursor()
-        cur.execute(string)
-        self.connection.autoCommit = False
+        try:
+            items = cur.execute(string)
+            if commit:
+                self.connection.commit()
+        except:
+            self.connection.rollback()
+        #self.connection.autoCommit = False
         
         items = cur.fetchall()
         

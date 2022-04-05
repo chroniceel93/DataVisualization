@@ -84,6 +84,17 @@ def req():
                         , query.get('itemB')
                         , query.get('filter')
                         , query.get('step'))
+    
+@app.route('/set_db', methods=['POST'])
+def set_db():
+    query = request.form
+    session['server'] = str(query.get('server'))
+    session['ip'] = str(query.get('ip'))
+    session['port'] = str(query.get('port'))
+    session['username'] = str(query.get('username'))
+    session['password'] = str(query.get('password'))
+    return "NOP"
+    
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -151,11 +162,18 @@ def api_test():
     
     
 
-@app.route('/create_test_user')
+@app.route('/create_test_user', methods=['POST'])
 def create_test_user():
+    query = request.form
+    username = query.get('username')
+    password = query.get('password')
+    email = query.get('email')
     accessdb = db.DBUser()
     login_access = login.Login(access=accessdb)
-    return login_access.UserAdd(username='JohnDoe', password='password', email='JohnDoe@email.com')
+    return login_access.UserAdd(
+        username=username, 
+        password=password, 
+        email=email)
     
 
 @app.route('/validate_test_user')
