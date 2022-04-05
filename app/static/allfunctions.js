@@ -86,12 +86,11 @@ function favgraph(){
 
 //function for adding to the graph creation history
 function graphhistory(){
-    //make it similar to favgraph, save either pic of it or word data of it selected data
-
-    //var tmp = localStorage.getItem('myArray');
-    //var image = myChart.toBase64Image();
-    //var tmp2 = tmp + " " + image;
-    //localStorage.setItem('myArray', tmp2);
+    var tmp = localStorage.getItem('myArray2');
+    var image = myChart.toBase64Image();
+    var tmp2 = tmp + " " + image;
+    localStorage.setItem('myArray2', tmp2);
+    window.location.href = "/viewpage"
 }
 
 //export of user settings

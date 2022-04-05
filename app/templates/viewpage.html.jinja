@@ -5,103 +5,158 @@
 
     <body>
         <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
-        <button class="button" onclick="location.href = '/'">Make new Graph</button><br>
+        <button class="button" onclick="location.href = '/template'">Make new Graph</button><br>
         <input class="button" type="button" value="Back" onclick="history.back()"><br>
-        <div class="container">
-            <h3 id="emptymsg" style="display:block;">No Graphs to display</h3>
-            <div id="favblock" style="display:none;" class="slideshow-container">
-                <h3> Favorite graph</h3>
-                <img src="" id="fg"><br>
-                <button class="button" onclick="clearfav()" id="fbutton">Clear Favorite</button>
-                <button class="button" onclick="removefav()" id="fbutton">Delete Current Favorite</button>
-                <button class="button" onclick="exportimage()" id="dbutton">Download Favorite</button><br>
+        <div class="row">
+            <div class="column">
+                <h3 id="emptymsg2" style="display:block;">No Graphs to display</h3>
+                <div id="historyblock" style="display:none;" class="slideshow-container">
+                    <h3> History of created graphs</h3>
+                    <img src="" id="fg"><br>
 
-                <div class="mySlides fade" id="tmp1" style="display:none;">
-                  <img id="imgtmp1" src="" style="width:100%">
+                    <div class="mySlides fade" id="tmp2" style="display:none;">
+                        <img id="imgtmp2" src="" style="width:100%">
+                    </div>
+                    
+                    <a class="prev" onclick="plushistory(-1)">&#10094;</a>
+                    <a class="next" onclick="plushistory(1)">&#10095;</a>  
                 </div>
-                
-                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-                <a class="next" onclick="plusSlides(1)">&#10095;</a>
-                
-            </div> 
+            </div>
+            <div class="column">
+                <h3 id="emptymsg" style="display:block;">No Graphs to display</h3>
+                <div id="favblock" style="display:none;" class="slideshow-container">
+                    <h3> Favorite graph</h3>
+                    <button class="button" onclick="clearfav()" id="fbutton">Clear Favorite</button>
+                    <button class="button" onclick="removefav()" id="fbutton">Delete Current Favorite</button>
+                    <button class="button" onclick="exportimage()" id="dbutton">Download Favorite</button><br>
 
-            <script>
-                if(typeof(Storage)!=="undefined" && localStorage.myArray){
-                    document.getElementById("emptymsg").style.display = "none";
-                    var tmpstring = localStorage.getItem('myArray');
-                    var tmparray = tmpstring.split(" ");
-                    var arraylen = tmparray.length;                    
-                    document.getElementById("imgtmp1").src = tmparray[1];
-                    document.getElementById("tmp1").style.display = "block";
-                    document.getElementById("favblock").style.display = "block";
-                }
-                else{
-                    document.getElementById("emptymsg").style.display = "block";
-                }
-
-                //clears entire array of favorites
-                function clearfav(){
-                    localStorage.removeItem("favgraph");
-                    document.getElementById("favblock").style.display = "none";
-                    document.getElementById("emptymsg").style.display = "block";
-                    var testArray = [];
-                    localStorage.setItem('myArray', testArray);
-                }
-
-                //removes current graph from favorites
-                function removefav(){
-                    tmparray.splice(slideIndex, 1);
-                    var newstring;
-                    for(i = 1;i < tmparray.length; i++){
-                        newstring += " " + tmparray[i];
-                    }
-                    if(tmparray.length == 1){
-                        var testArray = [];
-                        localStorage.setItem('myArray', testArray);
-                    }
-                    else{
-                        localStorage.setItem('myArray', newstring);
-                    }
-                    location.reload();
-                }
-
-                //function for downloading the graph as an image
-                function exportimage(){
-                    var a = document.createElement('a');
-                    var numindex = slideIndex;
-                    a.href = tmparray[slideIndex];
-                    a.download = 'graph.png';
-              
-                    // Trigger the download
-                    a.click();
-                }
-
-                //functions for making the arrows change pictures
-                var slideIndex = 1;
-                showSlides(slideIndex);
-
-                function plusSlides(n) {
-                    showSlides(slideIndex += n);
-                }
-
-                function currentSlide(n) {
-                    showSlides(slideIndex = n);
-                }
-
-                function showSlides(n) {
-                    if (n >= arraylen) {
-                        slideIndex = 1;
-                        document.getElementById("imgtmp1").src = tmparray[1];
-                    }    
-                    else if (n < 1) {
-                        slideIndex = arraylen;
-                        document.getElementById("imgtmp1").src = tmparray[arraylen - 1];
-                    }
-                    else{
-                        document.getElementById("imgtmp1").src = tmparray[slideIndex];
-                    }
-                }
-            </script>
+                    <div class="mySlides fade" id="tmp1" style="display:none;">
+                        <img id="imgtmp1" src="" style="width:100%">
+                    </div>
+                    
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>  
+                </div>
+            </div>
         </div>
     </body>
+
+    <script>
+        //loads images of history on page load
+        if(typeof(Storage)!=="undefined" && localStorage.myArray2){
+            document.getElementById("emptymsg2").style.display = "none";
+            var tmpstring = localStorage.getItem('myArray2');
+            var historyarray = tmpstring.split(" ");
+            var historylen = historyarray.length;                    
+            document.getElementById("imgtmp2").src = historyarray[1];
+            document.getElementById("tmp2").style.display = "block";
+            document.getElementById("historyblock").style.display = "block";
+        }
+        else{
+            document.getElementById("emptymsg2").style.display = "block";
+        }
+
+        //loads images of favorite on page load
+        if(typeof(Storage)!=="undefined" && localStorage.myArray){
+            document.getElementById("emptymsg").style.display = "none";
+            var tmpstring = localStorage.getItem('myArray');
+            var tmparray = tmpstring.split(" ");
+            var arraylen = tmparray.length;                    
+            document.getElementById("imgtmp1").src = tmparray[1];
+            document.getElementById("tmp1").style.display = "block";
+            document.getElementById("favblock").style.display = "block";
+        }
+        else{
+            document.getElementById("emptymsg").style.display = "block";
+        }
+
+        //clears entire array of favorites
+        function clearfav(){
+            localStorage.removeItem("favgraph");
+            document.getElementById("favblock").style.display = "none";
+            document.getElementById("emptymsg").style.display = "block";
+            var testArray = [];
+            localStorage.setItem('myArray', testArray);
+        }
+
+        //removes current graph from favorites
+        function removefav(){
+            tmparray.splice(slideIndex, 1);
+            var newstring;
+            for(i = 1;i < tmparray.length; i++){
+                newstring += " " + tmparray[i];
+            }
+            if(tmparray.length == 1){
+                var testArray = [];
+                localStorage.setItem('myArray', testArray);
+            }
+            else{
+                localStorage.setItem('myArray', newstring);
+            }
+            location.reload();
+        }
+
+        //function for downloading the graph as an image
+        function exportimage(){
+            var a = document.createElement('a');
+            var numindex = slideIndex;
+            a.href = tmparray[slideIndex];
+            a.download = 'graph.png';
+        
+            // Trigger the download
+            a.click();
+        }
+
+        //functions for making the arrows change pictures for favorite
+        var slideIndex = 1;
+        showSlides(slideIndex);
+
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        function currentSlide(n) {
+            showSlides(slideIndex = n);
+        }
+
+        function showSlides(n) {
+            if (n >= arraylen) {
+                slideIndex = 1;
+                document.getElementById("imgtmp1").src = tmparray[1];
+            }    
+            else if (n < 1) {
+                slideIndex = arraylen;
+                document.getElementById("imgtmp1").src = tmparray[arraylen - 1];
+            }
+            else{
+                document.getElementById("imgtmp1").src = tmparray[slideIndex];
+            }
+        }
+
+        //functions for making arrow change pictures for history
+        var historyIndex = 1;
+        historySlides(historyIndex);
+
+        function plushistory(n) {
+            historySlides(historyIndex += n);
+        }
+
+        function currenthistory(n) {
+            historySlides(historyIndex = n);
+        }
+
+        function historySlides(n) {
+            if (n >= historylen) {
+                historyIndex = 1;
+                document.getElementById("imgtmp2").src = historyarray[1];
+            }    
+            else if (n < 1) {
+                historyIndex = historylen;
+                document.getElementById("imgtmp2").src = historyarray[historylen - 1];
+            }
+            else{
+                document.getElementById("imgtmp2").src = historyarray[historyIndex];
+            }
+        }
+    </script>
 </html>
