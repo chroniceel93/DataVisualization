@@ -15,6 +15,9 @@ def index():
     else:
         return redirect(url_for('login_page'))
  
+@app.route('/template')
+def templatepage():
+	return render_template("template.html.jinja")
 
 @app.route('/linepage')
 def linepage():

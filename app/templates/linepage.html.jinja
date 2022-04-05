@@ -13,7 +13,7 @@
 
 <h3>Line Graph Page</h3>
 <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
-<button class="button" onclick="location.href = '/'">Back</button>
+<button class="button" onclick="history.back()">Back</button>
 
 <!-- Dropdown with table choices -->
 <select id="tables" onchange="displayColumnDropdown(value)">
@@ -290,7 +290,7 @@
       </div>
     <button class="button" onclick="exportimage()">Download Image</button>
     <button class="button" onclick="favgraph()">Favorite Graph</button>
-    <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
+    <button class="button" onclick="graphhistory()">View Page</button><br>
     <button class="button" onclick="seconddata()">Add Second Dataset</button>
     <button class="button" onclick="exportsavedata('line', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
     <button class="button" onclick="testRequest()"> Show request result </button>
