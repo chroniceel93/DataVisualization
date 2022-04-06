@@ -17,39 +17,16 @@
 <button class="button" onclick="history.back()">Back</button>
 
 <!-- Dropdown with table choices -->
-<select id="tables" onchange="displayColumnDropdown(value)">
+<select id="tables" onchange="chooseTable(value)">
   <option> Select a table </option>  
 </select>
 
-<script>
-  // jinja substitutes the scripts root directory upon creation.
-  $SCRIPT_ROOT = {{ request.script_root|tojson }};
-
-  // global variables
-  var columnChoices = [];
-  var tableChoices = [];
-  
-  var chosenTable;
-  var chosenX;
-  var chosenY;
-  var chosenYType;
-  
-
-  var tableDropdown = document.getElementById("tables");
-
-  // on page load, automatically:
-  getTables(tableChoices); // get tables from database
-  displayTableDropdown(); // display table dropdown
-  
-</script>
-
-
 <!-- Column dropdowns, dependent on what table user chooses-->
-<select id="xColumn" onchange = "chooseX(value)">
+<select id="xDropdown" onchange = "chooseX(value)">
   <option> Select x-axis </option>  
 </select>
 
-<select id="yColumn" onchange = 'chooseY(value)'>
+<select id="yDropdown" onchange = 'chooseY(value)'>
   <option> Select y-axis </option>  
 </select>
 
@@ -59,13 +36,37 @@
 <p id = 'columnY'></p>
 <p id = 'columnYType'></p>
 
+<button onclick = 'graph(table, xColumn, yColumn, yType)'> Update Values </button>
 
-<button onclick = 'graph(chosenTable, chosenX, chosenY, chosenYType)'> Update Values </button>
+<button onclick=updateGraph()> Graph </button>
+
+
+
 
 
 <script>
-  var xColumn = document.getElementById("xColumn");
-  var yColumn = document.getElementById("yColumn");
+  // jinja substitutes the scripts root directory upon creation.
+  $SCRIPT_ROOT = {{ request.script_root|tojson }};
+
+
+  // IMPORTANT: global variables
+  var columnChoices = [];
+  var tableChoices = [];
+  
+  var table;
+  var xColumn;
+  var yColumn;
+  var yType;
+  
+  // html elements
+  var tableDropdown = document.getElementById("tables");
+  var xDropdown = document.getElementById("xDropdown");
+  var yDropdown = document.getElementById("yDropdown");
+
+
+  // on page load, automatically:
+  setTables(tableChoices); // set tables from database
+  displayTables(); // display table dropdown
 
   // Close the dropdown menu if the user clicks outside of it
   // Not sure if this is necessary?
@@ -84,7 +85,7 @@
 </script>
 
 
-<button onclick=updateGraph()> Graph </button>
+<!-- From here down is Terrence's work -->
 
 
 <div class="chartCard">
@@ -106,7 +107,7 @@
     <button class="button" onclick="favgraph()">Favorite Graph</button>
     <button class="button" onclick="graphhistory()">View Page</button><br>
     <button class="button" onclick="seconddata()">Add Second Dataset</button>
-    <button class="button" onclick="exportsavedata('line', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
+    <button class="button" onclick="exportsavedata('line', table, xColumn, yColumn, yType)">Export Graph Settings</button>
     <button class="button" onclick="testRequest()"> Show request result </button>
   </div>
 </div>

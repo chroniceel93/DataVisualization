@@ -105,10 +105,18 @@ function exportsavedata(charttype, dbin, xin, yin, ytype){
 
 
 
+
+
+
+
+
+
+
+
 // gets tables from raw JSON data
 // passing by reference with global vars, but might need to change this - Arrays are weird in JS
 // CLEAN: clean this up by figuring out better way to pass value out (instead of global variable reference)
-function getTables(tableChoices) {
+function setTables(tableChoices) {
     var currentTable;
 
     // this used to be .getJSON, but now have syncronous option
@@ -116,27 +124,24 @@ function getTables(tableChoices) {
         url: $SCRIPT_ROOT + '/db_all',
         dataType: 'json',
         async: false,
-        //data: myData, // maybe should be '/db_all'?
         success: function(JSON) {
-
             // loop through JSON object and create array with unique table names
             // ASSUMES: first element of 2d array is table name, second is column name
             for (var i = 0, len = JSON.length; i < len; i++) {
                 currentTable = JSON[i][0];
-                var inTables = (tableChoices.indexOf(currentTable) > -1);
+                var inTables = (tableChoices.indexOf(currentTable) > -1); // is current table already in tableChoices?
 
                 // if currentTable is not already in tables,
                 if (!inTables)
-                tableChoices.push(currentTable); // add it to tables
+                    tableChoices.push(currentTable); // add it to tables
             }
         }
     });
 }
 
-
 // displays elements of tableChoices in tableDropdown element
 // CLEAN: figure out how generalize this function by passing in a parameter
-function displayTableDropdown() {
+function displayTables() {
     for (var i = 0; i < tableChoices.length; i++) {
         var optn = tableChoices[i];
         var el = document.createElement("option");
@@ -147,57 +152,80 @@ function displayTableDropdown() {
     }
 }
 
-
-
 // when user chooses x-axis
 function chooseX(x) {
-    chosenX = x; // update global variable
+    xColumn = x; // update global variable
     document.getElementById('columnX').innerHTML = "Current x-axis - " + x; // update html
 }
 
 // when user chooses y-axis
 function chooseY(y) {
-    // set global variables
-    chosenY = y; 
+    // update global variables
+    yColumn = y; 
     getType(y);
 
     // update html
     document.getElementById('columnY').innerHTML = "Current y-axis - " + y; 
-    document.getElementById('columnYType').innerHTML = "Current y type - " + chosenYType;
+    document.getElementById('columnYType').innerHTML = "Current y type - " + yType;
 }
 
 
-// displays column dropdown from columnChoices
-// TODO: modify to erase previous dropdown before displaying new one
-function displayColumnDropdown(table) {
+// when user chooses table:
+function chooseTable(dummyTable) {
+    // update global variables
+    table = dummyTable;
+    setColumns(table, columnChoices); // sets columnChoices according to current table
 
+    // set html used for debugging
     document.getElementById('table').innerHTML = "Current table - " + table;
 
-    getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
-    chosenTable = table; // sets global var
+    // display new dropdowns
+    displayColumns();
+}
 
-    // loops over columns from db, adding those that correspond to table
+// displays column dropdown
+function displayColumns() {
+    // delete options for old column dropdowns
+    removeOptions(xDropdown);
+    removeOptions(yDropdown);
+
+    // loops over columns, adding those that correspond to table
     // CLEAN: don't know why need elx and ely separately, but it works
     for (var i = 0; i < columnChoices.length; i++) {
         var optn = columnChoices[i];
 
+        // creates element to be added
         var elx = document.createElement("option");
         elx.textContent = optn;
         elx.value = optn;
 
+        // creates element to be added
         var ely = document.createElement("option");
         ely.textContent = optn;
         ely.value = optn;
 
-        yColumn.appendChild(elx);
-        xColumn.appendChild(ely);
+        // appends elements
+        xDropdown.appendChild(elx);
+        yDropdown.appendChild(ely);
     }
 }
+
+// removes all but first element of given <select> element
+function removeOptions(selectElement) {
+    //var i;
+    var L = selectElement.options.length - 1;
+    for(var i = L; i > 0; i--) {
+       selectElement.remove(i);
+    }
+ }
 
 
 // returns list of columns associated with given table name
 // CLEAN: eliminate passing in global variable
-function getColumns(tableName, columnChoices) {
+function setColumns(tableName, columnChoices) {
+    // clear existing columns
+    columnChoices.length = 0;
+
     $.ajax({
         url: $SCRIPT_ROOT + '/db_all',
         dataType: 'json',
@@ -240,8 +268,8 @@ function getType(y) {
                 currentType = JSON[i][2];
 
                 // if column name matches
-                if (chosenY == currentColumn)
-                chosenYType = currentType;
+                if (yColumn == currentColumn)
+                yType = currentType;
             }
         }
     });
@@ -249,11 +277,11 @@ function getType(y) {
 
 
 // type: -1 for no operation (disables step), 0 for avg, 1 for sum
-function graph(chosenTable, chosenX, chosenY, chosenYType) {
+function graph(table, xColumn, yColumn, yType) {
 
     // construct strings for sql queries
-    var A = chosenTable + "," + chosenX;
-    var B = chosenTable + "," + chosenY + "," + chosenYType;
+    var A = table + "," + xColumn;
+    var B = table + "," + yColumn + "," + yType;
 
         // requests appropriate data
         $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
