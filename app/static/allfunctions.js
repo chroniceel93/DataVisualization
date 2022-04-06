@@ -102,3 +102,200 @@ function exportsavedata(charttype, dbin, xin, yin, ytype){
     a.download = 'GraphData.txt';
     a.click();
 }
+
+
+
+// gets tables from raw JSON data
+// passing by reference with global vars, but might need to change this - Arrays are weird in JS
+// CLEAN: clean this up by figuring out better way to pass value out (instead of global variable reference)
+function getTables(tableChoices) {
+    var currentTable;
+
+    // this used to be .getJSON, but now have syncronous option
+    $.ajax({
+        url: $SCRIPT_ROOT + '/db_all',
+        dataType: 'json',
+        async: false,
+        //data: myData, // maybe should be '/db_all'?
+        success: function(JSON) {
+
+            // loop through JSON object and create array with unique table names
+            // ASSUMES: first element of 2d array is table name, second is column name
+            for (var i = 0, len = JSON.length; i < len; i++) {
+                currentTable = JSON[i][0];
+                var inTables = (tableChoices.indexOf(currentTable) > -1);
+
+                // if currentTable is not already in tables,
+                if (!inTables)
+                tableChoices.push(currentTable); // add it to tables
+            }
+        }
+    });
+}
+
+
+// displays elements of tableChoices in tableDropdown element
+// CLEAN: figure out how generalize this function by passing in a parameter
+function displayTableDropdown() {
+    for (var i = 0; i < tableChoices.length; i++) {
+        var optn = tableChoices[i];
+        var el = document.createElement("option");
+        el.textContent = optn;
+        el.value = optn;
+
+        tableDropdown.appendChild(el);
+    }
+}
+
+
+
+// when user chooses x-axis
+function chooseX(x) {
+    chosenX = x; // update global variable
+    document.getElementById('columnX').innerHTML = "Current x-axis - " + x; // update html
+}
+
+// when user chooses y-axis
+function chooseY(y) {
+    // set global variables
+    chosenY = y; 
+    getType(y);
+
+    // update html
+    document.getElementById('columnY').innerHTML = "Current y-axis - " + y; 
+    document.getElementById('columnYType').innerHTML = "Current y type - " + chosenYType;
+}
+
+
+// displays column dropdown from columnChoices
+// TODO: modify to erase previous dropdown before displaying new one
+function displayColumnDropdown(table) {
+
+    document.getElementById('table').innerHTML = "Current table - " + table;
+
+    getColumns(table, columnChoices); // assigns appropriate columns to columnChoices
+    chosenTable = table; // sets global var
+
+    // loops over columns from db, adding those that correspond to table
+    // CLEAN: don't know why need elx and ely separately, but it works
+    for (var i = 0; i < columnChoices.length; i++) {
+        var optn = columnChoices[i];
+
+        var elx = document.createElement("option");
+        elx.textContent = optn;
+        elx.value = optn;
+
+        var ely = document.createElement("option");
+        ely.textContent = optn;
+        ely.value = optn;
+
+        yColumn.appendChild(elx);
+        xColumn.appendChild(ely);
+    }
+}
+
+
+// returns list of columns associated with given table name
+// CLEAN: eliminate passing in global variable
+function getColumns(tableName, columnChoices) {
+    $.ajax({
+        url: $SCRIPT_ROOT + '/db_all',
+        dataType: 'json',
+        async: false,
+        success: function(JSON) {
+            var currentTable;
+            var currentColumn;
+
+            // loop through JSON object and grab column names associated with given table name
+            // ASSUMES: first element of 2d array is table name, second is column name
+            for (var i = 0, len = JSON.length; i < len; i++) {
+                currentTable = JSON[i][0];
+                currentColumn = JSON[i][1];
+
+                // if table name matches
+                if (tableName == currentTable) {
+                columnChoices.push(currentColumn);
+                }
+            }
+        }
+    });
+}
+
+  
+// returns type associated with column passed in
+// CLEAN: use something other than global variable
+function getType(y) {
+    $.ajax({
+        url: $SCRIPT_ROOT + '/db_all',
+        dataType: 'json',
+        async: false,
+        success: function(JSON) {
+            var currentColumn;
+            var currentType;
+
+            // loop through JSON object and grab column type associated with chosen column
+            // ASSUMES: third element of 2d array is column type
+            for (var i = 0, len = JSON.length; i < len; i++) {
+                currentColumn = JSON[i][1];
+                currentType = JSON[i][2];
+
+                // if column name matches
+                if (chosenY == currentColumn)
+                chosenYType = currentType;
+            }
+        }
+    });
+}
+
+
+// type: -1 for no operation (disables step), 0 for avg, 1 for sum
+function graph(chosenTable, chosenX, chosenY, chosenYType) {
+
+    // construct strings for sql queries
+    var A = chosenTable + "," + chosenX;
+    var B = chosenTable + "," + chosenY + "," + chosenYType;
+
+        // requests appropriate data
+        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
+
+        /* CLEAN: get this to work synchronously so no need for separate 'update' and 'graph' buttons
+    $.ajax({
+        url: $SCRIPT_ROOT + '/request',
+        data: { type: 0, itemA: A, itemB: B, filter: "", step: 1 },
+        dataType: 'json',
+        async: false,
+        success: function(JSON) {
+            */
+
+            var tmp = JSON.toString();
+            var allVars = tmp.split(",");
+
+            // gets odd values from array, which are x-vals
+            var x = allVars.filter((element, index) => {
+                return index % 2 === 1;
+            });
+
+            // gets even values from array, which are y-vals
+            var y = allVars.filter((element, index) => {
+                return index % 2 === 0;
+            });
+
+            // sets graph x-values
+            myChart.config.data.labels = x;
+
+            // sets graph y-values
+            myChart.config.data.datasets[0].data = y;
+            
+        //}
+   // });
+    }, "json");
+}
+
+
+function dropToggleColumn() {
+    document.getElementById("setColumn").classList.toggle("show");
+}
+
+function updateGraph() {
+    myChart.update();
+}
