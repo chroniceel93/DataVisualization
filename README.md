@@ -24,7 +24,6 @@ When running the actual webserver, we will also need the following packages:
 ```
 apache2 (webserver)
 libapache2-mod-wsgi-py3 (Webserver Gateway Interface for python-based webapps)
-
 ```
 
 We will also be using Redis to store user session information in memory. You can find installation instructions at the following address, but I'm planning on adding only the relevant steps here later.
@@ -48,6 +47,7 @@ redis (needed to interface with redis)
 wheel (needed to compile some c++ interface code)
 mysql-connector-python (MySQL interface)
 cryptography (used for cryptographic hashing)
+sshtunnel (Used to create an SSH tunnel to a set server.)
 ```
 
 Finally, we need to get the Flask debug server running.

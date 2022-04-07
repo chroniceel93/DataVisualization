@@ -45,12 +45,12 @@
     }
 
     function set_db() {
-      var server = document.getElementById("Server");
+      var schema = document.getElementById("schema");
       var ip = document.getElementById("ip");
       var port = document.getElementById("port");
       var username = document.getElementById("username_DB");
       var password = document.getElementById("password_DB");
-      $.post($SCRIPT_ROOT + '/set_db', { server:server.value, ip:ip.value, port:port.value, username:username.value, password:password.value}, function(JSON) {
+      $.post($SCRIPT_ROOT + '/set_db', { schema:schema.value, ip:ip.value, port:port.value, username:username.value, password:password.value}, function(JSON) {
           alert(JSON.toString())
       }, "json");
       return;
@@ -117,24 +117,24 @@ nothing
 
 <form id="form2" name="form2">
   <div>
-    <label for="Server">Enter Server:</label>
-    <input type="text" id="Server" name="Server" value="0">
+    <label for="schema">Enter DB Schema:</label>
+    <input type="text" id="schema" name="schema" value="{{session['schema']}}">
   </div>
   <div>
     <label for="ip">Enter IP:</label>
-    <input type="text" id="ip" name="ip" value="0">
+    <input type="text" id="ip" name="ip" value="{{session['ip']}}">
   </div>
   <div>
     <label for="port">Enter Port:</label>
-    <input type="text" id="port" name="port" value="0">
+    <input type="text" id="port" name="port" value="{{session['port']}}">
   </div>
   <div>
     <label for="username_DB">Enter Username:</label>
-    <input type="text" id="username_DB" name="username_DB" value="0">
+    <input type="text" id="username_DB" name="username_DB" value="{{session['db_username']}}">
   </div>
   <div>
     <label for="password_DB">Enter Password:</label>
-    <input type="text" id="password_DB" name="password_DB" value="0">
+    <input type="text" id="password_DB" name="password_DB" value="{{session['db_password']}}">
   </div>
     <input type="button" onclick="set_db()" value="Submit!">
 </form>

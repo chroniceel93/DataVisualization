@@ -3,7 +3,6 @@
 from flask import current_app as app
 from flask import render_template, request, session, render_template_string, redirect, url_for
 from flask_session import Session
-#from sshtunnel import SSHTunnelForwarder
 from . import db, login
 
 server_session = Session(app)
@@ -66,21 +65,29 @@ def dbtest_allfields():
 # These do not return actual webpages, just raw JSON data.
 @app.route('/db_all')
 def db_all():
-    access = db.DBData(user='johndoe'
-                     , password='password'
-                     , host='localhost'
-                     , schema='employees'
-                     , port='3306')
+    access = db.DBData(
+        db_user=session["db_username"],
+        db_password=session["db_password"],
+        schema=session["schema"],
+        ssh_user=session["db_username"],
+        ssh_password=session["db_password"],
+        host=session["ip"],
+        port=session["port"]
+    )
     return access.get_all()
 
 @app.route('/request', methods=['POST'])
 def req():
     query = request.form
-    access = db.DBData(user='johndoe'
-                    , password='password'
-                    , host='localhost'
-                    , schema='employees'
-                    , port='3306')
+    access = db.DBData(
+        db_user=session["db_username"],
+        db_password=session["db_password"],
+        schema=session["schema"],
+        ssh_user=session["db_username"],
+        ssh_password=session["db_password"],
+        host=session["ip"],
+        port=session["port"]
+    )
     
     return access.request(query.get('type')
                         , query.get('itemA')
@@ -91,12 +98,14 @@ def req():
 @app.route('/set_db', methods=['POST'])
 def set_db():
     query = request.form
-    session['server'] = str(query.get('server'))
+    session['schema'] = str(query.get('schema'))
     session['ip'] = str(query.get('ip'))
     session['port'] = str(query.get('port'))
-    session['username'] = str(query.get('username'))
-    session['password'] = str(query.get('password'))
-    return "NOP"
+    session['server_username'] = str(query.get('username'))
+    session['server_password'] = str(query.get('password'))
+    session['db_username'] = str(query.get('username'))
+    session['db_password'] = str(query.get('password'))
+    return "OK"
     
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -154,8 +163,18 @@ def delete_email():
 
 @app.route('/api_test')
 def api_test():
-    access = db.DBUser()
-    return access.get_all()
+    accessdb = db.DBData(
+        db_user=session["db_username"],
+        db_password=session["db_password"],
+        schema=session["schema"],
+        ssh_user=session["db_username"],
+        ssh_password=session["db_password"],
+        host=session["ip"],
+        port=session["port"]
+    )
+    result = accessdb.get_all()
+
+    return result
 
 # @app.route('/set_db', methods=['POST'])
 # def set_db():

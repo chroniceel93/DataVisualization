@@ -3,32 +3,81 @@
 
 from logging import addLevelName
 from flask import current_app, g, jsonify
-import mysql.connector
+import pymysql.cursors
+from sshtunnel import SSHTunnelForwarder
 import json
 import csv
 
 class DB(object):
-    user = ""
-    password = ""
-    host = ""
-    schema = ""
-    port = ""
-    connection = None
-    def __init__(self, user=None, password=None, host=None, schema=None, port=None):
-        self.user = user
-        self.password = password
-        self.host = host
-        self.schema = schema
-        self.port = port
-        self.connection = self.connect()
+    tunnel=None
+    connection=None
+    db_user=None
+    db_password=None
+    database=None
+    def __init__(self, 
+                db_user=None, 
+                db_password=None, 
+                schema=None, 
+                ssh_user=None, 
+                ssh_password=None, 
+                host=None, 
+                port=None):
+        if ssh_user != None:
+            self.setSSH(user=ssh_user,
+                        password=ssh_password,
+                        host=host,
+                        port=port)
+        self.setDB(user=db_user,
+                   password=db_password,
+                   schema=schema)
+        if ssh_user != None:
+            self.connect(port=self.tunnel.local_bind_port)
+        else:
+            self.connect(port=3306)
+        return
+    
+    def __del__(self):
+        self.tunnel.close()
+        return
+    
+    def setSSH(self, user=None, password=None, host=None, port=None):
+        self.tunnel
+        if host != None:
+            self.tunnel = SSHTunnelForwarder(
+                (host, int(port)),
+                ssh_username = user,
+                ssh_password = password,
+                remote_bind_address = ('localhost', 3306)
+            )
+        self.tunnel.start()
+        return
+    
+    def setDB(self, user=None, password=None, schema=None):
+        self.db_user=user
+        self.db_password=password
+        self.database=schema
+        return
         
-    def connect(self):
-        return mysql.connector.connect( user=self.user
-                                        , password=self.password
-                                        , host=self.host
-                                        , database=self.schema
-                                        , port=self.port)
-        
+    def connect(self, port=None):
+        #try:
+        self.connection = pymysql.connect( user=self.db_user
+                                    , password=self.db_password
+                                    , host='localhost'
+                                    , database=self.database
+                                    , port=port)
+        # except pymysql.connector.Error as e:
+        #     print("Error code:", e.errno)        # error number
+        #     print("SQLSTATE value:", e.sqlstate) # SQLSTATE value
+        #     print("Error message:", e.msg)       # error message
+        #     print("Error:", e)                   # errno, sqlstate, msg values
+        #     s = str(e)
+        #     print("Error:", s)                   # errno, sqlstate, msg values
+        return
+    
+    def disconnect(self):
+        self.connection.close()
+        return
+    
     def execute_com(self, string="", commit=False):
         """ Takes a given string, assuming it is a valid SQL Query, and executes it.
 
@@ -355,11 +404,15 @@ class DBData(DB):
     
 class DBUser(DB):
     def __init__(self):
-        super(DBUser, self).__init__(user="data"
-                                   , password="Cg39rbaioxskMF4WyEfSfvbH"
+        super(DBUser, self).__init__(db_user="data"
+                                   , db_password="Cg39rbaioxskMF4WyEfSfvbH"
                                    , host="localhost"
                                    , schema="DataVisUser"
                                    , port="3306")
+        return
+        
+    def __del__(self):
+        return
         
     def SearchUser(self, username=None, email=None):
         command = "SELECT "
