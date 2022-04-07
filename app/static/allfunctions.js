@@ -385,11 +385,15 @@ $.ajax({
     success: function(JSON) {
         */
 
-        // check if first character is '{', then it worked
-        // if not, then bad response
-
         var tmp = JSON.toString();
         var allVars = tmp.split(",");
+
+        // check if first character is '{', then it worked
+        // if not, then bad response
+        if (isNaN(tmp[0])) {
+            alert('You cannot graph this');
+            return;
+        }
 
         // gets odd values from array, which are x-vals
         var x = allVars.filter((element, index) => {
