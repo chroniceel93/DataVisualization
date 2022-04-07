@@ -138,7 +138,7 @@ class DB(object):
                 break
         
         # if keyA returned empty
-        if (keyA == []):
+        if (keyA == ()):
             #then we use keyB
             command = tableA + " JOIN " + tableB + \
             " ON " + tableB + "." + keyB + " = " + tableA + "." + keyB + " "
