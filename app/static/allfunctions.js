@@ -316,7 +316,10 @@ function graph(table, xColumn, yColumn, yType, operation) {
             
         //}
    // });
-    }, "json");
+    }, "json")
+    .fail(function() {
+        alert('error');
+    });
 }
 
 
@@ -328,6 +331,7 @@ function updateGraph() {
     myChart.update();
 }
 
+// when user chooses operation,
 function chooseOperation(value) {
     operation = value;
 }
