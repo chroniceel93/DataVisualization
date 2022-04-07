@@ -277,14 +277,14 @@ function getType(y) {
 
 
 // type: -1 for no operation (disables step), 0 for avg, 1 for sum
-function graph(table, xColumn, yColumn, yType) {
+function graph(table, xColumn, yColumn, yType, operation) {
 
     // construct strings for sql queries
     var A = table + "," + xColumn;
     var B = table + "," + yColumn + "," + yType;
 
         // requests appropriate data
-        $.post($SCRIPT_ROOT + '/request', { type: 0, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
+        $.post($SCRIPT_ROOT + '/request', { type: operation, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
 
         /* CLEAN: get this to work synchronously so no need for separate 'update' and 'graph' buttons
     $.ajax({
@@ -326,4 +326,8 @@ function dropToggleColumn() {
 
 function updateGraph() {
     myChart.update();
+}
+
+function chooseOperation(value) {
+    operation = value;
 }

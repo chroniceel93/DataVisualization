@@ -30,13 +30,20 @@
   <option> Select y-axis </option>  
 </select>
 
+<select id='operationDropdown' onchange = 'chooseOperation(value)'>
+  <option> Select operation </option>
+  <option value = '-1'> No operation </option>
+  <option value = '0'> Average </option>
+  <option value = '1'> Summation </option>
+</select>
+
 <!--- REMOVE: Keep track of current values, useful for debugging -->
 <p id='table'></p>
 <p id = 'columnX'></p>
 <p id = 'columnY'></p>
 <p id = 'columnYType'></p>
 
-<button onclick = 'graph(table, xColumn, yColumn, yType)'> Update Values </button>
+<button onclick = 'graph(table, xColumn, yColumn, yType, operation)'> Update Values </button>
 
 <button onclick=updateGraph()> Graph </button>
 
@@ -57,6 +64,7 @@
   var xColumn;
   var yColumn;
   var yType;
+  var operation;
   
   // html elements
   var tableDropdown = document.getElementById("tables");
