@@ -16,19 +16,30 @@
 <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
 <button class="button" onclick="history.back()">Back</button>
 
+<br>
+
 <!-- Dropdown with table choices -->
-<select id="tables" onchange="chooseTable(value)">
-  <option> Select a table </option>  
+<select id="tablesX" onchange="chooseTableX(value)">
+  <option> Select a table - x </option>  
 </select>
+
+<select id="tablesY" onchange="chooseTableY(value)">
+  <option> Select a table - y</option>  
+</select>
+
+<br><br>
+
 
 <!-- Column dropdowns, dependent on what table user chooses-->
 <select id="xDropdown" onchange = "chooseX(value)">
-  <option> Select x-axis </option>  
+  <option> Select a column - x </option>  
 </select>
 
 <select id="yDropdown" onchange = 'chooseY(value)'>
-  <option> Select y-axis </option>  
+  <option> Select a column - y </option>  
 </select>
+
+<br><br>
 
 <select id='operationDropdown' onchange = 'chooseOperation(value)'>
   <option> Select operation </option>
@@ -37,14 +48,17 @@
   <option value = '1'> Summation </option>
 </select>
 
+<br><br>
+
 <!--- REMOVE: Keep track of current values, useful for debugging -->
-<p id='table'></p>
+<p id='tableX'></p>
+<p id='tableY'></p>
 <p id = 'columnX'></p>
 <p id = 'columnY'></p>
 <p id = 'columnYType'></p>
 <p id = 'operation'></p>
 
-<button onclick = 'getGraph(table, xColumn, yColumn, yType, operation)'> Update Values </button>
+<button onclick = 'getGraph(xColumn, yColumn, yType, operation)'> Update Values </button>
 
 <button onclick=updateGraph()> Update Graph </button>
 
@@ -57,7 +71,8 @@
   $SCRIPT_ROOT = {{ request.script_root|tojson }};
 
   // IMPORTANT: global variables
-  var columnChoices = [];
+  var columnChoicesX = [];
+  var columnChoicesY = [];
   var tableChoices = [];
 
   var table = 'unspecified';
@@ -71,7 +86,8 @@
   var database;
   
   // html elements
-  var tableDropdown = document.getElementById("tables");
+  var tableDropdownX = document.getElementById("tablesX");
+  var tableDropdownY = document.getElementById("tablesY");
   var xDropdown = document.getElementById("xDropdown");
   var yDropdown = document.getElementById("yDropdown");
 
@@ -204,7 +220,7 @@
 
     //code for loading graph from import page
     //maybe able to move to allfunctions.js depening on what db functions are moved there too
-    //TODO: add fifth variable for type (summation, average)
+    //TODO: update getGraph call
     if(typeof(Storage)!=="undefined" && localStorage.dbchose){
       getGraph(localStorage.getItem('dbchose'), localStorage.getItem('x1chose'), localStorage.getItem('y1chose'), localStorage.getItem('y1type'));
 

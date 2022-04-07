@@ -142,37 +142,57 @@ function setTables(tableChoices) {
 
 // displays elements of tableChoices in tableDropdown element
 // CLEAN: figure out how generalize this function by passing in a parameter
+// CLEAN: fix this elx and ely bullshit
 function displayTables() {
     for (var i = 0; i < tableChoices.length; i++) {
         var optn = tableChoices[i];
-        var el = document.createElement("option");
-        el.textContent = optn;
-        el.value = optn;
+        var elx = document.createElement("option");
+        elx.textContent = optn;
+        elx.value = optn;
 
-        tableDropdown.appendChild(el);
+        var ely = document.createElement("option");
+        ely.textContent = optn;
+        ely.value = optn;
+
+        tableDropdownX.appendChild(elx);
+        tableDropdownY.appendChild(ely);
     }
 }
 
 
 // CALLED BY USER
 
+//CLEAN: Combine these
 // when user chooses table:
-function chooseTable(tempTable) {
+function chooseTableX(tempTable) {
     // update global variables
-    table = tempTable;
-    setColumns(table, columnChoices); // sets columnChoices according to current table
+    xColumn['table'] = tempTable;
+    setColumns(xColumn['table'], columnChoicesX); // sets columnChoicesX according to current table
 
     // set html used for debugging
-    document.getElementById('table').innerHTML = "Current table - " + table;
+    document.getElementById('tableX').innerHTML = "Current x-table - " + xColumn['table'];
 
     // display new dropdowns
-    displayColumns();
+    //displayColumns();
+    displayXColumn(columnChoicesX);
+}
+
+function chooseTableY(tempTable) {
+    // update global variables
+    yColumn['table'] = tempTable;
+    setColumns(yColumn['table'], columnChoicesY); // sets columnChoicesY according to current table
+
+    // set html used for debugging
+    document.getElementById('tableY').innerHTML = "Current y-table - " + yColumn['table'];
+
+    // display new dropdowns
+    //displayColumns();
+    displayYColumn(columnChoicesY);
 }
 
 // when user chooses x-axis
 function chooseX(tempX) {
-    //xColumn = tempX; // update global variable
-    xColumn['table'] = table;
+    // update global variable
     xColumn['column'] = tempX;
     document.getElementById('columnX').innerHTML = "Current x-axis - " + xColumn['column'] + " FROM " + xColumn['table']; // update html
 }
@@ -180,7 +200,6 @@ function chooseX(tempX) {
 // when user chooses y-axis
 function chooseY(tempY) {
     // update global variables
-    yColumn['table'] = table;
     yColumn['column'] = tempY; 
     setType(tempY);
 
@@ -221,8 +240,9 @@ function setColumns(tableName, columnChoices) {
     }
 }
 
+/*
 // displays column dropdown
-function displayColumns() {
+function displayColumns(columnChoices) {
     // delete options for old column dropdowns
     removeOptions(xDropdown);
     removeOptions(yDropdown);
@@ -244,6 +264,45 @@ function displayColumns() {
 
         // appends elements
         xDropdown.appendChild(elx);
+        yDropdown.appendChild(ely);
+    }
+}
+*/
+
+function displayXColumn(columnChoices) {
+    // delete options for old column dropdowns
+    removeOptions(xDropdown);
+
+    // loops over columns, adding those that correspond to table
+    // CLEAN: don't know why need elx and ely separately, but it works
+    for (var i = 0; i < columnChoices.length; i++) {
+        var optn = columnChoices[i];
+
+        // creates element to be added
+        var elx = document.createElement("option");
+        elx.textContent = optn;
+        elx.value = optn;
+
+        // appends elements
+        xDropdown.appendChild(elx);
+    }
+}
+
+function displayYColumn(columnChoices) {
+    // delete options for old column dropdowns
+    removeOptions(yDropdown);
+
+    // loops over columns, adding those that correspond to table
+    // CLEAN: don't know why need elx and ely separately, but it works
+    for (var i = 0; i < columnChoices.length; i++) {
+        var optn = columnChoices[i];
+
+        // creates element to be added
+        var ely = document.createElement("option");
+        ely.textContent = optn;
+        ely.value = optn;
+
+        // appends elements
         yDropdown.appendChild(ely);
     }
 }
@@ -279,12 +338,17 @@ function setType(tempY) {
 
 // type: -1 for no operation (disables step), 0 for avg, 1 for sum
 // CLEAN: combine error alerts into a general function (named specifed?)
-function getGraph(table, xColumn, yColumn, yType, operation) {
+function getGraph(xColumn, yColumn, yType, operation) {
 
     // if table is unspecified
-    if (table == 'unspecified') {
-        alert('Please specify a table');
-        return
+    if (xColumn['table'] == 'unspecified') {
+        alert('Please specify a table for the x-axis');
+        return;
+    }
+
+    if (yColumn['table'] == 'unspecified') {
+        alert('Please specify a table for the y-axis');
+        return;
     }
 
     // if x-column is unspecified
@@ -294,7 +358,7 @@ function getGraph(table, xColumn, yColumn, yType, operation) {
     }
 
     // if y-column is unspecified
-    if (yColumn['table'] == 'unspecified') {
+    if (yColumn['column'] == 'unspecified') {
         alert('Please specify a y-column');
         return;
     }
@@ -320,6 +384,9 @@ $.ajax({
     async: false,
     success: function(JSON) {
         */
+
+        // check if first character is '{', then it worked
+        // if not, then bad response
 
         var tmp = JSON.toString();
         var allVars = tmp.split(",");
