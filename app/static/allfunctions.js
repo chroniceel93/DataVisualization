@@ -169,18 +169,21 @@ function chooseTable(tempTable) {
 
 // when user chooses x-axis
 function chooseX(tempX) {
-    xColumn = tempX; // update global variable
-    document.getElementById('columnX').innerHTML = "Current x-axis - " + xColumn; // update html
+    //xColumn = tempX; // update global variable
+    newX['table'] = table;
+    newX['column'] = tempX;
+    document.getElementById('columnX').innerHTML = "Current x-axis - " + newX['column'] + " FROM " + newX['table']; // update html
 }
 
 // when user chooses y-axis
 function chooseY(tempY) {
     // update global variables
-    yColumn = tempY; 
-    setType(yColumn);
+    newY['table'] = table;
+    newY['column'] = tempY; 
+    setType(tempY);
 
     // update html
-    document.getElementById('columnY').innerHTML = "Current y-axis - " + yColumn; 
+    document.getElementById('columnY').innerHTML = "Current y-axis - " + newY['column'] + " FROM " + newY['table']; 
     document.getElementById('columnYType').innerHTML = "Current y type - " + yType;
 }
 
@@ -261,7 +264,7 @@ function removeOptions(selectElement) {
   
 // returns type associated with column passed in
 // CLEAN: use something other than global variable
-function setType(yColumn) {
+function setType(tempY) {
     $.ajax({
         url: $SCRIPT_ROOT + '/db_all',
         dataType: 'json',
@@ -277,7 +280,7 @@ function setType(yColumn) {
                 currentType = JSON[i][2];
 
                 // if column name matches
-                if (yColumn == currentColumn)
+                if (tempY == currentColumn)
                     yType = currentType;
             }
         }
@@ -286,11 +289,11 @@ function setType(yColumn) {
 
 
 // type: -1 for no operation (disables step), 0 for avg, 1 for sum
-function getGraph(table, xColumn, yColumn, yType, operation) {
+function getGraph(table, newX, newY, yType, operation) {
 
     // construct strings for sql queries
-    var A = table + "," + xColumn;
-    var B = table + "," + yColumn + "," + yType;
+    var A = newX['table'] + "," + newX['column'];
+    var B = newY['table'] + "," + newY['column'] + "," + yType;
 
         // requests appropriate data
         $.post($SCRIPT_ROOT + '/request', { type: operation, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
