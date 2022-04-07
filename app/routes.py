@@ -89,11 +89,11 @@ def req():
         port=session["port"]
     )
     
-    return access.request(query.get('type')
-                        , query.get('itemA')
-                        , query.get('itemB')
-                        , query.get('filter')
-                        , query.get('step'))
+    return access.request(type=query.get('type')
+                        , itemA=query.get('itemA')
+                        , itemB=query.get('itemB')
+                        , Filter=query.get('filter')
+                        , step=query.get('step'))
     
 @app.route('/set_db', methods=['POST'])
 def set_db():

@@ -189,7 +189,7 @@ class DB(object):
             cols =self.get_table_columns(table=str(items[x])[2:-3])
             for y in range(0, len(cols)):
                 # append 2d array element with table name, item name and item type, in that order
-                result.append([str(items[x])[2:-3], str(cols[y][0]), str(cols[y][1])[2:-1]])
+                result.append([str(items[x])[2:-3], str(cols[y][0]), str(cols[y][1])])
         return json.dumps(result)   
         
         
@@ -210,7 +210,7 @@ class DBData(DB):
 
 
     
-    def request(self, type=None, itemA=None, itemB=None, Filter=None, step=None):
+    def request(self, type=-1, itemA=None, itemB=None, Filter=None, step=None):
         """ This function returns the JSON formatted results of an abstracted SQL request.
 
         The abstraction currently relies on a few core assumptions. We will only be returning two fields per request, and we will only average or sum the requests. The current syntax is designed so that it can be extended.
