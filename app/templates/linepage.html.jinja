@@ -44,7 +44,7 @@
 <p id = 'columnYType'></p>
 <p id = 'operation'></p>
 
-<button onclick = 'getGraph(table, newX, newY, yType, operation)'> Update Values </button>
+<button onclick = 'getGraph(table, xColumn, yColumn, yType, operation)'> Update Values </button>
 
 <button onclick=updateGraph()> Graph </button>
 
@@ -60,15 +60,13 @@
   var columnChoices = [];
   var tableChoices = [];
   
-  var table;
-  //var xColumn;
-  //var yColumn;
+  var table = 'unspecified';
   var yType;
-  var operation;
+  var operation = 'unspecified';
 
   // to replace xColumn and yColumn, specify table a given column is from
-  var newX = {table:'unspecified', column:'unspecified'};
-  var newY = {table:'unspecified', column:'unspecified'};
+  var xColumn = {table:'unspecified', column:'unspecified'};
+  var yColumn = {table:'unspecified', column:'unspecified'};
   
   // html elements
   var tableDropdown = document.getElementById("tables");
@@ -105,7 +103,7 @@
     <button class="button" onclick="favgraph()">Favorite Graph</button>
     <button class="button" onclick="graphhistory()">View Page</button><br>
     <button class="button" onclick="seconddata()">Add Second Dataset</button>
-    <button class="button" onclick="exportsavedata('line', table, newX, newY, yType)">Export Graph Settings</button>
+    <button class="button" onclick="exportsavedata('line', table, xColumn, yColumn, yType)">Export Graph Settings</button>
     <button class="button" onclick="testRequest()"> Show request result </button>
   </div>
 </div>

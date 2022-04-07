@@ -170,20 +170,20 @@ function chooseTable(tempTable) {
 // when user chooses x-axis
 function chooseX(tempX) {
     //xColumn = tempX; // update global variable
-    newX['table'] = table;
-    newX['column'] = tempX;
-    document.getElementById('columnX').innerHTML = "Current x-axis - " + newX['column'] + " FROM " + newX['table']; // update html
+    xColumn['table'] = table;
+    xColumn['column'] = tempX;
+    document.getElementById('columnX').innerHTML = "Current x-axis - " + xColumn['column'] + " FROM " + xColumn['table']; // update html
 }
 
 // when user chooses y-axis
 function chooseY(tempY) {
     // update global variables
-    newY['table'] = table;
-    newY['column'] = tempY; 
+    yColumn['table'] = table;
+    yColumn['column'] = tempY; 
     setType(tempY);
 
     // update html
-    document.getElementById('columnY').innerHTML = "Current y-axis - " + newY['column'] + " FROM " + newY['table']; 
+    document.getElementById('columnY').innerHTML = "Current y-axis - " + yColumn['column'] + " FROM " + yColumn['table']; 
     document.getElementById('columnYType').innerHTML = "Current y type - " + yType;
 }
 
@@ -289,43 +289,68 @@ function setType(tempY) {
 
 
 // type: -1 for no operation (disables step), 0 for avg, 1 for sum
-function getGraph(table, newX, newY, yType, operation) {
+// CLEAN: combine error alerts into a general function (named specifed?)
+function getGraph(table, xColumn, yColumn, yType, operation) {
+
+    // if table is unspecified
+    if (table == 'unspecified') {
+        alert('Please specify a table');
+        return
+    }
+
+    // if x-column is unspecified
+    if (xColumn['column'] == 'unspecified') {
+        alert('Please specify an x-column');
+        return;
+    }
+
+    // if y-column is unspecified
+    if (yColumn['table'] == 'unspecified') {
+        alert('Please specify a y-column');
+        return;
+    }
+
+    // if operation is unspecified
+    if (operation == 'unspecified') {
+        alert('Please specify an operation');
+        return;
+    }
 
     // construct strings for sql queries
-    var A = newX['table'] + "," + newX['column'];
-    var B = newY['table'] + "," + newY['column'] + "," + yType;
+    var A = xColumn['table'] + "," + xColumn['column'];
+    var B = yColumn['table'] + "," + yColumn['column'] + "," + yType;
 
-        // requests appropriate data
-        $.post($SCRIPT_ROOT + '/request', { type: operation, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
+    // requests appropriate data
+    $.post($SCRIPT_ROOT + '/request', { type: operation, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
 
-        /* CLEAN: get this to work synchronously so no need for separate 'update' and 'getGraph' buttons
-    $.ajax({
-        url: $SCRIPT_ROOT + '/request',
-        data: { type: 0, itemA: A, itemB: B, filter: "", step: 1 },
-        dataType: 'json',
-        async: false,
-        success: function(JSON) {
-            */
+    /* CLEAN: get this to work synchronously so no need for separate 'update' and 'getGraph' buttons
+$.ajax({
+    url: $SCRIPT_ROOT + '/request',
+    data: { type: 0, itemA: A, itemB: B, filter: "", step: 1 },
+    dataType: 'json',
+    async: false,
+    success: function(JSON) {
+        */
 
-            var tmp = JSON.toString();
-            var allVars = tmp.split(",");
+        var tmp = JSON.toString();
+        var allVars = tmp.split(",");
 
-            // gets odd values from array, which are x-vals
-            var x = allVars.filter((element, index) => {
-                return index % 2 === 1;
-            });
+        // gets odd values from array, which are x-vals
+        var x = allVars.filter((element, index) => {
+            return index % 2 === 1;
+        });
 
-            // gets even values from array, which are y-vals
-            var y = allVars.filter((element, index) => {
-                return index % 2 === 0;
-            });
+        // gets even values from array, which are y-vals
+        var y = allVars.filter((element, index) => {
+            return index % 2 === 0;
+        });
 
-            // sets graph x-values
-            myChart.config.data.labels = x;
+        // sets graph x-values
+        myChart.config.data.labels = x;
 
-            // sets graph y-values
-            myChart.config.data.datasets[0].data = y;
-            
+        // sets graph y-values
+        myChart.config.data.datasets[0].data = y;
+        
         //}
    // });
     }, "json")
