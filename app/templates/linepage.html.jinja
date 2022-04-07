@@ -43,7 +43,7 @@
 <p id = 'columnY'></p>
 <p id = 'columnYType'></p>
 
-<button onclick = 'graph(table, xColumn, yColumn, yType, operation)'> Update Values </button>
+<button onclick = 'getGraph(table, xColumn, yColumn, yType, operation)'> Update Values </button>
 
 <button onclick=updateGraph()> Graph </button>
 
@@ -54,7 +54,6 @@
 <script>
   // jinja substitutes the scripts root directory upon creation.
   $SCRIPT_ROOT = {{ request.script_root|tojson }};
-
 
   // IMPORTANT: global variables
   var columnChoices = [];
@@ -76,20 +75,6 @@
   setTables(tableChoices); // set tables from database
   displayTables(); // display table dropdown
 
-  // Close the dropdown menu if the user clicks outside of it
-  // Not sure if this is necessary?
-  window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-      var dropdowns = document.getElementsByClassName("dropdown-content");
-      var i;
-      for (i = 0; i < dropdowns.length; i++) {
-        var openDropdown = dropdowns[i];
-        if (openDropdown.classList.contains('show')) {
-          openDropdown.classList.remove('show');
-        }
-      }
-    }
-  }
 </script>
 
 
@@ -214,8 +199,9 @@
 
     //code for loading graph from import page
     //maybe able to move to allfunctions.js depening on what db functions are moved there too
+    //TODO: add fifth variable for type (summation, average)
     if(typeof(Storage)!=="undefined" && localStorage.dbchose){
-      graph(localStorage.getItem('dbchose'), localStorage.getItem('x1chose'), localStorage.getItem('y1chose'), localStorage.getItem('y1type'));
+      getGraph(localStorage.getItem('dbchose'), localStorage.getItem('x1chose'), localStorage.getItem('y1chose'), localStorage.getItem('y1type'));
 
       //clear localstorage of import options
       localStorage.removeItem("dbchose");

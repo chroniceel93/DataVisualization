@@ -107,11 +107,10 @@ function exportsavedata(charttype, dbin, xin, yin, ytype){
 
 
 
-
-
-
-
-
+// Keaton's functions:
+// Ordered by: 1. Called on page load
+//             2. Called by user action
+//             3. Called by other function
 
 // gets tables from raw JSON data
 // passing by reference with global vars, but might need to change this - Arrays are weird in JS
@@ -152,28 +151,13 @@ function displayTables() {
     }
 }
 
-// when user chooses x-axis
-function chooseX(x) {
-    xColumn = x; // update global variable
-    document.getElementById('columnX').innerHTML = "Current x-axis - " + x; // update html
-}
 
-// when user chooses y-axis
-function chooseY(y) {
-    // update global variables
-    yColumn = y; 
-    getType(y);
-
-    // update html
-    document.getElementById('columnY').innerHTML = "Current y-axis - " + y; 
-    document.getElementById('columnYType').innerHTML = "Current y type - " + yType;
-}
 
 
 // when user chooses table:
-function chooseTable(dummyTable) {
+function chooseTable(tempTable) {
     // update global variables
-    table = dummyTable;
+    table = tempTable;
     setColumns(table, columnChoices); // sets columnChoices according to current table
 
     // set html used for debugging
@@ -181,6 +165,60 @@ function chooseTable(dummyTable) {
 
     // display new dropdowns
     displayColumns();
+}
+
+// when user chooses x-axis
+function chooseX(tempX) {
+    xColumn = tempX; // update global variable
+    document.getElementById('columnX').innerHTML = "Current x-axis - " + xColumn; // update html
+}
+
+// when user chooses y-axis
+function chooseY(tempY) {
+    // update global variables
+    yColumn = tempY; 
+    setType(yColumn);
+
+    // update html
+    document.getElementById('columnY').innerHTML = "Current y-axis - " + yColumn; 
+    document.getElementById('columnYType').innerHTML = "Current y type - " + yType;
+}
+
+// when user chooses operation,
+function chooseOperation(value) {
+    operation = value;
+}
+
+
+
+
+// returns list of columns associated with given table name
+// CLEAN: eliminate passing in global variable
+function setColumns(tableName, columnChoices) {
+    // clear existing columns
+    columnChoices.length = 0;
+
+    $.ajax({
+        url: $SCRIPT_ROOT + '/db_all',
+        dataType: 'json',
+        async: false,
+        success: function(JSON) {
+            var currentTable;
+            var currentColumn;
+
+            // loop through JSON object and grab column names associated with given table name
+            // ASSUMES: first element of 2d array is table name, second is column name
+            for (var i = 0, len = JSON.length; i < len; i++) {
+                currentTable = JSON[i][0];
+                currentColumn = JSON[i][1];
+
+                // if table name matches
+                if (tableName == currentTable) {
+                columnChoices.push(currentColumn);
+                }
+            }
+        }
+    });
 }
 
 // displays column dropdown
@@ -218,41 +256,10 @@ function removeOptions(selectElement) {
        selectElement.remove(i);
     }
  }
-
-
-// returns list of columns associated with given table name
-// CLEAN: eliminate passing in global variable
-function setColumns(tableName, columnChoices) {
-    // clear existing columns
-    columnChoices.length = 0;
-
-    $.ajax({
-        url: $SCRIPT_ROOT + '/db_all',
-        dataType: 'json',
-        async: false,
-        success: function(JSON) {
-            var currentTable;
-            var currentColumn;
-
-            // loop through JSON object and grab column names associated with given table name
-            // ASSUMES: first element of 2d array is table name, second is column name
-            for (var i = 0, len = JSON.length; i < len; i++) {
-                currentTable = JSON[i][0];
-                currentColumn = JSON[i][1];
-
-                // if table name matches
-                if (tableName == currentTable) {
-                columnChoices.push(currentColumn);
-                }
-            }
-        }
-    });
-}
-
   
 // returns type associated with column passed in
 // CLEAN: use something other than global variable
-function getType(y) {
+function setType(yColumn) {
     $.ajax({
         url: $SCRIPT_ROOT + '/db_all',
         dataType: 'json',
@@ -269,7 +276,7 @@ function getType(y) {
 
                 // if column name matches
                 if (yColumn == currentColumn)
-                yType = currentType;
+                    yType = currentType;
             }
         }
     });
@@ -277,7 +284,7 @@ function getType(y) {
 
 
 // type: -1 for no operation (disables step), 0 for avg, 1 for sum
-function graph(table, xColumn, yColumn, yType, operation) {
+function getGraph(table, xColumn, yColumn, yType, operation) {
 
     // construct strings for sql queries
     var A = table + "," + xColumn;
@@ -286,7 +293,7 @@ function graph(table, xColumn, yColumn, yType, operation) {
         // requests appropriate data
         $.post($SCRIPT_ROOT + '/request', { type: operation, itemA: A, itemB: B, filter: "", step: 1 }, function(JSON) {
 
-        /* CLEAN: get this to work synchronously so no need for separate 'update' and 'graph' buttons
+        /* CLEAN: get this to work synchronously so no need for separate 'update' and 'getGraph' buttons
     $.ajax({
         url: $SCRIPT_ROOT + '/request',
         data: { type: 0, itemA: A, itemB: B, filter: "", step: 1 },
@@ -331,7 +338,3 @@ function updateGraph() {
     myChart.update();
 }
 
-// when user chooses operation,
-function chooseOperation(value) {
-    operation = value;
-}
