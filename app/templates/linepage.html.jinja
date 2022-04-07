@@ -7,9 +7,9 @@
   <script src="{{ url_for('static', filename='chart.js') }}"></script>
   <script src="{{ url_for('static', filename='jquery.js') }}"></script>
   <script src="{{ url_for('static', filename='allfunctions.js') }}"></script>
-
 </head>
 <body>
+
 
 
 <h3>Line Graph Page</h3>
@@ -46,7 +46,7 @@
 
 <button onclick = 'getGraph(table, xColumn, yColumn, yType, operation)'> Update Values </button>
 
-<button onclick=updateGraph()> Graph </button>
+<button onclick=updateGraph()> Update Graph </button>
 
 
 
@@ -59,14 +59,16 @@
   // IMPORTANT: global variables
   var columnChoices = [];
   var tableChoices = [];
-  
+
   var table = 'unspecified';
   var yType;
   var operation = 'unspecified';
 
-  // to replace xColumn and yColumn, specify table a given column is from
   var xColumn = {table:'unspecified', column:'unspecified'};
   var yColumn = {table:'unspecified', column:'unspecified'};
+
+  //NEW
+  var database;
   
   // html elements
   var tableDropdown = document.getElementById("tables");

@@ -118,24 +118,26 @@ function exportsavedata(charttype, dbin, xin, yin, ytype){
 function setTables(tableChoices) {
     var currentTable;
 
-    // this used to be .getJSON, but now have syncronous option
+    // get database from backend
     $.ajax({
         url: $SCRIPT_ROOT + '/db_all',
         dataType: 'json',
         async: false,
         success: function(JSON) {
-            // loop through JSON object and create array with unique table names
-            // ASSUMES: first element of 2d array is table name, second is column name
-            for (var i = 0, len = JSON.length; i < len; i++) {
-                currentTable = JSON[i][0];
-                var inTables = (tableChoices.indexOf(currentTable) > -1); // is current table already in tableChoices?
-
-                // if currentTable is not already in tables,
-                if (!inTables)
-                    tableChoices.push(currentTable); // add it to tables
-            }
+            database = JSON;
         }
     });
+
+    // loop through database object and create array with unique table names
+    // ASSUMES: first element of 2d array is table name, second is column name
+    for (var i = 0, len = database.length; i < len; i++) {
+        currentTable = database[i][0];
+        var inTables = (tableChoices.indexOf(currentTable) > -1); // is current table already in tableChoices?
+
+        // if currentTable is not already in tables,
+        if (!inTables)
+            tableChoices.push(currentTable); // add it to tables
+    }
 }
 
 // displays elements of tableChoices in tableDropdown element
@@ -203,27 +205,20 @@ function setColumns(tableName, columnChoices) {
     // clear existing columns
     columnChoices.length = 0;
 
-    $.ajax({
-        url: $SCRIPT_ROOT + '/db_all',
-        dataType: 'json',
-        async: false,
-        success: function(JSON) {
-            var currentTable;
-            var currentColumn;
+    var currentTable;
+    var currentColumn;
 
-            // loop through JSON object and grab column names associated with given table name
-            // ASSUMES: first element of 2d array is table name, second is column name
-            for (var i = 0, len = JSON.length; i < len; i++) {
-                currentTable = JSON[i][0];
-                currentColumn = JSON[i][1];
+    // loop through database object and grab column names associated with given table name
+    // ASSUMES: first element of 2d array is table name, second is column name
+    for (var i = 0, len = database.length; i < len; i++) {
+        currentTable = database[i][0];
+        currentColumn = database[i][1];
 
-                // if table name matches
-                if (tableName == currentTable) {
-                columnChoices.push(currentColumn);
-                }
-            }
+        // if table name matches
+        if (tableName == currentTable) {
+        columnChoices.push(currentColumn);
         }
-    });
+    }
 }
 
 // displays column dropdown
@@ -265,26 +260,20 @@ function removeOptions(selectElement) {
 // returns type associated with column passed in
 // CLEAN: use something other than global variable
 function setType(tempY) {
-    $.ajax({
-        url: $SCRIPT_ROOT + '/db_all',
-        dataType: 'json',
-        async: false,
-        success: function(JSON) {
-            var currentColumn;
-            var currentType;
 
-            // loop through JSON object and grab column type associated with chosen column
-            // ASSUMES: third element of 2d array is column type
-            for (var i = 0, len = JSON.length; i < len; i++) {
-                currentColumn = JSON[i][1];
-                currentType = JSON[i][2];
+    var currentColumn;
+    var currentType;
 
-                // if column name matches
-                if (tempY == currentColumn)
-                    yType = currentType;
-            }
-        }
-    });
+    // loop through database object and grab column type associated with chosen column
+    // ASSUMES: third element of 2d array is column type
+    for (var i = 0, len = database.length; i < len; i++) {
+        currentColumn = database[i][1];
+        currentType = database[i][2];
+
+        // if column name matches
+        if (tempY == currentColumn)
+            yType = currentType;
+    }
 }
 
 
