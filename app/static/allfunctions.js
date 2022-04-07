@@ -152,7 +152,7 @@ function displayTables() {
 }
 
 
-
+// CALLED BY USER
 
 // when user chooses table:
 function chooseTable(tempTable) {
@@ -187,10 +187,12 @@ function chooseY(tempY) {
 // when user chooses operation,
 function chooseOperation(value) {
     operation = value;
+
+    document.getElementById('operation').innerHTML = "Current operation - " + operation;
 }
 
 
-
+// CALLED BY OTHER FUNCTION
 
 // returns list of columns associated with given table name
 // CLEAN: eliminate passing in global variable
