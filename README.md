@@ -46,6 +46,7 @@ Flask-session (needed for session handling)
 redis (needed to interface with redis)
 wheel (needed to compile some c++ interface code)
 mysql-connector-python (MySQL interface)
+pymysql
 cryptography (used for cryptographic hashing)
 sshtunnel (Used to create an SSH tunnel to a set server.)
 ```

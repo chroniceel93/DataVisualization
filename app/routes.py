@@ -101,10 +101,10 @@ def set_db():
     session['schema'] = str(query.get('schema'))
     session['ip'] = str(query.get('ip'))
     session['port'] = str(query.get('port'))
-    session['server_username'] = str(query.get('username'))
-    session['server_password'] = str(query.get('password'))
-    session['db_username'] = str(query.get('username'))
-    session['db_password'] = str(query.get('password'))
+    session['server_username'] = str(query.get('server_username'))
+    session['server_password'] = str(query.get('server_password'))
+    session['db_username'] = str(query.get('db_username'))
+    session['db_password'] = str(query.get('db_password'))
     return "OK"
     
 

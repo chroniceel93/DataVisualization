@@ -48,9 +48,11 @@
       var schema = document.getElementById("schema");
       var ip = document.getElementById("ip");
       var port = document.getElementById("port");
-      var username = document.getElementById("username_DB");
-      var password = document.getElementById("password_DB");
-      $.post($SCRIPT_ROOT + '/set_db', { schema:schema.value, ip:ip.value, port:port.value, username:username.value, password:password.value}, function(JSON) {
+      var server_username = document.getElementById("username_Server");
+      var server_password = document.getElementById("password_Server");
+      var db_username = document.getElementById("username_DB");
+      var db_password = document.getElementById("password_DB");
+      $.post($SCRIPT_ROOT + '/set_db', { schema:schema.value, ip:ip.value, port:port.value, server_username: server_username.value, server_password: server_password.value, db_username: db_username.value, db_password: db_password.value}, function(JSON) {
           alert(JSON.toString())
       }, "json");
       return;
@@ -128,12 +130,20 @@ nothing
     <label for="port">Enter Port:</label>
     <input type="text" id="port" name="port" value="{{session['port']}}">
   </div>
+    <div>
+    <label for="username_Server">Enter Server Username:</label>
+    <input type="text" id="username_Server" name="username_Server" value="{{session['server_username']}}">
+  </div>
   <div>
-    <label for="username_DB">Enter Username:</label>
+    <label for="password_Server">Enter Server Password:</label>
+    <input type="text" id="password_Server" name="password_Server" value="{{session['server_password']}}">
+  </div>
+  <div>
+    <label for="username_DB">Enter DB Username:</label>
     <input type="text" id="username_DB" name="username_DB" value="{{session['db_username']}}">
   </div>
   <div>
-    <label for="password_DB">Enter Password:</label>
+    <label for="password_DB">Enter DB Password:</label>
     <input type="text" id="password_DB" name="password_DB" value="{{session['db_password']}}">
   </div>
     <input type="button" onclick="set_db()" value="Submit!">
