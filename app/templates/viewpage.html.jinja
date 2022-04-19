@@ -12,10 +12,10 @@
                 <h3 id="emptymsg2" style="display:block;">No Graphs to display</h3>
                 <div id="historyblock" style="display:none;" class="slideshow-container">
                     <h3> History of created graphs</h3>
-                    <img src="" id="fg"><br>
 
+                    <button class="button" onclick="clearhistory()" id="fbutton">Clear History</button>
                     <div class="mySlides fade" id="tmp2" style="display:none;">
-                        <img id="imgtmp2" src="" style="width:100%">
+                        <img id="imgtmp2" src="">
                     </div>
                     
                     <a class="prev" onclick="plushistory(-1)">&#10094;</a>
@@ -31,7 +31,7 @@
                     <button class="button" onclick="exportimage()" id="dbutton">Download Favorite</button><br>
 
                     <div class="mySlides fade" id="tmp1" style="display:none;">
-                        <img id="imgtmp1" src="" style="width:100%">
+                        <img id="imgtmp1" src="">
                     </div>
                     
                     <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
@@ -45,9 +45,9 @@
         //loads images of history on page load
         if(typeof(Storage)!=="undefined" && localStorage.myArray2){
             document.getElementById("emptymsg2").style.display = "none";
-            var tmpstring = localStorage.getItem('myArray2');
-            var historyarray = tmpstring.split(" ");
-            var historylen = historyarray.length;                    
+            var tmpstring2 = localStorage.getItem('myArray2');
+            var historyarray = tmpstring2.split(" ");
+            var historylen = historyarray.length;                  
             document.getElementById("imgtmp2").src = historyarray[1];
             document.getElementById("tmp2").style.display = "block";
             document.getElementById("historyblock").style.display = "block";
@@ -60,9 +60,9 @@
         if(typeof(Storage)!=="undefined" && localStorage.myArray){
             document.getElementById("emptymsg").style.display = "none";
             var tmpstring = localStorage.getItem('myArray');
-            var tmparray = tmpstring.split(" ");
-            var arraylen = tmparray.length;                    
-            document.getElementById("imgtmp1").src = tmparray[1];
+            var favarray = tmpstring.split(" ");
+            var arraylen = favarray.length;                    
+            document.getElementById("imgtmp1").src = favarray[1];
             document.getElementById("tmp1").style.display = "block";
             document.getElementById("favblock").style.display = "block";
         }
@@ -72,7 +72,6 @@
 
         //clears entire array of favorites
         function clearfav(){
-            localStorage.removeItem("favgraph");
             document.getElementById("favblock").style.display = "none";
             document.getElementById("emptymsg").style.display = "block";
             var testArray = [];
@@ -81,12 +80,12 @@
 
         //removes current graph from favorites
         function removefav(){
-            tmparray.splice(slideIndex, 1);
+            favarray.splice(slideIndex, 1);
             var newstring;
-            for(i = 1;i < tmparray.length; i++){
-                newstring += " " + tmparray[i];
+            for(i = 1;i < favarray.length; i++){
+                newstring += " " + favarray[i];
             }
-            if(tmparray.length == 1){
+            if(favarray.length == 1){
                 var testArray = [];
                 localStorage.setItem('myArray', testArray);
             }
@@ -100,7 +99,7 @@
         function exportimage(){
             var a = document.createElement('a');
             var numindex = slideIndex;
-            a.href = tmparray[slideIndex];
+            a.href = favarray[slideIndex];
             a.download = 'graph.png';
         
             // Trigger the download
@@ -122,14 +121,14 @@
         function showSlides(n) {
             if (n >= arraylen) {
                 slideIndex = 1;
-                document.getElementById("imgtmp1").src = tmparray[1];
+                document.getElementById("imgtmp1").src = favarray[1];
             }    
             else if (n < 1) {
                 slideIndex = arraylen;
-                document.getElementById("imgtmp1").src = tmparray[arraylen - 1];
+                document.getElementById("imgtmp1").src = favarray[arraylen - 1];
             }
             else{
-                document.getElementById("imgtmp1").src = tmparray[slideIndex];
+                document.getElementById("imgtmp1").src = favarray[slideIndex];
             }
         }
 
@@ -157,6 +156,14 @@
             else{
                 document.getElementById("imgtmp2").src = historyarray[historyIndex];
             }
+        }
+
+        //clears entire array of history
+        function clearhistory(){
+            document.getElementById("historyblock").style.display = "none";
+            document.getElementById("emptymsg2").style.display = "block";
+            var testArray = [];
+            localStorage.setItem('myArray2', testArray);
         }
     </script>
 </html>
