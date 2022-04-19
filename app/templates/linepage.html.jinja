@@ -121,7 +121,7 @@
     <button class="button" onclick="favgraph()">Favorite Graph</button>
     <button class="button" onclick="graphhistory()">View Page</button><br>
     <button class="button" onclick="seconddata()">Add Second Dataset</button>
-    <button class="button" onclick="exportsavedata('line', table, xColumn, yColumn, yType)">Export Graph Settings</button>
+    <button class="button" onclick="exportsavedata('line', xColumn, yColumn, yType, operation)">Export Graph Settings</button>
     <button class="button" onclick="testRequest()"> Show request result </button>
   </div>
 </div>
@@ -219,23 +219,8 @@
     );
 
     //code for loading graph from import page
-    //maybe able to move to allfunctions.js depening on what db functions are moved there too
-    //TODO: update getGraph call
     if(typeof(Storage)!=="undefined" && localStorage.dbchose){
-      getGraph(localStorage.getItem('dbchose'), localStorage.getItem('x1chose'), localStorage.getItem('y1chose'), localStorage.getItem('y1type'));
-
-      //clear localstorage of import options
-      localStorage.removeItem("dbchose");
-      localStorage.removeItem("x1chose");
-      localStorage.removeItem("y1chose");
-      localStorage.removeItem("y1type");
-
-      document.getElementById("importload").style.display = "block";
-      setTimeout(function() {
-        myChart.update();
-        document.getElementById("importload").style.display = "none";
-      }, 5000);
-      
+      importsavedata();
     }
 
     //makes things visible for when adding a second dataset

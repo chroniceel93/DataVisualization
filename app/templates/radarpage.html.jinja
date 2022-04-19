@@ -22,7 +22,7 @@
         <button class="button" onclick="favgraph()">Favorite Graph</button>
         <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
         <button class="button" onclick="seconddata()">Add Second Dataset</button>
-        <button class="button" onclick="exportsavedata('radar', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
+        <button class="button" onclick="exportsavedata('radar', xColumn, yColumn, yType, operation)">Export Graph Settings</button>
       </div>
     </div>
 
@@ -105,6 +105,10 @@
         config
       );
 
+      if(typeof(Storage)!=="undefined" && localStorage.dbchose){
+        importsavedata();
+      }
+  
       function seconddata(){
         myChart.config.data.datasets[1].hidden = false;
         myChart.config.data.datasets[1].label = 'Dataset 2 Name';

@@ -18,7 +18,7 @@
         <button class="button" onclick="favgraph()">Favorite Graph</button>
         <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
         <button class="button" onclick="seconddata()">Add Second Dataset</button>
-        <button class="button" onclick="exportsavedata('donut', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
+        <button class="button" onclick="exportsavedata('donut', xColumn, yColumn, yType, operation)">Export Graph Settings</button>
       </div>
     </div>
 
@@ -95,6 +95,10 @@
         document.getElementById('myChart'),
         config
       );
+
+      if(typeof(Storage)!=="undefined" && localStorage.dbchose){
+        importsavedata();
+      }
 
       function seconddata(){
         myChart.config.data.datasets[1].hidden = false;

@@ -30,7 +30,7 @@
         <button class="button" onclick="favgraph()">Favorite Graph</button>
         <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
         <button class="button" onclick="seconddata()">Add Second Dataset</button>
-        <button class="button" onclick="exportsavedata('scatter', chosenTable, chosenX, chosenY, chosenYType)">Export Graph Settings</button>
+        <button class="button" onclick="exportsavedata('scatter', xColumn, yColumn, yType, operation)">Export Graph Settings</button>
     </div>
 
     <script src="{{ url_for('static', filename='chart.js') }}"></script>
@@ -122,6 +122,10 @@
         document.getElementById('myChart'),
         config
       );
+
+      if(typeof(Storage)!=="undefined" && localStorage.dbchose){
+        importsavedata();
+      }
 
       function seconddata(){
         myChart.config.options.scales.y2.title.display = true;

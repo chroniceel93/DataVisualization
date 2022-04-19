@@ -103,7 +103,21 @@ function exportsavedata(charttype, dbin, xin, yin, ytype){
     a.click();
 }
 
+function importsavedata(){
+    getGraph( localStorage.getItem('x1chose'), localStorage.getItem('y1chose'), localStorage.getItem('y1type'), localStorage.getItem('opchose'));
 
+    //clear localstorage of import options
+    localStorage.removeItem("opchose");
+    localStorage.removeItem("x1chose");
+    localStorage.removeItem("y1chose");
+    localStorage.removeItem("y1type");
+
+    document.getElementById("importload").style.display = "block";
+    setTimeout(function() {
+    myChart.update();
+    document.getElementById("importload").style.display = "none";
+    }, 5000);
+}
 
 
 
