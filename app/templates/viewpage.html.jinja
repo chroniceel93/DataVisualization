@@ -1,12 +1,14 @@
 <html>
     <head>
         <link rel="stylesheet" href="/static/style.css" />
+        <script src="{{ url_for('static', filename='allfunctions.js') }}"></script>
     </head>
 
     <body>
         <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
         <button class="button" onclick="location.href = '/template'">Make new Graph</button><br>
         <input class="button" type="button" value="Back" onclick="history.back()"><br>
+        <button class="button" onclick="darkmode()">Toggle dark mode</button>
         <div class="row">
             <div class="column">
                 <h3 id="emptymsg2" style="display:block;">No Graphs to display</h3>

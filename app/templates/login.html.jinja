@@ -1,9 +1,11 @@
 <html>
   <head>
     <link rel="stylesheet" href="/static/style.css" />
+    <script src="{{ url_for('static', filename='allfunctions.js') }}"></script>
   </head>
   
   <body>
+    <button class="button" onclick="darkmode()">Toggle dark mode</button>
     <div class="container">
       <div class="child">
         <h1>Login</h1>

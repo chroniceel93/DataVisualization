@@ -1,13 +1,15 @@
 <html>
     <head>
         <link rel="stylesheet" href="/static/style.css" />
+        <script src="{{ url_for('static', filename='allfunctions.js') }}"></script>
     </head>
 
     <body>
         {% if session.get("UUID") != None %}
         {{session["UUID"].hex()}}
         {% endif %}
-        <button class="logoutbutton" onclick="location.href = '/logout'">Logout</button>
+        <button class="logoutbutton" onclick="location.href = '/logout'">Logout</button><br>
+        <button class="button" onclick="darkmode()">Toggle dark mode</button>
         <div class="container">
             <div class="child">
                 <h3> Choose a type of graph</h3>

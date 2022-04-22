@@ -119,7 +119,11 @@ function importsavedata(){
     }, 5000);
 }
 
-
+//dark mode
+function darkmode() {
+    var element = document.body;
+    element.classList.toggle("dark-mode");
+}
 
 // Keaton's functions:
 // Ordered by: 1. Called on page load

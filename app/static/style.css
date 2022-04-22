@@ -1,3 +1,9 @@
+/*dark mode css*/
+.dark-mode {
+    background-color: #2D4263;
+    color: #4E9F3D;
+}
+
 /*css for centering divs*/
 .container {
     width: 100vw;
@@ -149,7 +155,7 @@
     width: auto;
     padding: 16px;
     margin-top: -22px;
-    color: black;
+    color: rgb(241, 0, 0);
     font-weight: bold;
     font-size: 18px;
     transition: 0.6s ease;
