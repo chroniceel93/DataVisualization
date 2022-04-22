@@ -104,13 +104,17 @@ function exportsavedata(charttype, dbin, xin, yin, ytype){
 }
 
 function importsavedata(){
-    getGraph( localStorage.getItem('x1chose'), localStorage.getItem('y1chose'), localStorage.getItem('y1type'), localStorage.getItem('opchose'));
+    getGraph(localStorage.getItem('x1chose'), localStorage.getItem('y1chose'), localStorage.getItem('y1type'), localStorage.getItem('opchose'));
 
     //clear localstorage of import options
     localStorage.removeItem("opchose");
     localStorage.removeItem("x1chose");
     localStorage.removeItem("y1chose");
     localStorage.removeItem("y1type");
+    localStorage.removeItem("op2chose");
+    localStorage.removeItem("x2chose");
+    localStorage.removeItem("y2chose");
+    localStorage.removeItem("y2type");
 
     document.getElementById("importload").style.display = "block";
     setTimeout(function() {

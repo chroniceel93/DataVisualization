@@ -28,6 +28,7 @@
                   localStorage.setItem('y1type', tmparray[3]);
                   localStorage.setItem('opchose', tmparray[4]);
 
+                  //localstorage for 2 datasets
                   if(tmparray[5] != "[undefined]"){
                     localStorage.setItem('x2chose', tmparray[5]);
                     localStorage.setItem('y2chose', tmparray[6]);
@@ -35,7 +36,7 @@
                     localStorage.setItem('opchose2', tmparray[8]);
                   }
 
-                  
+                  //page redirect based on input from file, error msg if not correct
                   if(tmparray[0] == "bar"){
                     window.location.href = "/barpage"
                   }
