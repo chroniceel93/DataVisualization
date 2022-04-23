@@ -94,8 +94,8 @@ function graphhistory(){
 }
 
 //export of user settings
-function exportsavedata(charttype, dbin, xin, yin, ytype){
-    var sentdata = charttype + " " + dbin + " " + xin + " " + yin + " " + ytype;
+function exportsavedata(charttype, x1, y1, y1type, op1, x2, y2, y2type, op2){
+    var sentdata = charttype + " " + x1 + " " + y1 + " " + y1type + " " + op1 + " " + x2 + " " + y2 + " " + y2type + " " + op2;
     var a = document.createElement('a');
     a.href = 'data:attachment/text,' + encodeURI(sentdata);
     a.target = '_blank';
