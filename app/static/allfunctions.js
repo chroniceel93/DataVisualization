@@ -439,6 +439,10 @@ $.ajax({
     .fail(function() {
         alert('error');
     });
+
+    setTimeout(function() {
+        myChart.update();
+    }, 5000);
 }
 
 
