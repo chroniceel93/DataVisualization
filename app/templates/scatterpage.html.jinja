@@ -10,7 +10,86 @@
     <button class="logoutbutton" onclick="location.href = '/login'">Logout</button><br>
     <input class="button" type="button" value="Back" onclick="history.back()"><br>
     <button class="button" onclick="darkmode()">Toggle dark mode</button>
+    <br>
 
+    <!-- Dropdown with table choices -->
+    <select id="tablesX" onchange="chooseTableX(value)">
+      <option> Select a table - x </option>  
+    </select>
+    
+    <select id="tablesY" onchange="chooseTableY(value)">
+      <option> Select a table - y</option>  
+    </select>
+    
+    <br><br>
+    
+    <!-- Column dropdowns, dependent on what table user chooses-->
+    <select id="xDropdown" onchange = "chooseX(value)">
+      <option> Select a column - x </option>  
+    </select>
+    
+    <select id="yDropdown" onchange = 'chooseY(value)'>
+      <option> Select a column - y </option>  
+    </select>
+    
+    <br><br>
+    
+    <select id='operationDropdown' onchange = 'chooseOperation(value)'>
+      <option> Select operation </option>
+      <option value = '-1'> No operation </option>
+      <option value = '0'> Average </option>
+      <option value = '1'> Summation </option>
+    </select>
+    
+    <br><br>
+    
+    <!--- REMOVE: Keep track of current values, useful for debugging -->
+    <p id='tableX'></p>
+    <p id='tableY'></p>
+    <p id = 'columnX'></p>
+    <p id = 'columnY'></p>
+    <p id = 'columnYType'></p>
+    <p id = 'operation'></p>
+    
+    <button class="button" onclick = 'getGraph(xColumn, yColumn, yType, operation)'> Graph </button><br>
+    
+    <button class="button" onclick=updateGraph()> Refresh Graph </button>
+    
+    <script>
+      // jinja substitutes the scripts root directory upon creation.
+      $SCRIPT_ROOT = {{ request.script_root|tojson }};
+    
+      // IMPORTANT: global variables
+      var columnChoicesX = [];
+      var columnChoicesY = [];
+      var tableChoices = [];
+    
+      var table = 'unspecified';
+      var yType;
+      var operation = 'unspecified';
+    
+      var xColumn = {table:'unspecified', column:'unspecified'};
+      var yColumn = {table:'unspecified', column:'unspecified'};
+    
+      //NEW
+      var database;
+      
+      // html elements
+      var tableDropdownX = document.getElementById("tablesX");
+      var tableDropdownY = document.getElementById("tablesY");
+      var xDropdown = document.getElementById("xDropdown");
+      var yDropdown = document.getElementById("yDropdown");
+    
+      // on page load, automatically:
+      setTables(tableChoices); // set tables from database
+      displayTables(); // display table dropdown
+    
+      var x2Column;
+      var y2Column;
+      var y2Type;
+      var operation2;
+    </script>
+    
     <div class="chartCard">
       <div class="chartBox">
         <canvas id="myChart"></canvas>
