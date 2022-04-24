@@ -97,6 +97,10 @@
   setTables(tableChoices); // set tables from database
   displayTables(); // display table dropdown
 
+  var x2Column;
+  var y2Column;
+  var y2Type;
+  var operation2;
 </script>
 
 
@@ -123,7 +127,7 @@
     <button class="button" onclick="graphhistory()">View Page</button><br>
     <button class="button" onclick="seconddata()">Add Second Dataset</button>
     <button class="button" onclick="exportsavedata('line', xColumn, yColumn, yType, operation, x2Column, y2Column, y2Type, operation2)">Export Graph Settings</button>
-    <button class="button" onclick="testRequest()"> Show request result </button>
+    
   </div>
 </div>
 

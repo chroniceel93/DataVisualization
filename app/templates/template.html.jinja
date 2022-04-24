@@ -5,9 +5,6 @@
     </head>
 
     <body>
-        {% if session.get("UUID") != None %}
-        {{session["UUID"].hex()}}
-        {% endif %}
         <button class="logoutbutton" onclick="location.href = '/logout'">Logout</button><br>
         <button class="button" onclick="darkmode()">Toggle dark mode</button>
         <div class="container">
@@ -22,6 +19,7 @@
                 <button class="button" onclick="location.href = '/radarpage'">Radar Graphs</button><br>
                 <button class="button" onclick="location.href = '/scatterpage'">Scatter Graphs</button><br>
                 <button class="button" onclick="location.href = '/importpage'">Import Graph from file</button><br>
+                <button class="button" onclick="location.href = '/viewpage'">View Page</button><br>
                 <br><br>
             </div>
         </div>
